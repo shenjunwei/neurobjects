@@ -1,0 +1,1617 @@
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+\@ifundefined{definecolor}
+ {\usepackage{color}}{}
+ 
+
+% Use doublespacing - comment out for single spacing
+%\usepackage{setspace} 
+%\doublespacing
+
+
+% Text layout
+\topmargin 0.0cm
+\oddsidemargin 0.5cm
+\evensidemargin 0.5cm
+\textwidth 16cm 
+\textheight 21cm
+
+% Bold the 'Figure #' in the caption and separate it with a period
+% Captions will be left justified
+\usepackage[labelfont=bf,labelsep=period,justification=raggedright]{caption}
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+\date{}
+\end_preamble
+\use_default_options true
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement h
+\paperfontsize 10
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 3cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Object coding in the primary somatosensory cortex and hippocampus
+\end_layout
+
+\begin_layout Author
+Nivaldo A.
+ P.
+ de Vasconcelos
+\begin_inset Formula $^{1,2}$
+\end_inset
+
+, Edson Anibal de Macedo
+\begin_inset Formula $^{1,3}$
+\end_inset
+
+, Gilberto Corso
+\begin_inset Formula $^{4}$
+\end_inset
+
+, 
+\begin_inset Newline newline
+\end_inset
+
+Herman Martins Gomes
+\begin_inset Formula $^{2}$
+\end_inset
+
+, Adriano Tort
+\begin_inset Formula $^{1,5}$
+\end_inset
+
+, Miguel A.
+ L.
+ Nicolelis 
+\begin_inset Formula $^{1,6}$
+\end_inset
+
+, Sidarta Ribeiro
+\begin_inset Formula $^{1,5,\ast}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+
+\series bold
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+1
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ Edmond and Lily Safra International Institute of Neuroscience of Natal
+ (ELS-IINN), Rua Professor Francisco Luciano de Oliveira 2460, Candelária,
+ Natal, RN, Brazil.
+ 
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+2
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ Department of Systems and Computation, Federal University of Campina Grande
+ (UFCG), Campina Grande, PB, Brazil.
+\series default
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+3
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ Universidade Estadual do Estado do Rio Grande do Norte (UERN), Natal/RN,
+ Brazil 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+4
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ Department of Biophysics, Federal University of Rio Grande do Norte (UFRN),
+ Natal/RN, Brazil.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+5
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ Neuroscience Program, UFRN.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+6
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ Center for Neuroengineering, Department of Neurobiology, Duke University
+ Medical Center, 101 Research Drive, Durham/NC, USA.
+
+\series default
+ 
+\series bold
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\ast$
+\end_inset
+
+ E-mail: Corresponding ribeiro@natalneuro.org.br
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Primary sensory areas of the cerebral cortex are anatomically defined by
+ its massive thalamic afferences 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rose1949"
+
+\end_inset
+
+.
+ Physiologically, primary sensory areas related to the different senses
+ are characterized by the small latencies of neuronal responses to stimulation
+ of the corresponding sensory modality [REF], and by the fact that these
+ areas display complete – albeit distorted - topographic representations
+ of the external world 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Adrian1940"
+
+\end_inset
+
+.
+ By comparison, hippocampal neurons are more removed from the sensory periphery,
+ responds to multiple sensory modalities with longer latencies than primary
+ cortical areas 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Pereira2007"
+
+\end_inset
+
+, and are not organized according to any sensory or spatial topography [REF].
+ It is traditionally believed that the function of primary cortical areas
+ is to extract the basic features that underlie any sensory scene, such
+ as brightness and orientation in the case of vision, pitch and volume in
+ the case of audition, or pressure and texture in the case of somatosensation
+ (REF).
+ In contrast, cortical and subcortical areas more distant from the ascending
+ thalamic inputs and with broader access to multisensory information are
+ conceptualized as capable of creating an abstract representation of the
+ stimulus (REF).
+ This was particularly well established for models of vision processing
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Marr1983"
+
+\end_inset
+
+, in which the primary visual cortex (V1) is proposed to be responsible
+ for extracting the primal sketch from the visual stimulus, leaving to the
+ higher visual areas the processing of more abstract aspects of the scene,
+ such as “object identity” (REF).
+ In accordance with this view, it has been demonstrated that neuronal ensemble
+ activity in the inferior temporal (IT) cortex of rhesus monkeys can be
+ used to identify and classify complex visual objects 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Hung2005a"
+
+\end_inset
+
+.
+ This is possible despite great variability in shape, size, illumination
+ and other aspects of the stimulation context.
+ By the same token, the hippocampus in humans has been shown to code for
+ complex objects with exquisite specificity 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Quiroga2005"
+
+\end_inset
+
+.
+ In mice, neuronal ensembles recorded in the hippocampus have been shown
+ to code for a complex object of special ecological significance, namely
+ nests 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Lin2007"
+
+\end_inset
+
+.
+ Complex object coding in freely behaving rats is yet to be reported in
+ either cortical or hippocampal regions.
+ 
+\end_layout
+
+\begin_layout Section*
+Results
+\end_layout
+
+\begin_layout Standard
+To address these questions, we performed extracellular recordings of action
+ potentials (spikes) using multielectrode arrays in surgically implanted
+ rats.
+ Our goal in the present study was to investigate the neural basis of the
+ identity of complex objects in S1 and hippocampus.
+ We allowed animals to freely explore four new objects while simultaneous
+ recordings of neural population activity from both areas were performed
+ (Fig.
+ 1A).
+ We studied the discriminative power of binary classifiers about the identity
+ of complex objects based on the activation of a neuronal population (Fig.
+ 1B,C).
+ Our results suggest that it is possible to predict the identity of complex
+ objects in S1 and hippocampus using a neuron population code approach.
+ Furthermore, we show that the coding occurs mainly distributed among neurons
+ in these areas, although we also show that subpopulations of neurons can
+ present a higher object coding specificity than others.
+\end_layout
+
+\begin_layout Subsection*
+General classification
+\end_layout
+
+\begin_layout Standard
+\begin_inset Marginal
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+Resultado geral usando a atividade vetores de bins
+\end_layout
+
+\end_inset
+
+In order to quantify the amount of object-related information in the neuronal
+ population activity record of S1 and HP, we used binary classifiers, with
+ diferent models, which had as input spike count derived data (Supplementary).
+ As shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Flo:Fig 1"
+
+\end_inset
+
+A, there is substantial amount of specific information enough to classify
+ individual objects based on population neurons activity over time, when
+ are used the AUROC values for object classification with a binary classifier
+ fed with neuronal ensemble data from S1 and HP (group data, median 
+\begin_inset Formula $±$
+\end_inset
+
+ quartiles).
+ S1 and HP values were significantly different only for URCHIN (Mann-Whitney
+ test, 
+\begin_inset Formula $p>0.05$
+\end_inset
+
+ corrected for the number of comparisons and also can be possible to classify
+ based on average of population neurons activity over time.
+ To validate these results, the binary classifiers were fed with surragated
+ data (details in Supplementary Material) and, in all cases, the AUROC of
+ the classifier converged to 
+\begin_inset Formula $0.5$
+\end_inset
+
+ when surrogate percentage was increased from zero until 
+\begin_inset Formula $100\%$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Marginal
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+Resultado geral usando a atividade 
+\emph on
+\color inherit
+média
+\emph default
+\color blue
+ de vetores de bins
+\end_layout
+
+\end_inset
+
+Also it was possible to classify the individual objects based on the 
+\emph on
+average
+\emph default
+ of neuronal population activity over time, using the same classification
+ approach shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Flo:Fig 1"
+
+\end_inset
+
+A.
+ The results are so similar as found in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Flo:Fig 1"
+
+\end_inset
+
+A, as can be seen in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Flo:Fig 1"
+
+\end_inset
+
+B.
+ S1 and HP values were significantly different only for URCHIN (Mann-Whitney
+ test, 
+\begin_inset Formula $p>0.05$
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+insert all 
+\emph on
+p
+\emph default
+-value here
+\end_layout
+
+\end_inset
+
+ corrected for the number of comparisons and also can be possible to classify
+ based on the average of population neurons activity over time.
+ This dataset also validate with surrogated data (details in Supplementary
+ Material) and, in all cases, the AUROC of the classifier converged to 
+\begin_inset Formula $0.5$
+\end_inset
+
+ when surrogate percentage was increased from zero until 
+\begin_inset Formula $100\%$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+Distributed coding
+\end_layout
+
+\begin_layout Standard
+\begin_inset Marginal
+status collapsed
+
+\begin_layout Plain Layout
+
+\family typewriter
+\color blue
+Resultado do neuron dropping usando a atividade vetores de bins
+\end_layout
+
+\end_inset
+
+To assess how the encoding information of the individual objects in the
+ pattern of the population neurons activity over time, in different number
+ of neurons, and areas, was calculated the neuron dropping curves (NDC's)
+ in those areas in study (S1, HP), which show the classification accuracy,
+ based on AUROC, as a function of the number of neurons recorded simultaneously
+ during the object exploration, in different areas, proposed as the 
+\emph on
+Distributing coding
+\emph default
+ principle 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Nicolelis2009"
+
+\end_inset
+
+.
+ The results, for each animal, can be found in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Flo:Fig 2"
+
+\end_inset
+
+, where is shown that for most of object (BALL, BRUSH and URCHIN) the classifica
+tion accuracy is function as of the number of neurons, in diferent areas:
+ S1 and HP.
+ The model of those NDC's, as double exponential, not yielded significative
+ difference between parameters' growth in each area (details in Supplementary
+ material), according to the 
+\emph on
+Distributing coding
+\emph default
+ principle 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Nicolelis2009"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color blue
+[Talvez seja o caso de fazer NDC para a média da taxa de disparo]
+\end_layout
+
+\begin_layout Subsection*
+Sparse coding
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\color blue
+[Gilberto e Anibal]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Gilberto e Anibal
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Coding over time
+\end_layout
+
+\begin_layout Section*
+Discussion
+\end_layout
+
+\begin_layout Standard
+In the present work, we have shown that neuronal population activity in
+ the somatosensory primary area of rats, can be used to classify individual
+ complex objects during a free exploration task.
+ Conversely, we also have shown here that neuronal population activity in
+ the hippocampus also can be used to classify those individual complex objects
+ during that a free exploration task.
+ 
+\end_layout
+
+\begin_layout Standard
+Thus those objects were always explored in a free non-stereotyped behavior,
+ in which the animal (rat) can choose exploration aspects: as approach in
+ each object, sequence of explorated objects, duration in each object, time
+ attack, etc.
+ This in itself already enough to increase the complexity of stimuli when
+ compared with approaches in which the animal is not free to exploit simple
+ objects (simple shape, texture or place), and give rise to study the object
+ exploration under the the animal 
+\emph on
+volition
+\emph default
+, bringing us into contact with the analysis of primary sensory and hippocampus
+ neuronal ensemble activity under more natural conditions.
+\end_layout
+
+\begin_layout Standard
+[comportamento não estereotipado, objetos complexos, 
+\end_layout
+
+\begin_layout Section*
+Material and Methods 
+\end_layout
+
+\begin_layout Subsection*
+Multielectrode Implantation 
+\end_layout
+
+\begin_layout Standard
+The general approach for electrode implantation and multichannel recording
+ has been described elsewhere 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Kralik2001,nicolelis2003,Ribeiro2004"
+
+\end_inset
+
+.
+ Rats were anesthetized with ketamine and xylazine and implanted with three
+ multielectrode arrays of teflon-coated tungsten microwires (35 
+\begin_inset Formula $\mu m$
+\end_inset
+
+, 1.0–1.2 
+\begin_inset Formula $M$
+\end_inset
+
+
+\begin_inset Formula $\Omega$
+\end_inset
+
+ at 1 
+\begin_inset Formula $KHz$
+\end_inset
+
+; California Fine Wire Company, Grover Beach, CA).
+ Stainless steel screws and dental acrylic were used to secure the implant.
+ One screw was soldered to a silver wire to serve as recording ground.
+ The accuracy of electrode placement during surgery was assured by stereotaxic
+ placement of microwires and by continuously recording neural activity during
+ the surgery.
+ Arrays targeting HP and S1 were centered on the following stereotaxic coordinat
+es on the left hemisphere, in mm from Bregma with respect to the antero-posterio
+r (AP), medio-lateral (ML), and dorso-ventral (DV) axes (Paxinos and Watson,
+ 1997): HP (AP: 
+\begin_inset Formula $-2.80$
+\end_inset
+
+; ML: 
+\begin_inset Formula $+1.5$
+\end_inset
+
+; DV: 
+\begin_inset Formula $-3.30$
+\end_inset
+
+); S1 (AP: 
+\begin_inset Formula $-3.00$
+\end_inset
+
+; ML: 
+\begin_inset Formula $+5.5$
+\end_inset
+
+; DV: 
+\begin_inset Formula $-1.40$
+\end_inset
+
+); DV measurements were taken with respect to the pial surface.
+ Arrays consisted of 
+\begin_inset Formula $16–32$
+\end_inset
+
+ microwires spaced at 250 
+\begin_inset Formula $\mu m$
+\end_inset
+
+ intervals (
+\begin_inset Formula $4×4$
+\end_inset
+
+ arrays for S1, 
+\begin_inset Formula $2×16$
+\end_inset
+
+ array for HP) attached to plastic connectors (Omnetics, Minneapolis, MN).
+ For S1 arrays were aimed at pyramidal layer V and the location of implants
+ was confirmed by the respective presence of somatosensory during implantation
+ and/or experimentation.
+ For HP, electrode placement was guided by the characteristic depth profile
+ of ongoing neuronal activity during implantation, and by the presence of
+ theta rhythm in LFPs observed during test recordings of alert WK.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Electrophysiological Recordings 
+\end_layout
+
+\begin_layout Standard
+After 1-week recovery from surgery, animals were habituated to the empty
+ recording box for 5 full consecutive days (12:12 light cycle, lights off
+ at 7 PM, food and water ad libitum).
+ Experiments consisted of recording animals before, during, and after object
+ exploration in the dark (Figure S1), but only the object exploration stage
+ was used in this work.
+ On the day of the experiment, arrays were plugged to the recording cables
+ under halothane anesthesia around 6:30 PM under normal illumination.
+ Animals were then placed inside the dark recording chamber under infrared
+ illumination.
+ To avoid the residual effects of halothane, unit waveform selection began
+ 60 minutes after placing the animals inside the recording box.
+ Recordings usually begin at 9 PM.
+ A 96-channel multi-neuron acquisition processor (MAP, Plexon Inc, Dallas,
+ TX) was used for digital spike waveform discrimination and storage.
+ Continuous single-unit recordings were performed for up to 6 hours using
+ a software package for supervised spike sorting which allows for real-time
+ sampling of all spike waveforms (SortClient 2002, Plexon Inc) for offline
+ validation (Offline Sorter 2.3, Plexon Inc) LFPs recorded from the same
+ wires were pre-amplified (500X), filtered (0.3–400 Hz), and digitized at
+ 500 Hz using a Digital Acquisition card (National Instruments, Austin,
+ TX) and a MAP (Plexon).
+ The LFP frequencies actually analyzed in this study ranged from 1 to 55
+ Hz.
+ Behaviors were recorded throughout the entire experiment under infrared
+ illumination, by way of two CCD video cameras and a videocassette recorder.
+ Video and neural recordings were synchronized with a millisecond-precision
+ timer (model VTG-55; For-A, Tokyo, Japan).
+ Staggered arrays were used to simultaneously record neurons from the CA1
+ field and LFPs from the DG, due to its very robust theta rhythm.
+ About 80% of the electrodes were targeted to CA1.
+ These electrodes were cut 0.8 mm shorter than the longer electrodes, destined
+ to the DG.
+ Analysis of our data (Bonferroni t-test, P < 0.05) showed that only 21%
+ of DG neurons were activated by experience, and were pooled with activated
+ CA1 neurons.
+ Therefore, hippocampal data mostly reflect CA1 neurons (>90% of total HP
+ neurons).
+\end_layout
+
+\begin_layout Subsection*
+Histology 
+\end_layout
+
+\begin_layout Standard
+Neuroanatomical reconstruction to confirm multielectrode placement and guide
+ IEG expression quantification was carried out after experiments were finished,
+ by inspecting 20 
+\begin_inset Formula $\mu m$
+\end_inset
+
+ cresyl-stained frontal brain sections with reference to anatomical planes
+ (Paxinos and Watson, 1997).
+ To prevent interference with IEG detection, lesion holes were not employed
+ for anatomical reference.
+ Instead, glial scars along electrode tracks were used to verify the correct
+ placement of the recording arrays.
+ Inspection showed that electrodes targeting the HP were never placed in
+ the subiculum, which at the antero-posterior level targeted appears only
+ in the most medial 0.5 mm of the brain hemispheres (Figure S3).
+ 
+\end_layout
+
+\begin_layout Subsection*
+Data Analysis 
+\end_layout
+
+\begin_layout Subsubsection*
+Data preparation for binary classifiers  
+\end_layout
+
+\begin_layout Standard
+For any given recording site 
+\begin_inset Formula $s$
+\end_inset
+
+ 
+\begin_inset Formula $(s=1,\cdots,N)$
+\end_inset
+
+; let 
+\begin_inset Formula $\mathbf{r}_{s}$
+\end_inset
+
+ denote the response of the 
+\begin_inset Formula $s$
+\end_inset
+
+ unit throughout the time observed, where each element on 
+\begin_inset Formula $\mathbf{r}_{s}$
+\end_inset
+
+ denotes the time in which an action potential occurred on unit 
+\begin_inset Formula $s$
+\end_inset
+
+.
+ For the spike data, we explored a family of codes based on spike counting
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Rieke1999"
+
+\end_inset
+
+ in successive bin sizes 
+\begin_inset Formula $w$
+\end_inset
+
+.
+ This parameter controls the time resolution of the code, its default value
+ on this study is 
+\begin_inset Formula $w=250ms$
+\end_inset
+
+.
+ Having defined the bin size 
+\begin_inset Formula $w$
+\end_inset
+
+, each site contributes with 
+\begin_inset Formula $W$
+\end_inset
+
+ bins on the input data matrix.
+ For a given animal, the 
+\begin_inset Formula $k$
+\end_inset
+
+-th time interval of contact with an object, 
+\begin_inset Formula $I_{k}$
+\end_inset
+
+, is defined by 
+\begin_inset Formula $I_{k}=[a_{k};b_{k}]$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $(W.w)≤(b_{k}-a_{k})$
+\end_inset
+
+ then it is possible makes more than one sample from that contact interval,
+ the next samples are built sliding (by 
+\begin_inset Formula $w$
+\end_inset
+
+ seconds) into interval, 
+\begin_inset Formula $I_{k}$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $(W.w)>(b_{k}-a_{k})$
+\end_inset
+
+ then the interval, 
+\begin_inset Formula $I_{k}$
+\end_inset
+
+, is too short and cannot be used on input data for the given bin size 
+\begin_inset Formula $w$
+\end_inset
+
+.
+ Therefore, using the spike counting to define the code, given an interval,
+ 
+\begin_inset Formula $I_{k}=[a_{k};b_{k}]$
+\end_inset
+
+, where 
+\begin_inset Formula $(W.w)≤(b_{k}-a_{k})$
+\end_inset
+
+, and a given site 
+\begin_inset Formula $s$
+\end_inset
+
+, we define the response vector 
+\begin_inset Formula $\mathbf{r}(a_{k},b_{k})$
+\end_inset
+
+ as 
+\begin_inset Formula $\mathbf{r}(a_{k},b_{k})=h(\mathbf{u}_{s},w,a_{k},b_{k})=[\mathbf{r}_{0}\,\mathbf{r}_{1}\cdots\mathbf{r}_{l}]$
+\end_inset
+
+, where: 
+\begin_inset Formula $\mathbf{u}_{s}$
+\end_inset
+
+, is a vector which stores the firing times of the site 
+\begin_inset Formula $s$
+\end_inset
+
+; 
+\begin_inset Formula $h$
+\end_inset
+
+ is defined as the histogram (8??) of the vector 
+\begin_inset Formula $\mathbf{u}_{s}$
+\end_inset
+
+, between 
+\begin_inset Formula $a_{k}$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{k}$
+\end_inset
+
+, using as bin size 
+\begin_inset Formula $w$
+\end_inset
+
+; and 
+\begin_inset Formula $l$
+\end_inset
+
+ is the number of bins on that given interval, 
+\begin_inset Formula $I_{k}$
+\end_inset
+
+, which can be computed by 
+\begin_inset Formula $l=(b_{k}-a_{k})/w$
+\end_inset
+
+.
+ Given 
+\begin_inset Formula $W$
+\end_inset
+
+, as the time length of the observation, the input data samples from 
+\begin_inset Formula $\mathbf{r}(a_{k},b_{k})$
+\end_inset
+
+ are obtained taken all consecutive 
+\begin_inset Formula $W$
+\end_inset
+
+-width vectors from 
+\begin_inset Formula $\mathbf{r}(a_{k},b_{k})$
+\end_inset
+
+.
+ These samples were used as input data to the decoding classifier.
+ When considering the responses of multiple sites, we concatenated the correspon
+ding response samples and used the result as input to the classifier (9??).
+ Therefore, the input data dimensionality to the classifier is 
+\begin_inset Formula $W.N$
+\end_inset
+
+, where 
+\begin_inset Formula $N$
+\end_inset
+
+ is the number of the sites used to build the input data.
+ Depends on the analysis, and the animal, we used 
+\begin_inset Formula $N=1,\cdots,144$
+\end_inset
+
+ sites.
+ For training and testing, the data were always divided into a training
+ set and a test set, using always the same number of samples for all animals.
+ In all cases the training set comprised 
+\begin_inset Formula $70\%$
+\end_inset
+
+ of the available contact samples of each object, while the test set included
+ the remaining 
+\begin_inset Formula $30\%$
+\end_inset
+
+.
+ Positive samples for a given object comprise moments when the animal was
+ in contact with that object, and negative samples for a given object are
+ moments in which the animal was in contact with other objects.
+ The training set and a test set are built using 
+\begin_inset Formula $M$
+\end_inset
+
+ positive samples and 
+\begin_inset Formula $2.M$
+\end_inset
+
+ negative samples, randomly chosen from all available samples.  
+\end_layout
+
+\begin_layout Subsubsection*
+Binary classifier models  
+\end_layout
+
+\begin_layout Standard
+We used the following classifier models to analyze data related to the free
+ exploration of novel objects: multilayer perceptron 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Haykin2008"
+
+\end_inset
+
+, radial basis functions 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Haykin2008"
+
+\end_inset
+
+, support vector machines 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Haykin2008"
+
+\end_inset
+
+, decision tree 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Ressell2002,Bishop2006"
+
+\end_inset
+
+ and naive Bayes classifier 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Duda2000,Bishop2006"
+
+\end_inset
+
+.
+ The binary classifier results shown in Figs.
+ 4D and 4E come from the naive Bayes classifier model, which showed the
+ global best performance.  
+\end_layout
+
+\begin_layout Subsubsection*
+Surrogated datasets 
+\end_layout
+
+\begin_layout Standard
+The Poisson point process 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Papoulis2001"
+
+\end_inset
+
+ is well established as a model of neuronal firing 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Brown2004,Amarasingham2006,Wulfram2002"
+
+\end_inset
+
+, and was used to surrogate our spike datasets.
+ Given a site, s, the approach used to surrogate the original pattern of
+ neuronal activation was to replace the original spike counts within each
+ 
+\begin_inset Formula $250ms$
+\end_inset
+
+ bin by random firing following a Poisson distribution with the same average
+ found in the original samples.
+ Figure S3 shows that average AUROC decays as the percentage of surrogated
+ neurons increases.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Evaluation of ISI 
+\end_layout
+
+\begin_layout Section*
+
+\series bold
+Acknowledgments
+\end_layout
+
+\begin_layout Standard
+We thank XXX for discussions, Xinwu Shi, Matthew Engelhard and Yi Zhou for
+ help with early electrophysiological recordings, Jim Meloy, Gary Lehew
+ for manufacturing electrode arrays and stimulation devices; Adriana Ragoni,
+ Laura Oliveira, and Marcelo Pacheco for laboratory management; and Susan
+ Halkiotis for secretarial help.
+ The project described was supported by Grant Number R01-DE011451 from the
+ National Institutes of Dental and Craniofacial Research (NIDCR).
+ The content is solely the responsibility of the authors and does not necessaril
+y represent the official views of the NIDCR or the NIH.
+ Support was also obtained from FINEP 01.06.1092.00, INCT-CNPq/MCT 704134/2009,
+ CNPq Universal 481506/2007-1 and a CAPES graduate fellowship.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "S1Paper"
+options "plos2009"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+
+\series bold
+Figure Legends
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename imgs/Fig1.eps
+	width 90col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+
+\series bold
+Average of AUROC for the different objects
+\series default
+.
+ (A) Mean AUROC values for object classification with a binary classifier
+ fed with neuronal ensemble data from S1 and HP (group data, median ± quartiles).
+ S1 and HP values were significantly different only for URCHIN (Mann-Whitney
+ test, p>0.05 corrected for the number of comparisons).
+ Adicionar Box plots dos outros modelos de classificação.
+ (B) Same as (A) when is used, for each neuron, not spike count vector as
+ inputs but average of spike count over time.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "Flo:Fig 1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename imgs/Fig2.eps
+	width 90col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+
+\series bold
+Neuron-dropping curves for object classification in S1 and HP
+\series default
+.
+ Neuronal dropping curves to classify individual objects based on population
+ neurons activity over time (
+\begin_inset Formula $2.5s$
+\end_inset
+
+) in rats Long Evans calculated for the ensembles recorded in different
+ cortical areas: primary somatosensory cortex (S1) and hippocampus (HP).
+ Neuronal dropping curves describe the AUROC as a function of the size of
+ the neuronal ensemble used to generate the classifcation.
+ Classification accuracy improved with the increase of neuronal ensemble
+ size.
+ Each plane figure represents a diferente animal and its vertical position
+ is the last value of its respective curve.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "Flo:Fig 2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+begin{figure}[!ht]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%%
+\backslash
+includegraphics[width=4in]{figure_name.2.eps}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+end{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+caption{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%{
+\backslash
+bf Bold the first sentence.}  Rest of figure 2  caption.
+  Caption 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%should be left justified, as specified by the options to the caption 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%package.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+label{Figure_label}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+end{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+
+\series bold
+Tables
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+begin{table}[!ht]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+caption{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+bf{Table title}}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+begin{tabular}{|c|c|c|}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%table information
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+end{tabular}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
