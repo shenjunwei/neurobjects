@@ -7,5 +7,5 @@ public interface BehavHandlerI {
 	
 	public ArrayList<DoubleMatrix1D> 		getIntervals(String label);
 	public double[] 						getBigInterval(ArrayList<String> labels);
-
+ 
 }
