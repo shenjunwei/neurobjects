@@ -2,6 +2,21 @@ package utils;
 
 import java.util.ArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
+/** \page behaveDataSpec Behavior Data Format Spec
+ * 
+ * In our model the animal behavior is captured as a set of: label and a time interval. \n
+ * The label must be a string and time interval must be formed using two numbers .
+ * For example, consider that in animal bahavior data there is the following information:
+ * \code
+ * label01,1010,1014
+ * label01,1015,1020 
+ * label03,900,902
+ * label04,900,915
+ * \endcode	
+ * 
+ * @author Nivaldo Vasconcelos
+ * */
+
 
 /** @brief Handle animal behavior informations 
  * 
@@ -9,12 +24,15 @@ import cern.colt.matrix.DoubleMatrix1D;
  *  The animal behavior data contains information about important aspects of the animal behavior models
  *  as a set of intervals, in which each element has a bahavior label and its respective time interval. 
  *  Therefore in our model the animal behavior is captured as a set of: label and a time interval. \n
+ *  The label must be a string and time interval must be formed using two numbers .
  *  Ex: \n
  *  \code ball 2010 2012 \endcode 
  *  means that the time interval [2010;2012] has been labeled with 'ball' tag. 
- *  \code north 1000 1005 \endcode 
- *  means that the time interval [2010;2012] has been labeled with 'north' tag.   
- *
+ *  \code north 1000 1005.5 \endcode 
+ *  means that the time interval [2010;2012] has been labeled with 'north' tag.
+ *  
+ *     \see Behavior Data Format Spec
+ *  @author Nivaldo Vasconcelos
  */
 public interface BehavHandlerI {
 	
@@ -29,8 +47,29 @@ public interface BehavHandlerI {
 	 *  
 	 * @param label label target.
 	 * @return Returns a list of intervals tagged with a give label as list of 2D vector.
+	 * @author Nivaldo Vasconcelos
 	 */
 	public ArrayList<DoubleMatrix1D> 		getIntervals(String label);
+	
+	/** \brief Returns a big interval in which the animal execute a set of given behavior 
+	 * 
+	 * Given a set of labels this method returns a interval I in which all intervals associated with each 
+	 * given label is contained. \n
+	 * For example, consider that in animal bahavior data there is the following information:
+	 * \code
+	 * label01,1010,1014
+	 * label01,1015,1020 
+	 * label03,900,902
+	 * label04,900,915
+	 * \endcode
+	 * 
+	 * If the given list of labels is: {label01,label03} should be returned the following interval:
+	 * \code [900;1020] \endcode
+	 * 
+	 * @param labels list of labels target
+	 * @return a 2D vector with the big interval.
+	 * @author Nivaldo Vasconcelos
+	 * */
 	public double[] 						getBigInterval(ArrayList<String> labels);
  
 }
