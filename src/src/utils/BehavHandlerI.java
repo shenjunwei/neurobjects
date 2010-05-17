@@ -18,7 +18,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * */
 
 
-/** @brief Handle animal behavior informations 
+/** \brief Handle animal behavior informations 
  * 
  * This component should be provide the interface between the animal behavior data and the application.
  *  The animal behavior data contains information about important aspects of the animal behavior models
@@ -33,6 +33,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  *  
  *     \see Behavior Data Format Spec
  *  @author Nivaldo Vasconcelos
+ *  @date 17Mai2010
  */
 public interface BehavHandlerI {
 	
@@ -51,23 +52,22 @@ public interface BehavHandlerI {
 	 */
 	public ArrayList<DoubleMatrix1D> 		getIntervals(String label);
 	
-	/** \brief Returns a big interval in which the animal execute a set of given behavior 
+	/**
+	 * \brief Returns a big interval in which the animal execute a set of given
+	 * behavior
 	 * 
-	 * Given a set of labels this method returns a interval I in which all intervals associated with each 
-	 * given label is contained. \n
-	 * For example, consider that in animal bahavior data there is the following information:
-	 * \code
-	 * label01,1010,1014
-	 * label01,1015,1020 
-	 * label03,900,902
-	 * label04,900,915
+	 * Given a set of labels this method returns a interval I in which all
+	 * intervals associated with each given label is contained. \n For example,
+	 * consider that in animal bahavior data there is the following information:
+	 * \code label01,1010,1014 label01,1015,1020 label03,900,902 label04,900,915
 	 * \endcode
 	 * 
-	 * If the given list of labels is: {label01,label03} should be returned the following interval:
-	 * \code [900;1020] \endcode
+	 * If the given list of labels is: {label01,label03}; should be returned the
+	 * following interval: \code [900;1020] \endcode
 	 * 
-	 * @param labels list of labels target
-	 * @return a 2D vector with the big interval.
+	 * @param labels
+	 *            list of target labels
+	 * @return a 2D vector with the big interval [a,b].
 	 * @author Nivaldo Vasconcelos
 	 * */
 	public double[] 						getBigInterval(ArrayList<String> labels);
