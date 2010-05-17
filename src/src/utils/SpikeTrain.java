@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
  * \brief Models the spike train information as a time series.
@@ -68,23 +67,9 @@ public class SpikeTrain {
 	 * @param fileName full path and file name in which are stored the spike times
 	 * 
 	 * */
-	public SpikeTrain(String fileName) {
-		String neuronFilename = fileName;
-		int numberOfSpikes= 0;
+	public SpikeTrain(String filename) {
 		
-		// Number of spike times
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(
-					neuronFilename));
-	        while (in.readLine() != null){  
-	        	numberOfSpikes++;
-	     
-	        }
-	        in.close();
-			
-		} catch (IOException e) {
-			System.out.println("SpikeTime: Problems reading the file: " + neuronFilename);
-		}
+		int numberOfSpikes = this.getNumSpkFromFile(filename);
 		if (numberOfSpikes==0) {
 			this.valid = false;
 		}
@@ -94,19 +79,9 @@ public class SpikeTrain {
 		if (!this.valid) {
 			return;
 		}
-		
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
-		try { 
-			BufferedReader in = new BufferedReader(new FileReader(
-					neuronFilename));
-			String str;
-			
-			int i = 0;
-			while ((str = in.readLine()) != null) {
-				this.times.set(i++, Double.parseDouble(str));
-			}
-		} catch (IOException e) { }
-		this.name = this.parseName(neuronFilename);
+		this.fillFromFile(filename);
+		this.name = this.parseName(filename);
 		return;
 		
 		
@@ -125,16 +100,59 @@ public class SpikeTrain {
 	 *            
 	 *  
 	 * */
-	public SpikeTrain(String fileName, double a, double b) {
-		
+	public SpikeTrain(String filename, double a, double b) {
+		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
+		if (numberOfSpikes==0) {
+			this.valid = false;
+		}
+		else {
+			this.valid = true;
+		}
+		if (!this.valid) {
+			return;
+		}
+		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
+		this.fillFromFile(filename,a,b);
+		this.name = this.parseName(filename);
+		return;
 		
 	}
 	
-	public SpikeTrain(String fileName, String name) {		
+	public SpikeTrain(String filename, String name) {
+		
+		int numberOfSpikes = this.getNumSpkFromFile(filename);
+		if (numberOfSpikes==0) {
+			this.valid = false;
+		}
+		else {
+			this.valid = true;
+		}
+		if (!this.valid) {
+			return;
+		}
+		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
+		this.fillFromFile(filename);
+		this.name = name;
+		return;
 		
 	}
 	
-	public SpikeTrain(String fileName, String name, double a, double b) {		
+	public SpikeTrain(String filename, String name, double a, double b) {
+		
+		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
+		if (numberOfSpikes==0) {
+			this.valid = false;
+		}
+		else {
+			this.valid = true;
+		}
+		if (!this.valid) {
+			return;
+		}
+		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
+		this.fillFromFile(filename,a,b);
+		this.name = name;
+		return;
 		
 	}
 
@@ -170,6 +188,91 @@ public class SpikeTrain {
 		
 		newName = name.substring(pathPos+1, dotPos-1);		
 		return (newName); 
+	}
+	
+	private int getNumSpkFromFile (String filename) {
+		
+		int numberOfSpikes= 0;
+		
+		// Number of spike times
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(
+					filename));
+	        while (in.readLine() != null){  
+	        	numberOfSpikes++;
+	     
+	        }
+	        in.close();
+			
+		} catch (IOException e) {
+			System.out.println("SpikeTime: Problems reading the file: " + filename);
+		}
+		return (numberOfSpikes);
+		
+	}
+	
+	private int getNumSpkFromFile (String filename, double a, double b) {
+		
+		int numberOfSpikes= 0;
+		
+		// Number of spike times
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(
+					filename));
+			double spikeTime=0;
+			String str="";
+			while (((str = in.readLine()) != null) && (spikeTime < b)) {
+				if ((spikeTime >= a) && (spikeTime <= b)) {
+					spikeTime = Double.parseDouble(str);
+					numberOfSpikes++;
+				}
+			}
+	        in.close();
+		} catch (IOException e) {
+			System.out.println("SpikeTime: Problems reading the file: " + filename);
+		}
+		return (numberOfSpikes);
+		
+	}
+	
+	
+	
+	private void fillFromFile(String filename){
+		
+		
+		try { 
+			BufferedReader in = new BufferedReader(new FileReader(
+					filename));
+			String str;
+			
+			int i = 0;
+			while ((str = in.readLine()) != null) {
+				this.times.set(i++, Double.parseDouble(str));
+			}
+			in.close();
+		} catch (IOException e) { }
+		
+	}
+	
+	private void fillFromFile(String filename, double a, double b){
+		
+		
+		try { 
+			BufferedReader in = new BufferedReader(new FileReader(
+					filename));
+			String str;
+			int i = 0;
+			double spikeTime=0;
+			
+			while (((str = in.readLine()) != null) && (spikeTime < b)) {
+				if ((spikeTime >= a) && (spikeTime <= b)) {
+					spikeTime = Double.parseDouble(str);
+					this.times.set(i++, spikeTime);
+				}
+			}
+			in.close();
+		} catch (IOException e) { }
+		
 	}
 	
 	
