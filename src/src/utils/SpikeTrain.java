@@ -49,11 +49,8 @@ public class SpikeTrain {
 	 *
 	 * */ 
 	public SpikeTrain(DoubleMatrix1D setTime, String setName) {
-		
-		this.times = setTime.copy();
-		this.name = setName;
-		this.first= this.times.get(0);
-		this.last= this.times.get(this.times.size()-1);
+		this.times = setTime;
+		setInitialValues(setName);
 	}
 	
 	
@@ -68,23 +65,11 @@ public class SpikeTrain {
 	 * 
 	 * */
 	public SpikeTrain(String filename) {
-		
 		int numberOfSpikes = this.getNumSpkFromFile(filename);
-		if (numberOfSpikes==0) {
-			this.valid = false;
-		}
-		else {
-			this.valid = true;
-		}
-		if (!this.valid) {
-			return;
-		}
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename);
-		this.name = this.parseName(filename);
+		setInitialValues(filename);
 		return;
-		
-		
 	}
 	
 	/** \brief Constructor of a Spike Train given a filename in which there is
@@ -102,56 +87,26 @@ public class SpikeTrain {
 	 * */
 	public SpikeTrain(String filename, double a, double b) {
 		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
-		if (numberOfSpikes==0) {
-			this.valid = false;
-		}
-		else {
-			this.valid = true;
-		}
-		if (!this.valid) {
-			return;
-		}
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename,a,b);
-		this.name = this.parseName(filename);
+		setInitialValues(filename);
 		return;
-		
 	}
 	
 	public SpikeTrain(String filename, String name) {
-		
 		int numberOfSpikes = this.getNumSpkFromFile(filename);
-		if (numberOfSpikes==0) {
-			this.valid = false;
-		}
-		else {
-			this.valid = true;
-		}
-		if (!this.valid) {
-			return;
-		}
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename);
-		this.name = name;
+		setInitialValues(name);
 		return;
-		
 	}
 	
 	public SpikeTrain(String filename, String name, double a, double b) {
 		
 		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
-		if (numberOfSpikes==0) {
-			this.valid = false;
-		}
-		else {
-			this.valid = true;
-		}
-		if (!this.valid) {
-			return;
-		}
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename,a,b);
-		this.name = name;
+		setInitialValues(name);
 		return;
 		
 	}
@@ -186,7 +141,11 @@ public class SpikeTrain {
 		int dotPos = name.lastIndexOf('.');
 		int pathPos = name.lastIndexOf('\\');
 		
-		newName = name.substring(pathPos+1, dotPos-1);		
+		if (dotPos <0 && pathPos<0)
+			return (name); 
+
+		newName = name.substring(pathPos+1, dotPos);
+		
 		return (newName); 
 	}
 	
@@ -273,6 +232,25 @@ public class SpikeTrain {
 			in.close();
 		} catch (IOException e) { }
 		
+	}
+	
+	/**
+	 * \brief Set initial values like: if the spike trains is valid, first time and last time, neuron name
+	 */
+	private void setInitialValues(String name) {
+		int numberOfSpikes = this.times.size();
+		if (numberOfSpikes==0) {
+			this.valid = false;
+		}
+		else {
+			this.valid = true;
+		}
+		if (!this.valid) {
+			return;
+		}
+		this.name = this.parseName(name);
+		this.first= this.times.get(0);
+		this.last= this.times.get(this.times.size()-1);
 	}
 	
 	
