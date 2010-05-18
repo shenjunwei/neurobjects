@@ -60,16 +60,15 @@ public interface SpkHandlerI {
 	 * selection, if it is not found, this method returns a \c null value as
 	 * result.
 	 * 
-	 * @return the spike train as 1D vector, in which each element is a spike
-	 *         time for the give neuron. If the neuron name is not found under
+	 * @return the spike train. If the neuron name is not found under
 	 *         filter selection returns a \c null value.
 	 * 
 	 *         \sa setFilter, getFilter
 	 * */
-	public DoubleMatrix1D getSpikes(String name);
+	public SpikeTrain getSpikes(String name);
 
 	/**
-	 * \brief Returns a spike train as a time series, into a give into a given
+	 * \brief Returns a spike train as a time series, into a given
 	 * time interval.
 	 * 
 	 * Given a neuron name, and a time interval I=[a;b], this method returns a
@@ -78,14 +77,12 @@ public interface SpkHandlerI {
 	 * name is seek from a list under filter selection, if it is not found, this
 	 * method returns a \c null value as result.
 	 * 
-	 *  
-	 * @return the spike train as 1D vector, where each element is a spike time
-	 *         for the give neuron. If the neuron name is not found under filter
+	 * @return the spike train. If the neuron name is not found under filter
 	 *         selection returns a \c null value.
 	 * 
 	 *         \sa setFilter(), getFilter()
 	 * */
-	public DoubleMatrix1D getSpikes(String name, double a, double b);
+	public SpikeTrain getSpikes(String name, double a, double b);
 
 	/**
 	 * \brief Set the selection filter to neuron names patterns.
@@ -149,9 +146,9 @@ public interface SpkHandlerI {
 	 * 
 	 *  \sa setFilter
 	 */
-	public ArrayList<DoubleMatrix1D> getAllSpikes();
+	public ArrayList<SpikeTrain> getAllSpikes();
 
-	public ArrayList<DoubleMatrix1D> getAllSpikes(double a, double b);
+	public ArrayList<SpikeTrain> getAllSpikes(double a, double b);
 
 	
 	public int getNumberOfNeurons();
