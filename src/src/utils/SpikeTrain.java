@@ -18,6 +18,7 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  * \endcode
  * @author Nivaldo Vasconcelos
  * @date 17Mai2010
+ * \todo Documentation
  */
 public class SpikeTrain {
 	
@@ -61,7 +62,7 @@ public class SpikeTrain {
 	 * This constructor receive a filename (with full path) in which should be
 	 * there is a spike train, one time per row. The 
 	 * 
-	 * @param fileName full path and file name in which are stored the spike times
+	 * @param filename full path and file name in which are stored the spike times
 	 * 
 	 * */
 	public SpikeTrain(String filename) {
@@ -79,9 +80,9 @@ public class SpikeTrain {
 	 * there is a spike train, one time per row and a time interval I=[a;b] and
 	 * build spike that stores those spike times into I interval.
 	 * 
-	 * @param fileName full path and file name in which are stored the spike times
-	 * @param first time in time interval;
-	 * @param last time in time interval; 
+	 * @param filename full path and file name in which are stored the spike times
+	 * @param a first time in time interval;
+	 * @param b last time in time interval; 
 	 *            
 	 *  
 	 * */
@@ -93,6 +94,17 @@ public class SpikeTrain {
 		return;
 	}
 	
+	/**
+	 * \brief Constructor of a Spike Train given a filename in which there is
+	 * the spike train and the name of spike train.
+	 * 
+	 * This constructor receive a filename (with full path) in which should be
+	 * there is a spike train, one time per row.  
+	 * 
+	 * @param filename full path and file name in which are stored the spike times
+	 * @param name name to be used by the spike train
+	 * 
+	 * */
 	public SpikeTrain(String filename, String name) {
 		int numberOfSpikes = this.getNumSpkFromFile(filename);
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
@@ -101,6 +113,20 @@ public class SpikeTrain {
 		return;
 	}
 	
+	/** \brief Constructor of a named Spike Train given a filename in which there is
+	 * the spike train and a time interval.
+	 * 
+	 * This constructor receive a filename (with full path) in which should be
+	 * there is a spike train, one time per row and a time interval I=[a;b] and
+	 * build spike that stores those spike times into I interval.
+	 * 
+	 * @param filename full path and file name in which are stored the spike times;
+	 * @param name name to be used by spike train;
+	 * @param a first time in time interval;
+	 * @param b last time in time interval; 
+	 *            
+	 *  
+	 * */
 	public SpikeTrain(String filename, String name, double a, double b) {
 		
 		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
@@ -111,35 +137,58 @@ public class SpikeTrain {
 		
 	}
 
+	/** \brief Returns the time series of the spike train. 
+	 * 
+	 * Returns a 1D vector in which is time series representing the spike train.
+	 * @return a 1D vector with the times of spike train
+	 * 
+	 * */
 	public DoubleMatrix1D getTimes() {
 		return times;
 	}
 
-	public void setTimes(DoubleMatrix1D times) {
-		this.times = times;
-	}
-
+	/** \brief  Returns the spike train name. 
+	 * 
+	 * @return spike train name */
 	public String getName() {
 		return name;
 	}
 
+	/** \brief  Defines the spike train name.
+	 * 
+	 * @param name to be used by spike train.
+	 * */
 	public void setName(String name) {
 		this.name = name;
 	}
 	
+	/** \brief Returns the first time in the spike train
+	 * 
+	 *  @return the value of the first time in the spike train */
 	public double getFirst() {
 		return first;
 	}
 
+	/** \brief Returns the last time in the spike train
+	 * 
+	 *  @return the value of the last time in the spike train */
 	public double getLast() {
 		return last;
+	}
+	
+	/** \brief  Informs if the spike train content is valid.
+	 * 
+	 * @return \c TRUE if the spike is valid \b or \n
+	 *         \c FALSE otherwise */
+	public boolean isValid() {
+		return (valid);
 	}
 	
 	private String parseName(String name) {
 		String newName = name;
 		
 		int dotPos = name.lastIndexOf('.');
-		int pathPos = name.lastIndexOf('\\');
+		int pathPos = name.lastIndexOf('/');
 		
 		if (dotPos <0 && pathPos<0)
 			return (name); 
@@ -181,8 +230,8 @@ public class SpikeTrain {
 			double spikeTime=0;
 			String str="";
 			while (((str = in.readLine()) != null) && (spikeTime < b)) {
+				spikeTime = Double.parseDouble(str);
 				if ((spikeTime >= a) && (spikeTime <= b)) {
-					spikeTime = Double.parseDouble(str);
 					numberOfSpikes++;
 				}
 			}
@@ -224,8 +273,8 @@ public class SpikeTrain {
 			double spikeTime=0;
 			
 			while (((str = in.readLine()) != null) && (spikeTime < b)) {
+				spikeTime = Double.parseDouble(str);
 				if ((spikeTime >= a) && (spikeTime <= b)) {
-					spikeTime = Double.parseDouble(str);
 					this.times.set(i++, spikeTime);
 				}
 			}
@@ -235,7 +284,8 @@ public class SpikeTrain {
 	}
 	
 	/**
-	 * \brief Set initial values like: if the spike trains is valid, first time and last time, neuron name
+	 * \brief Set initial values like: if the spike trains is valid, first time
+	 * and last time, neuron name
 	 */
 	private void setInitialValues(String name) {
 		int numberOfSpikes = this.times.size();
