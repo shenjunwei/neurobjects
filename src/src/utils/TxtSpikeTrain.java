@@ -66,10 +66,16 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * @param filename full path and file name in which are stored the spike times
 	 * @param a first time in time interval;
 	 * @param b last time in time interval; 
+	 * @throws Exception 
 	 *            
 	 *  
 	 * */
-	public TxtSpikeTrain(String filename, double a, double b) {
+	public TxtSpikeTrain(String filename, double a, double b) throws Exception {
+		
+		if (a > b){
+			throw new Exception("First timestamp 'a' must be minor or equal than last timestamp 'b'");
+		}
+		
 		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename,a,b);
@@ -107,10 +113,16 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * @param name name to be used by spike train;
 	 * @param a first time in time interval;
 	 * @param b last time in time interval; 
+	 * @throws Exception 
 	 *            
 	 *  
 	 * */
-	public TxtSpikeTrain(String filename, String name, double a, double b) {
+	public TxtSpikeTrain(String filename, String name, double a, double b) throws Exception {
+		
+		if (a > b){
+			throw new Exception("First timestamp 'a' must be minor or equal than last timestamp 'b'");
+		}
+
 		
 		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
@@ -229,8 +241,10 @@ public class TxtSpikeTrain extends SpikeTrain {
 		}
 		else {
 			this.valid = true;
+			this.numberOfSpikes = numberOfSpikes;
 		}
 		if (!this.valid) {
+			System.out.println("WARNING: IOException has occured causing an invalid spike train. Maybe there's no spikes in datasource.");			
 			return;
 		}
 		this.name = this.parseName(name);

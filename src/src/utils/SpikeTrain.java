@@ -28,6 +28,9 @@ abstract class SpikeTrain {
 	/** Spike train name*/
 	String			name="";
 	
+	/** Total number of spikes in 'times' attribute */
+	int			numberOfSpikes=0;
+	
 	/** value of first spike time */
 	double			first=0;
 	
@@ -86,6 +89,16 @@ abstract class SpikeTrain {
 		return (valid);
 	}
 	
+	/**
+	 * \brief Returns the total number of spikes in 'times' attribute
+	 * @return
+	 */
+	public int getNumberOfSpikes() {
+		return numberOfSpikes;
+	}
+
+	
+
 		
 	
 }
