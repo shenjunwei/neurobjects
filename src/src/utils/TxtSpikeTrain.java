@@ -7,6 +7,17 @@ import java.io.IOException;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
+/**
+ * \brief Models the spike train information as a time series read from a text file.
+ * 
+ * This implementation considers that the set of spike, a spike train, s=[t1 t2 ... tN], is placed
+ * one spike time per line.
+ * 
+ * @author Nivaldo Vasconcelos
+ * @date 18Mai2010
+ * 
+ */
+
 public class TxtSpikeTrain extends SpikeTrain {
 	
 	/**
