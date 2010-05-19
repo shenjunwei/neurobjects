@@ -36,6 +36,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 	public TxtSpikeTrain(DoubleMatrix1D setTime, String setName) {
 		times = setTime;
 		setInitialValues(setName);
+		this.numberOfSpikes = setTime.size();
 		
 	}
 	
@@ -51,7 +52,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * 
 	 * */
 	public TxtSpikeTrain(String filename) {
-		int numberOfSpikes = this.getNumSpkFromFile(filename);
+		this.numberOfSpikes = this.getNumSpkFromFile(filename);
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename);
 		setInitialValues(filename);
@@ -78,7 +79,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 			throw new Exception("First timestamp 'a' must be minor or equal than last timestamp 'b'");
 		}
 		
-		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
+		this.numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename,a,b);
 		setInitialValues(filename);
@@ -97,7 +98,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * 
 	 * */
 	public TxtSpikeTrain(String filename, String name) {
-		int numberOfSpikes = this.getNumSpkFromFile(filename);
+		this.numberOfSpikes = this.getNumSpkFromFile(filename);
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename);
 		setInitialValues(name);
@@ -126,7 +127,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 		}
 
 		
-		int numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
+		this.numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
 		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
 		this.fillFromFile(filename,a,b);
 		setInitialValues(name);
@@ -232,7 +233,10 @@ public class TxtSpikeTrain extends SpikeTrain {
 				}
 			}
 			in.close();
-		} catch (IOException e) { }
+		} catch (IOException e) {
+			System.err.println ("TxtSpikeTrain.fillFromFile)\n ERROR: Problems reading from file : " + filename);
+			
+		}
 		
 	}
 	
@@ -250,7 +254,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 			this.numberOfSpikes = numberOfSpikes;
 		}
 		if (!this.valid) {
-			System.out.println("WARNING: IOException has occured causing an invalid spike train. Maybe there's no spikes in datasource.");			
+			System.err.println("WARNING: IOException has occured causing an invalid spike train. Maybe there's no spikes in datasource." + numberOfSpikes + "(" + name + ")");			
 			return;
 		}
 		this.name = this.parseName(name);
