@@ -135,41 +135,55 @@ public class TxtSpkHandler implements SpkHandlerI {
 		return false;
 	}
 	
-	private boolean readSpikes (String path, String filter) {
+	private String[] getDirList(String path) {
 		
-		String dataSourcePath = path+'/'+filter+".txt"; 
+		 
 		// Gets the list of files in the dataset path
 		File dir = new File(path);
-		String name[] = dir.list();
-		this.neurons = new ArrayList<SpikeTrain>();
-		if (name==null) {
-			System.out.println ("Error:Problems reading spikes: " + dataSourcePath);
-			return false;
+		if (!dir.canRead()) {
+			System.err.println ("(TxtSpikeTrain.readSpikes)\nERROR : Can not read the given path: "+path+"\n");
+			return null;
 		}
-		int numberOfNeurons = name.length;
+		// 
+		String name[] = dir.list();
+		return (name);
 		
+	}
+	
+	private boolean readSpikes (String path, String filter) {
+		
+		 // Getting the directory listing	 
+		String name[] = this.getDirList(path);
+		if (name==null) {
+			return false;
+		} 
+		String dataSourcePath = path+'/'+filter+".txt";
+		this.neurons = new ArrayList<SpikeTrain>();
+		int numberOfNeurons = name.length;
 		if (numberOfNeurons>0) {
-
-			if (filter.length() > 0) {
+			if (filter.isEmpty()) {
+				for (int i = 0; i < numberOfNeurons; i++) {
+					this.neurons.add(new TxtSpikeTrain(path + "/"+name[i]));
+				}
+				
+			}
+			else {
 				for (int i = 0; i < numberOfNeurons; i++) {
 					if (name[i].toLowerCase().startsWith(filter.toLowerCase())) {
 						this.neurons.add(new TxtSpikeTrain(path + "/"+name[i]));
 					}
 				}
-			}
-			else {
-				for (int i = 0; i < numberOfNeurons; i++) {
-					this.neurons.add(new TxtSpikeTrain(path + "/"+name[i]));
-				}
+				
 			}
 			return true;
 		}
 		else {
-		
+			System.err.println("(TxtSpikeTrain.readSpikes)\nERROR : There is no available spike data in path: "+dataSourcePath);
 			return false;
 		}
 	}
 	
+	//TODO Rebuild this mode to read spikes. Use more try and catch.
 	private boolean readSpikes (String path, String filter, double a, double b) {
 		
 		String dataSourcePath = path+'/'+filter+".txt"; 
@@ -193,7 +207,9 @@ public class TxtSpkHandler implements SpkHandlerI {
 							this.neurons.add(spikes);
 						} 
 						catch (Exception e){
-							System.out.println ("Problems creating spike train " + name[i]);
+							System.err.println("Caught Exception when open : " + name[i] + " : " 
+				                      + e.getMessage());
+							
 						}
 						
 					}
@@ -206,7 +222,9 @@ public class TxtSpkHandler implements SpkHandlerI {
 						this.neurons.add(spikes);
 					} 
 					catch (Exception e){
-						System.out.println ("Problems creating spike train " + name[i]);
+						System.err.println("Caught Exception when open : " + name[i] + " : " 
+			                      + e.getMessage());
+						
 					}
 				}
 			}
