@@ -148,9 +148,62 @@ public interface SpkHandlerI {
 	 */
 	public ArrayList<SpikeTrain> getAllSpikes();
 
+	/**
+	 * \brief Returns a list of all spike trains into a given time interval.
+	 * 
+	 * Following the current filter selection, returns all spike trains for each
+	 * neuron as a list of spike trains into a give interval.
+	 * 
+	 * 
+	 * 
+	 * @return There are the following cases: \n
+	 * 
+	 *         - the given interval I=[a;b] is contained into the current spike
+	 *         time interval,in this case this method returns list of spike
+	 *         trains.
+	 * 
+	 *         - the given interval I=[a;b] is not contained into the current
+	 *         spike time interval, but there is a intersection between them,
+	 *         this method returns list of spike trains from that intersection.
+	 * 
+	 *         - the given interval I=[a;b] that has no intersection between with
+	 *         time interval of spike times, this method returns a \c null word.
+	 * 
+	 * 
+	 *         \sa setFilter
+	 */
 	public ArrayList<SpikeTrain> getAllSpikes(double a, double b);
-
 	
+	/**
+	 * \brief Returns the first spike time from filter selected spike trains
+	 * 
+	 * Considering each one of spike times, from each one spike train, this
+	 * method returns the smallest spike time.
+	 * 
+	 * @return the smallest spike time considering all spike times \b or \c -1 if
+	 *         the current content is not valid.
+	 */
+	public double firstSpike();
+	
+	/**
+	 * \brief Returns the last spike time from the filter selected spike trains.
+	 * 
+	 * Considering each one of spike times, from each one spike train, this
+	 * method returns the biggest spike time.
+	 * 
+	 * @return the biggest spike time considering all spike times \b or \c -1 if
+	 *         the current content is not valid.
+	 */
+	public double lastSpike();
+	
+
+	/**
+	 * \brief Returns the number of neurons from filter selected spike trains.
+	 * 
+	 *  
+	 * @return the number of neurons from the spikes trains \b or \c -1 if
+	 *         the current content is not valid.
+	 */
 	public int getNumberOfNeurons();
 
 }
