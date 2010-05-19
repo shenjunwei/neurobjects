@@ -257,6 +257,10 @@ public class TxtSpikeTrain extends SpikeTrain {
 		this.first= this.times.get(0);
 		this.last= this.times.get(this.times.size()-1);
 	}
+	
+	public int getNumberOfSpikes() {
+		return (numberOfSpikes);
+	}
 
 
 
