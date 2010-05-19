@@ -20,6 +20,8 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 public class TxtSpikeTrain extends SpikeTrain {
 	
+	int numberOfSpikes=0;
+	
 	/**
 	 * \brief Constructor of a Spike Train given a 1D vector and a name.
 	 * 
@@ -131,6 +133,10 @@ public class TxtSpikeTrain extends SpikeTrain {
 		return;
 		
 	}
+	
+	public String toString () {
+	return (this.name + "\n"+this.times.toString()+"\n");	
+	}
 	private String parseName(String name) {
 		String newName = name;
 		
@@ -142,7 +148,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 
 		newName = name.substring(pathPos+1, dotPos);
 		
-		return (newName); 
+		return (newName.toLowerCase()); 
 	}
 	
 	private int getNumSpkFromFile (String filename) {
