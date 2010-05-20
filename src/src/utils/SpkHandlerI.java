@@ -180,7 +180,7 @@ public interface SpkHandlerI {
 	 * Considering each one of spike times, from each one spike train, this
 	 * method returns the smallest spike time.
 	 * 
-	 * @return the smallest spike time considering all spike times \b or \c -1 if
+	 * @return the smallest spike time considering all spike times \b or \c NaN if
 	 *         the current content is not valid.
 	 */
 	public double firstSpike();
@@ -191,7 +191,7 @@ public interface SpkHandlerI {
 	 * Considering each one of spike times, from each one spike train, this
 	 * method returns the biggest spike time.
 	 * 
-	 * @return the biggest spike time considering all spike times \b or \c -1 if
+	 * @return the biggest spike time considering all spike times \b or \c NaN if
 	 *         the current content is not valid.
 	 */
 	public double lastSpike();
@@ -201,7 +201,7 @@ public interface SpkHandlerI {
 	 * \brief Returns the number of neurons from filter selected spike trains.
 	 * 
 	 *  
-	 * @return the number of neurons from the spikes trains \b or \c -1 if
+	 * @return the number of neurons from the spikes trains \b or \c NaN if
 	 *         the current content is not valid.
 	 */
 	public int getNumberOfNeurons();

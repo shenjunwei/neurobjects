@@ -99,7 +99,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 			}
 			return (first);
 		}
-		return (-1);
+		return (Double.NaN);
 	}
 	
 	
@@ -116,7 +116,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 			}
 			return (last);
 		}
-		return (-1);
+		return (Double.NaN);
 	}
 	
 	public String toString () {
