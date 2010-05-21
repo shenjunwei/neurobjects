@@ -6,6 +6,30 @@ import java.io.IOException;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import errors.InvalidArgumentException;
+import errors.InvertedParameterException;
+
+/**
+ * \page TxtSpikeTrainTests Tests on TxtSpikeTrain
+ *
+ * 	The following tests were performed (in tests.utils_TxtSpikeTrainTests):
+ *   1- Testing the constructor in normal situation: new TxtSpikeTrain(filePath);
+ *   2- Testing the constructor in normal situation: new TxtSpikeTrain(filePath, "neuron_S1_02a");
+ *   3- Testing the constructor in normal situation: new TxtSpikeTrain(filePath, "neuron_S1_02a", 0, 100);
+ *   4- Testing the constructor in normal situation with a negative firsTime parameter: new TxtSpikeTrain(filePath, "neuron_S1_02a", -10, 100.00000000000000000009);
+ *   5- Testing in an erroneous situation with firstTime > lastTime: new TxtSpikeTrain(filePath, "neuron_S1_02a", 100.00000000000000000009, 0);
+ *   6- Testing in normal situation with equals parameters 'firstTime' and 'LastTime': new TxtSpikeTrain(filePath, "neuron_S1_02a", 0, 0);
+ *   7- Testing in an abnormal situation with a sourceFile that don't is a neuronFile but an Gif binary image file: new TxtSpikeTrain("/tmp/talesmileto01.gif", "neuron_S1_02a", 0, 500);
+ *   8- Testing in an abnormal situation with a sourceFile that don't exists: new TxtSpikeTrain("/tmp/huiahsuihsi", "neuron_S1_02a", 0, 200);
+ *   9- Testing in an abnormal situation with a source file that comes from /dev/random: new TxtSpikeTrain("/dev/random", "neuron_S1_02a", 0, 100);
+ *   10- Testing in an abnormal situation which the 'firstime' and 'lastTime' parameter is much larger than the existing in source file: new TxtSpikeTrain(filePath, "neuron_S1_02a", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY); 
+ *
+ *   In all performed tests were made the follow commands:
+ *    TxtSpikeTrain spkTrain_1 = new TxtSpikeTrain(filePath);
+ *	  DoubleMatrix1D spikes_1 = spkTrain_1.getTimes();
+ *	  System.out.println("spikes size: "+spkTrain_1.getNumberOfSpikes());
+ */
+
 
 /**
  * \brief Models the spike train information as a time series read from a text file.
@@ -15,6 +39,8 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  * 
  * @author Nivaldo Vasconcelos
  * @date 18Mai2010
+ *
+ * \TODO Verify if the spike file have a correct format (one double number per line), if not: throws an specific exception. 
  * 
  */
 
@@ -69,14 +95,14 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * @param filename full path and file name in which are stored the spike times
 	 * @param a first time in time interval;
 	 * @param b last time in time interval; 
-	 * @throws Exception 
+	 * @throws InvertedParameterException 
 	 *            
 	 *  
 	 * */
-	public TxtSpikeTrain(String filename, double a, double b) throws Exception {
+	public TxtSpikeTrain(String filename, double a, double b) throws InvertedParameterException  {
 		
 		if (a > b){
-			throw new Exception("First timestamp 'a' must be minor or equal than last timestamp 'b'");
+			throw new InvertedParameterException("First timestamp 'a' must be minor or equal than last timestamp 'b'");
 		}
 		
 		this.numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
@@ -116,14 +142,14 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * @param name name to be used by spike train;
 	 * @param a first time in time interval;
 	 * @param b last time in time interval; 
-	 * @throws Exception 
+	 * @throws InvertedParameterException 
 	 *            
 	 *  
 	 * */
-	public TxtSpikeTrain(String filename, String name, double a, double b) throws Exception {
+	public TxtSpikeTrain(String filename, String name, double a, double b) throws InvertedParameterException  {
 		
 		if (a > b){
-			throw new Exception("First timestamp 'a' must be minor or equal than last timestamp 'b'");
+			throw new InvertedParameterException("First timestamp 'a' must be minor or equal than last timestamp 'b'");
 		}
 
 		

@@ -7,6 +7,8 @@ import cern.colt.matrix.DoubleMatrix2D;
 import java.io.*;
 import java.util.*;
 
+import errors.InvalidArgumentException;
+
 /** @brief Create the Matrix of spike count given a interval
  * 
  * Considering that the spike times are stored in data files, with a specific structure (one spike time per row), 

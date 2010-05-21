@@ -73,3 +73,4 @@ public interface BehavHandlerI {
 	public double[] 						getBigInterval(ArrayList<String> labels);
  
 }
+
