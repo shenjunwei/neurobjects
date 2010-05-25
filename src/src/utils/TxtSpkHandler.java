@@ -8,6 +8,8 @@ public class TxtSpkHandler implements SpkHandlerI {
 	String animal="";
 	String filter = "";
 	String dataPath= "";
+	double a=Double.NaN;
+	double b=Double.NaN;
 	ArrayList<SpikeTrain> neurons = null;
 	
 	
@@ -24,6 +26,8 @@ public class TxtSpkHandler implements SpkHandlerI {
 		if (!this.validateInterval(a, b)) {
 		return;
 		}
+		this.a = a;
+		this.b = b;
 		this.filter = filter;
 		this.dataPath = dataSourcePath;
 		this.readSpikes(dataSourcePath, filter,a,b);
@@ -200,9 +204,8 @@ public class TxtSpkHandler implements SpkHandlerI {
 		int numberOfNeurons = name.length;
 		TxtSpikeTrain spikes=null;
 		if (numberOfNeurons>0) {
-			 
+			java.util.Arrays.sort(name); // Sort the neuron names 
 			if (filter.length() > 0) {
-				java.util.Arrays.sort(name); // Sort the neuron names 
 				for (int i = 0; i < numberOfNeurons; i++) {
 					if (name[i].toLowerCase().startsWith(filter.toLowerCase())) {
 						try {
@@ -238,5 +241,20 @@ public class TxtSpkHandler implements SpkHandlerI {
 			return false;
 		}
 	}
+	
+	
+	public double beginInterval() {
+	return(this.a);
 
 	}
+	
+	public double endInterval() {
+		return (this.b);
+	}
+	
+	public SpikeTrain getSpikeTrain( int i) {
+		
+	return (this.neurons.get(i));	
+	}
+}
+
