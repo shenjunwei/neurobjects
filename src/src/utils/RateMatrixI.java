@@ -32,7 +32,7 @@ public interface RateMatrixI {
 	 * The result will be:
 	 * p = [1 1 1 2 2 2 3 3 3 4 4 4];
 	 */
-	public DoubleMatrix1D rawPattern (double a, double b);
+	//public DoubleMatrix1D rawPattern (double a, double b);
 	
 	/**
 	 * Returns a double vector which is the activity population pattern using
@@ -50,7 +50,42 @@ public interface RateMatrixI {
 	 * 
 	 * @param width window width used to build the pattern
 	 */
-	public DoubleMatrix1D rawPattern (int width);
+	//public DoubleMatrix1D rawPattern (int width);
+	
+	/**
+	 * Informs if there is a next pattern.
+	 * 
+	 * Based on current cursor position and window width, informs if there is a
+	 * pattern available for reading from the Rate Matrix.
+	 * 
+	 * @return \code true if there is a pattern available for reading from the
+	 *         Rate Matrix, \b or \code false otherwise;
+	 * 
+	 */
+	public boolean	  hasNext();
+	
+	
+	/**
+	 * \brief Returns the pattern in current cursor.
+	 * 
+	 * Returns a double vector which is the activity population pattern using
+	 * the current cursor position as begin and the current window width.
+	 * 
+	 * Ex: In following matrix the cursor is 2 and window width is 3.
+	 * 
+	 * M = [ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3
+	 * 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
+	 * 
+	 * The result will be: p = [1 1 1 2 2 2 3 3 3 4 4 4];
+	 * 
+	 * Every time that that this method is the cursor position is incremeted by
+	 * unity.
+	 * 
+	 * @return a \code double vector with the pattern \b or a \code null value
+	 *         if the matrix content is not valid.
+	 */
+	public DoubleMatrix1D getPattern();
+
 	
 	/**
 	 * Returns the number of rows in the matrix
@@ -158,25 +193,26 @@ public interface RateMatrixI {
 	 * */
 	public int			  numPatterns(int width, double beginTime);
 	
-	/** Defines a time cursor in the rate matrix
+	/** Increments the time cursor in the rate matrix
 	 * 
 	 *  
 	 * The default value is equal to first time.
 	 * @param time value to time cursor; 
 	 * @exception invalid argument when time is invalid to rate matrix time interval.
 	 */
-	public void	      setCursor(double time);
+	public boolean  incCursor(int inc);
 	
-	/**
-	 * Informs if there is a next pattern.
+	/** \brief Return the average of a row 
 	 * 
-	 * Based on current cursor position and window width, informs if there is a
-	 * pattern available for reading from the Rate Matrix.
+	 * @param row index of the row; 
+	 * @return the value of average of given row \b or NaN if the matrix content is not valid */
+	public double   avgRow (int idx);
+	
+	/** \brief Return the average of a column 
 	 * 
-	 * @return \code true if there is a pattern available for reading from the
-	 *         Rate Matrix, \b or \code false otherwise;
-	 * 
-	 */
-	public boolean	  hasNext();
+	 * @param neuron index of the column; 
+	 * @return the value of average of given column \b or NaN if the matrix content is not valid; */
+	public double   avgColumn (int idx);
+	
 
 }
