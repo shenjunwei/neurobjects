@@ -205,5 +205,26 @@ public interface SpkHandlerI {
 	 *         the current content is not valid.
 	 */
 	public int getNumberOfNeurons();
+	
+	
+	/**
+	 * \brief Returns the time in which begin the time interval 
+	 * 
+	 * Given the time interval I=[a,b] in which were got the spikes, this method returns 'a';
+	 * @return begin of the time interval in which the spikes were got \b or \c NaN if
+	 *         the current content is not valid.
+	 */
+	public double beginInterval();
+	
+	/**
+	 * \brief Returns the time in which end the time interval 
+	 * 
+	 * Given the time interval I=[a,b] in which were got the spikes, this method returns 'b';
+	 * @return end of the time interval in which the spikes were got \b or \c NaN if
+	 *         the current content is not valid.
+	 */
+	public double endInterval();
+	
+	public SpikeTrain getSpikeTrain( int i);
 
 }
