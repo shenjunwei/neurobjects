@@ -1,6 +1,7 @@
 package utils;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class TxtSpkHandler implements SpkHandlerI {
 	
@@ -195,11 +196,13 @@ public class TxtSpkHandler implements SpkHandlerI {
 			System.out.println ("Error:Problems reading spikes: " + dataSourcePath);
 			return false;
 		}
+		// Considering that all files in directory store spike data.
 		int numberOfNeurons = name.length;
 		TxtSpikeTrain spikes=null;
 		if (numberOfNeurons>0) {
 			 
 			if (filter.length() > 0) {
+				java.util.Arrays.sort(name); // Sort the neuron names 
 				for (int i = 0; i < numberOfNeurons; i++) {
 					if (name[i].toLowerCase().startsWith(filter.toLowerCase())) {
 						try {
@@ -209,7 +212,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 						catch (Exception e){
 							System.err.println("Caught Exception when open : " + name[i] + " : " 
 				                      + e.getMessage());
-							
+//TODO handle exceptions in a way more precise (file not found, permission).							
 						}
 						
 					}
