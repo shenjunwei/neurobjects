@@ -2,12 +2,14 @@ package utils;
 
 import hep.aida.IHistogram1D;
 import hep.aida.ref.Histogram1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+//import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
-import java.io.*;
+//import java.io.*;
 import java.util.*;
 
-import errors.InvalidArgumentException;
+//import errors.InvalidArgumentException;
 
 /** @brief Create the Matrix of spike count given a interval
  * 
@@ -18,7 +20,7 @@ import errors.InvalidArgumentException;
  * 
  *  @see DoubleMatrix2D
  */
-public class CountMatrix {
+public class CountMatrix implements RateMatrixI{
 	
 	/** Size of bins used to build the count. Using this bin size, in seconds, are defined the count intervals. Given 
 	 * the time interval where the count is taken, I=[a,b], this interval is considered in sub-intervals I'_1 = [a,a+binSize]
@@ -26,7 +28,7 @@ public class CountMatrix {
 	private double					binSize=0.0; 
 	
 	/**Path to dataset where the data files are stored. */
-	private String					datasetPath = ""; 
+	//private String					datasetPath = ""; 
 	
 	/** First time instant of the interval where the spikes will be counted  */
 	private double					first=0.0;
@@ -39,16 +41,16 @@ public class CountMatrix {
 	private double					last=0.0; 
 	
 	/** The last valid position of atual window on binMatrix  */
-	private int lastValidWindowPosition=-1;
+	//private int lastValidWindowPosition=-1;
 	
 	/** String where are stored the log msgs */
 	private String 					log = "";
 	
 	/**  Matrix where are stored all count for the given interval. Each row stores the spike count for a neuron  */
-	public DoubleMatrix2D			matrix; 
+	public int						matrix[][]; 
 	
 	/** Minimum number of spikes to consider a spike train as valid within a interval */
-	private int						minSpikes = 10; 
+	//private int						minSpikes = 10; 
 	
 	/** List of string where are stored the name of neurons used to build the Count Matrix */
 	private ArrayList<String> 		neuronNames = null; 
@@ -57,7 +59,7 @@ public class CountMatrix {
 	private int						numberOfCols = 0;
 	
 	/**  Number of rows  */
-	private short					numberOfRows = 0; 
+	private int						numberOfRows = 0; 
 	
 	/* Attributes used to control inner operations */
 	
@@ -65,48 +67,37 @@ public class CountMatrix {
 	private boolean					valid = false;
 	
 	/** The cursor position of window inner binMatrix. */
-	private int windowIndex=0;
+	private int cursor=0;
 	/** Window size */
 	private int windowWidth=0;
 	
+	private String title="";
 	
 	
-	/** Constructor of the CountMatrix class when is given the data files path, bin size and interval 
-	 * 
-	 * Given a interval  I=[a;b] and a directory, where are stored the date files of neurons, this method builds a matrix
-	 * in which each row stores the spike count information of a neuron. The spike count is taken in time intervals
-	 * with binSize seconds of width. Only spike occurring within [a;b] are counted.  If a neuron has less than 10 spikes 
-	 * within  [a;b] it is not taken to build the Count Matrix.
-	 * 
-	 * @param path directory where the data files are stored;
-	 * @param binSize size of the bin used the build the count Matrix;
-	 * @param a begin of the interval where the count will be taken;
-	 * @param b end of the interval where the count will be taken;
-	 * */
-	public CountMatrix (String path, double binSize, double a, double b) {
+	public CountMatrix (SpkHandlerI spikes, double binSize) {
 		
-		// Validates the intervals and calculates the histogram size
-		if (!this.setupInterval(binSize, a, b)) {
+		
+		
+		if (!this.setupInterval(binSize, spikes.beginInterval(), spikes.endInterval())) {
+			this.log = "Error: Invalid time interval\n";
 			return;
 		}
 		
-		this.datasetPath = path;
+		this.numberOfRows = spikes.getNumberOfNeurons();
+		this.numberOfCols = (int) Math.floor((this.last-this.first)/binSize);
+		this.neuronNames = spikes.getNeuronNames();
 		
-		// get number and names of neurons
-		this.setupNeurons();
-		this.numberOfRows = (short) this.numberOfNeurons();
-		this.numberOfCols = this.histSize;
-		this.binSize = binSize;
-			
-		IHistogram1D h1 = null; 
+		 
 		if (!this.createMatrix2D()) {
 			this.valid = false;
 			this.log = this.log + "Problems creating Count Matrix !!\n";
 		}
-		h1 = new Histogram1D("H",this.histSize,this.first,this.last);
-		for (int i=0; i<this.numberOfNeurons(); i++) {
+		IHistogram1D  h1 = new Histogram1D("H",this.histSize,this.first,this.last);
+		
+		int numberOfNeurons = spikes.getNumberOfNeurons();
+		for (int i=0; i<numberOfNeurons; i++) {
 			h1.reset();
-			if (this.insertNeuronSpikes(h1,i)) {
+			if (this.insertNeuronSpikes(h1,spikes.getSpikeTrain(i))) {
 				if (!this.fillMatrixRow2D(h1, i)) {
 					return;
 				}
@@ -117,30 +108,8 @@ public class CountMatrix {
 			}
 		}
 		
-			
-		// Release the Count Matrix to be used. 
-		this.valid = true; 
 	}
 	
-	/** Checks the spike trains for each neuron within the given count interval
-	 * 
-	 *  Remove neurons, from internal list, which have no minimum spikes into count interval 
-	 *  @see CountMatrix#validNeuron*/  
-	private void checkNeurons() {
-		
-		int numberOfNeurons = this.numberOfNeurons();
-		
-		for (int i=0; i<numberOfNeurons; i++) {
-			if (!validNeuron(i)){
-				this.removeNeuronName(i);
-				
-			}
-		}
-		if (numberOfNeurons<=0) {
-			this.valid = false;
-		}
-		
-	}
 	
 	/* ------------------------------------------------------------------------------------------ */
 	/** Creates the Count Matrix 2D.
@@ -151,7 +120,7 @@ public class CountMatrix {
 	 * @return TRUE operation was successful, or FALSE otherwise.
 	 */
 	private boolean createMatrix2D() {
-		this.matrix = new DenseDoubleMatrix2D (this.numberOfRows,this.numberOfCols);
+		this.matrix = new int[this.numberOfRows][this.numberOfCols];
 		
 		if (this.matrix!=null) {
 			return true;
@@ -176,13 +145,13 @@ public class CountMatrix {
 	 */
 	private boolean fillMatrixRow2D (IHistogram1D h1, int row) {
 		
-		if (h1.entries()<this.numberOfCols) {
+		/*if (h1.entries()<this.numberOfCols) {
 			this.valid = false;
 			this.log = this.log + "fillMatrixRow2D: Histogram not smaller than number of columns\n";
 			return (false);
-		}
+		} */
 		for (int column = 0; column < this.numberOfCols; column++) {
-			this.matrix.setQuick(row, column, h1.binEntries(column));
+			this.matrix[row][column]=h1.binEntries(column);
 		}
 		return (true);
 		
@@ -239,6 +208,31 @@ public class CountMatrix {
 	}
 	/* ------------------------------------------------------------------------------------------ */
 	
+	// TODO Doc
+	/** Returns a set of pattern give a time interval */
+	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) {
+	
+		ArrayList<DoubleMatrix1D> patterns = null;
+		if (t1>t2) {
+			this.log += "CountMatrix:getPatterns: invalid arguments";
+			return (patterns);
+		}
+		
+		if ( (!this.windowPossible(t1,this.windowWidth)) || (!this.windowPossible(t2,this.windowWidth)))  {
+			this.log += "CountMatrix:getPatterns: invalid input arguments can not possible windows";
+			return (patterns);
+		}
+		 
+		
+		int lastCol = this.getIdx(t2);
+		patterns = new ArrayList<DoubleMatrix1D> ();
+		for (int i=this.getIdx(t1); i<=lastCol; i++) {
+			patterns.add(this.getPattern(i, this.windowWidth));
+		}
+		
+		return (patterns);
+	}
+	
 	/** Given the column position and window width, returns an array of spikes of Count Matrix.
 	  *  
 	 * @param firstCol : first column from which the pattern will be formed.
@@ -247,7 +241,7 @@ public class CountMatrix {
 	 * 
 	 * todo: check it !!
 	 */
-	public int[] getPattern(int firstCol, int windowWidth){
+	private DoubleMatrix1D getPattern(int firstCol, int windowWidth){
 		
 		String errorMsg = "";
 		// checks the firstCol input parameter
@@ -266,22 +260,64 @@ public class CountMatrix {
 			return (null);
 		}
 		
-		int pattern[] = new int[this.numberOfRows*windowWidth];
+		DoubleMatrix1D pattern = new DenseDoubleMatrix1D(this.numberOfRows*windowWidth);
 		int colLimit = firstCol + windowWidth;
 		 
 		
 		for (int row=0, i=0; row<this.numberOfRows; row++) {
 			for (int col=firstCol; col<colLimit; col++,i++) {		
-				pattern[i]= (int) this.matrix.getQuick(row, col);
+				pattern.setQuick(i,this.matrix[row][col]);
 			}
 		} 
 		return (pattern);
 	}
 	
+	
+	
+	public DoubleMatrix1D getPattern() {
+		
+		DoubleMatrix1D pattern = new DenseDoubleMatrix1D(this.numberOfRows*this.windowWidth);
+		
+		String errorMsg = "";
+		int firstCol = this.cursor;
+		 
+		// checks the firstCol input parameter
+		if ( (firstCol<0) || (firstCol>(this.numberOfCols-windowWidth))) {
+			errorMsg = "Error:BinMatrix:getPattern:invalid firstCol input>>"+firstCol;
+			this.log = this.log + errorMsg;
+			//System.out.println(errorMsg);
+			return (null);
+			
+		}
+		// checks the windowWidth input parameter
+		if ((windowWidth<0) || (windowWidth>this.numberOfCols) ) {
+			errorMsg = "Error:BinMatrix:getPattern:invalid windowWidth input>>"+windowWidth;
+			this.log = this.log + errorMsg;
+			//System.out.println(errorMsg);
+			return (null);
+		}
+		
+	//	int pattern[] = new int[this.numberOfRows*windowWidth];
+		int colLimit = firstCol + windowWidth;
+		 
+		
+		for (int row=0, i=0; row<this.numberOfRows; row++) {
+			for (int col=firstCol; col<colLimit; col++,i++) {		
+				pattern.setQuick(i, this.matrix[row][col]);
+			}
+		} 
+		this.cursor++;
+		return (pattern);
+			
+		
+		
+	}
+	
+	
 	/* ------------------------------------------------------------------------------------------ */
 	/** Inserts spike trains for a given neuron in the Count Matrix.
 	 * 
-	 *  Given a histogram and a index this method:
+	 *  Given a histogram and a spike train this method:
 	 *   (1) Reads the corresponding data file where the spikes train is stored;
 	 *   (2) Build the count of that spikes train in the given histogram;    
 	 *   
@@ -293,32 +329,30 @@ public class CountMatrix {
 	 * @param h1 histogram used 
 	 * @return TRUE operation was successful, or FALSE otherwise.
 	 * @see IHistogram1D */
-	private boolean insertNeuronSpikes(IHistogram1D h1, int i) {
-		String neuronFilename = this.datasetPath+"/"+this.neuronNames.get(i) +".txt";
-		try { 
-			BufferedReader in = new BufferedReader(new FileReader(
-					neuronFilename));
-			String str;
-			double spikeTime = 0;
-			int numOfSpikes = -1;
-			while (((str = in.readLine()) != null) && (spikeTime < this.last)) {
-				if ((spikeTime >= this.first) && (spikeTime <= this.last)) {
-					spikeTime = Double.parseDouble(str);
-					numOfSpikes++;
-					h1.fill(spikeTime);
-				}
+	private boolean insertNeuronSpikes(IHistogram1D h1, SpikeTrain spikes) {
+		
+		double spikeTime = 0;
+		int numOfSpikes = -1;
+		DoubleMatrix1D spike = spikes.getTimes();
+		int i=0;
+		spikeTime = spike.get(i++);
+		int spikeTrainSize = spike.size();
+		while ((spikeTime < this.last) && (i<spikeTrainSize) ) {
+			if ((spikeTime >= this.first) && (spikeTime <= this.last)) {
+				numOfSpikes++;
+				h1.fill(spikeTime);
+			}
+			spikeTime = spike.get(i++);
 		}
+		
 		if (numOfSpikes==0) {
 			this.valid = false;
-			this.log = this.log + "Problems reading spikes from " +  neuronFilename+"\n";
+			this.log = this.log + "Problems reading spikes from " +  spikes.getName()+"\n";
 		
 		}
 		else {
 			this.valid = true;
 		}
-		in.close(); 
-		
-		} catch (IOException e) { } 
 		return (this.valid);
 	}
 	/* ------------------------------------------------------------------------------------------ */
@@ -344,24 +378,6 @@ public class CountMatrix {
 	}
 	/* ------------------------------------------------------------------------------------------ */
 	
-	/** Given a index, remove a name of neuron from the internal list of neuron names. 
-	 * 
-	 * If index is not valid the operation is not done, and is added a message into log string 
-	 * 
-	 * @param i index of neuron name to be removed.
-	 * */
-	private boolean removeNeuronName(int i) {
-		boolean result = false;
-		if ( (i<=this.neuronNames.size()) && (i>=0) ){
-			this.neuronNames.remove(i);
-			result = true;
-		}
-		else {
-			this.log = this.log + "Neuron name not removed: " +i;
-		}
-		return (result);
-		
-	}
 	
 	/* ------------------------------------------------------------------------------------------ */
 	/** Setups the internal time interval.
@@ -373,10 +389,10 @@ public class CountMatrix {
 	 * */
 	private boolean setupInterval(double binSize, double a, double b) {
 		
-		if ((a<0) || (b<0)) {
-			return false;
-		}
 		
+		if ( (a==Double.NaN) || (b==Double.NaN) ) {
+			return false;	
+		}
 		if (a>b) {
 			double tmp = a;
 			a = b;
@@ -385,32 +401,11 @@ public class CountMatrix {
 		this.first = (Math.floor(a/binSize)*binSize); //defines the biggest bin limit smaller than a;
 		this.last = (Math.ceil(b/binSize)*binSize);   //defines the smallest bin limit bigger than b;
 		this.histSize = (int)((last-first)/binSize);
+		this.binSize = binSize;
 		
 		return true;
 	}
-	/** Setup the neurons informations
-	 *
-	 * This method not read the spikes from neurons, only general information into them. 
-	 * The current neurons information are:
-	 * - names 
-	 * - number of neurons */
-	private void setupNeurons() {
-		
-		// Gets the list of files in the dataset path
-		File dir = new File(this.datasetPath);
-		String name[] = dir.list();
-		this.neuronNames = new ArrayList<String>();
-		int numberOfNeurons = name.length;
 	
-		for (int i=0; i<numberOfNeurons; i++) {
-			name[i]=name[i].replace(".txt", "");
-			this.neuronNames.add(name[i]);
-		}
-		
-		Collections.sort(this.neuronNames);
-		checkNeurons();
-		
-	}
 	
 	/** Shows the Count Matrix informations
 	 * 
@@ -431,7 +426,7 @@ public class CountMatrix {
 		for (int row=0; row < this.numberOfRows; row++) {
 			str=str+this.neuronNames.get(row)+"\t";
 	          for (int column=0; column < this.numberOfCols; column++) {
-	        	  str=str+this.matrix.getQuick(row, column)+"\t";
+	        	  str=str+this.matrix[row][column]+"\t";
 	          }
 	          str=str+"\n";
 	   }
@@ -463,86 +458,14 @@ public class CountMatrix {
 		for (int row=0; row < this.numberOfRows; row++) {
 			  str=str+this.neuronNames.get(row)+"\t";
 	          for (int column=0; column < this.numberOfCols; column++) {
-	        	  str=str+this.matrix.getQuick(row, column)+"\t";
+	        	  str=str+this.matrix[row][column]+"\t";
 	          }
 	          str=str+"\n";
 	   }
 		return str;
 	}
 	
-	 /* ------------------------------------------------------------------------------------------ */
-	/** Checks the spike trains, for a given neuron, within the given count interval
-	 * 
-	 *  Given the index of this neuron in the internal list. If the index is valid the correspondig
-	 *  data file is read and is cheked if the number of spikes within the interval I=[a;b] 
-	 *  is not less than the minimum the neuron is considered valid, otherwise is considered
-	 *  invalid.  
-	 *  Before all, is checked if the data file exist. If data file does not exist it is logged a msg
-	 *  in the internal log and returned FALSE.  
-	 *  If the index is not valid in internal list the internal flag valid is defined as false and a 
-	 *  log msg is added to internal log and returned FALSE.
-	 *  
-	 *  @param i index of neuron in internal list 
-	 *  @return TRUE if neuron is valid, or FALSE otherwise.*/
-	private boolean validNeuron(int i) {
-		
-		boolean valid = false;
-		int numOfSpikes = -1;
-		
-		if ( (i>this.neuronNames.size()) || (i<0) ){
-			
-			this.log = this.log + "Neuron index is not valid : " +i;
-			return (valid);
-		}
-		
-		String neuronFilename = this.datasetPath+"/"+this.neuronNames.get(i) +".txt";
-		// File exist ?
-		boolean exists = (new File(neuronFilename )).exists();
-		if (!exists)  {
-			this.log = this.log + "There is no corresponding data file for neuron: " +neuronFilename;
-			return (valid);
-		}
-		
-		try { 
-			BufferedReader in = new BufferedReader(new FileReader(
-					neuronFilename));
-			String str;
-			double spikeTime = 0;
-			while (((str = in.readLine()) != null) && (spikeTime < this.last) && numOfSpikes<this.minSpikes) {
-				spikeTime = Double.parseDouble(str);
-				if ((spikeTime >= this.first) && (spikeTime <= this.last)) {
-					numOfSpikes++;
-				}
-		}
-		in.close(); 
-		} catch (IOException e) { } 
-		if (numOfSpikes<this.minSpikes) {
-			valid = false;
-		}
-		return (valid);
-		
 	
-	}
-	/* ------------------------------------------------------------------------------------------ */
-	
-	/* ------------------------------------------------------------------------------------------ */
-	/** View part of the Count Matrix 
-	 * 
-	 * Return a piece of the Count Matrix. The piece is defined by position (row,column) and the
-	 * width. Therefore, is returned the piece that starts in (row,column) and ends in (row+width,column+width). 
-	 * It is implemented using the method DoubleMatrix2D#viewPart. 
-	 * 
-	 * @param row row in the Count Matrix where is defined the part
-	 * @param column column in the Count Matrix where is defined the part 
-	 * @param width width the Count Matrix where is defined the part
-	 * @return the piece of count matrix  
-	 * 
-	 * @see DoubleMatrix2D#viewPart */
-	public DoubleMatrix2D viewPart(int row, int column, int width) {
-		
-		return (this.matrix.viewPart(row,column,this.numberOfRows,width));
-	}
-	/* ------------------------------------------------------------------------------------------ */
 	
 	/** Informs if a given window is possible in the Count Matrix 
 	 * Given time instant and a temporal width, informs if the respective window is possible in 
@@ -560,6 +483,114 @@ public class CountMatrix {
 		}
 		return(result);
 	}
+
+	
+	 //public DoubleMatrix1D rawPattern (double a, double b) {return ((DoubleMatrix1D)null);}
+	public int numRows() {
+		return (this.numberOfRows);
+	}
+
+	public int numCols() {
+		return (this.numberOfCols);
+	}
+
+	public double binSize() {
+		return (this.binSize);
+	}
+
+	public double firstTime() {
+		return (this.first);
+	}
+
+	public double lastTime() {
+		return (this.last);
+	}
+
+	public void setWindowWidth(int width) {
+		windowWidth = width;
+	}
+
+	public int getWindowWidth() {
+		return windowWidth;
+	}
+ 
+     public int                        numPatterns(int width){return (-1);}
+     public int                        numPatterns(int width, double beginTime) {return (-1);}
+     
+     
+     public boolean  incCursor(int inc) {
+       int newCursor = this.cursor + inc;
+       if(isValidCursor(newCursor)) {
+    	   this.cursor = newCursor;
+    	   return (true);
+       }
+       return (false);
+    	 
+     }
+     
+     
+     
+     public double             getCursor() {
+    	 return (this.first+(this.cursor*this.binSize));
+     }
+     public boolean            hasNext() {return (false);}
+
+
+	
+     public void setTitle (String title){
+    	 this.title = title;
+     }
+     public String getTitle() {
+		// TODO Auto-generated method stub
+		return this.title;
+     }
+     
+     // TODO uses exception
+     
+     public double  avgRow (int idx) {
+    	 
+    	 if (!this.isValidRow(idx)){
+    		 return (Double.NaN);
+    	 }
+    	 int sum = 0;
+    	 for (int i=0; i<this.numberOfCols; i++) {
+    		 sum+=matrix[idx][i];
+    	 }
+    	 return ((double)sum/this.numberOfCols);
+     }
+     
+     public double  avgColumn (int idx) {
+    	 
+    	 if (!this.isValidColumn(idx)){
+    		 return (Double.NaN);
+    	 }
+    	 int sum = 0;
+    	 for (int i=0; i<this.numberOfRows; i++) {
+    		 sum+=matrix[i][idx];
+    	 }
+    	 return ((double)sum/this.numberOfRows);
+     }
+     
+     private boolean isValidRow(int idx) {
+    	 if( (idx>=0) && (idx<this.numberOfRows) ) {
+    		 return true;
+    	 }
+    	 return false;
+     }
+     
+     private boolean isValidColumn(int idx) {
+    	 if( (idx>=0) && (idx<this.numberOfCols) ) {
+    		 return true;
+    	 }
+    	 return false;
+     }
+     private boolean isValidCursor(int value) {
+    	 if ( (value>=0) &&  ((value+this.windowWidth)<=this.numberOfCols) ){
+    		 return (true);
+    	 }
+    	 return (false);
+     }
+
 	
 	
 	
