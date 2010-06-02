@@ -58,8 +58,11 @@ public interface BehavHandlerI {
 	 * 
 	 * Given a set of labels this method returns a interval I in which all
 	 * intervals associated with each given label is contained. \n For example,
-	 * consider that in animal bahavior data there is the following information:
-	 * \code label01,1010,1014 label01,1015,1020 label03,900,902 label04,900,915
+	 * consider that in animal behavior data there is the following information:
+	 * \code 1010,1014,label01 
+	 * 1015,1020,label03 
+	 * 900,902,label04 
+	 * 900,915,label01
 	 * \endcode
 	 * 
 	 * If the given list of labels is: {label01,label03}; should be returned the
@@ -70,7 +73,7 @@ public interface BehavHandlerI {
 	 * @return a 2D vector with the big interval [a,b].
 	 * @author Nivaldo Vasconcelos
 	 * */
-	public double[] 						getBigInterval(ArrayList<String> labels);
+	public double[] 						getBigInterval(String labels);
  
 }
 

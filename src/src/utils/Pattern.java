@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.ArrayList;
+
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
@@ -17,6 +19,7 @@ public class Pattern {
 	
 	/** Pattern dimension */
 	int dim = 0;
+	
 	
 	public Pattern (DoubleMatrix1D p, String label, double time) {
 		this.pattern = p.copy();
@@ -37,6 +40,15 @@ public class Pattern {
 	}
 	public String toString () {
 		return ("Time(s): "+time+"\tLabel: "+label+"\n"+this.pattern.toString() );
+	}
+	
+	public String toWeka (String classValue) {
+		String result="";
+		for (int i=0; i<this.pattern.size(); i++) {
+			result+=this.pattern.get(i)+",";
+		}
+		result +=classValue;
+		return (result);
 	}
 	
 	public String getLabel() {
