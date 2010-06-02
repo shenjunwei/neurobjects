@@ -1,5 +1,6 @@
 package app;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import utils.Pattern;
@@ -14,9 +15,9 @@ public class PatternsApp {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		double[] p = new double[1000];
-		double[] p2 = new double[1000];
-		double[] p3 = new double[1000];
+		double[] p = new double[20];
+		double[] p2 = new double[20];
+		double[] p3 = new double[20];
 		String label = "teste";
 		DenseDoubleMatrix1D Ptmp = new DenseDoubleMatrix1D(p);
 		
@@ -33,6 +34,21 @@ public class PatternsApp {
 		Ps.addPattern(P2);
 		Ps.addPattern(P3);
 		System.out.println(Ps);
+		
+		
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<Integer> pos = new ArrayList<Integer>();
+		pos.add(0);
+		pos.add(1);
+		
+		names.add("HP_01a");
+		names.add("HP_01b");
+		names.add("HP_01c");
+		names.add("HP_02a");
+		Ps.setNeuronNames(names);
+		
+		System.out.println(Ps.buildWekaFile("teste", Ps.getPatterns("teste"), pos));
+		
 
 	}
 

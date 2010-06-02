@@ -7,7 +7,7 @@ public class PatternApp {
 	
 	public static void main(String[] args) {
 		
-		double[] p = new double[1000];
+		double[] p = new double[10];
 		String label = "teste";
 		DenseDoubleMatrix1D Ptmp = new DenseDoubleMatrix1D(p);
 		
@@ -19,6 +19,7 @@ public class PatternApp {
 		System.out.println(P);
 		Ptmp.setQuick(1, 0);
 		System.out.println(P);
+		System.out.println(P.toWeka("t"));
 		
 		
 		
