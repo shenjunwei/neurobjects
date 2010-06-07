@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 import cern.colt.matrix.DoubleMatrix1D;
 
@@ -73,16 +74,61 @@ public class DataSetBuilder {
 		int numAllPositive = this.setup.totalSamples;
 		int numAllNegative = (int) Math.floor(numAllPositive*this.setup.getBeta());
 		
-		ArrayList<Pattern> positive = this.patterns.getPatterns(positiveLabel);
-		int positiveIdx[] = new int[numAllPositive];
-		ArrayList<String> labels = new ArrayList<String> ();
-		labels.addAll(this.setup.getLabels());
-		labels.remove(positiveLabel);
-		String[] others = (String[])this.setup.getLabels().toArray();
-		int negativeIdx[] = new int[numAllNegative];
+								
+		ArrayList<String> labels = this.setup.getLabels();
+		
+		int numOther = (int) Math.floor(numAllNegative/(labels.size()-1));
+		if (!validNumOthers(positiveLabel, numOther)) {
+			System.out.println ("Invalid number of other labels for positive label equal to :" +positiveLabel);
+			return (null);
+		}
+
 		
 		
 		return (data);
+	}
+	
+	private Hashtable<String, Integer> buildPatsIdx (ArrayList<String> labels ) {
+		if (labels==null) {
+			System.out.println ("There is no labeled samples !! ");
+			return null;
+		}
+		Hashtable<String, Integer> patIdx = new Hashtable<String, Integer>  ();
+		
+		Enumeration <String> e = Collections.enumeration(labels);
+		if (e==null) {
+			System.out.println ("There is no labeled samples !! ");
+			return (null);
+		}
+		String label = "";
+		int numOfPatterns =0;
+		int i=0;
+		while(e.hasMoreElements()) {
+			numOfPatterns = this.patterns.getPatterns(label).size();
+			label = e.nextElement();
+			for (i=0; i<numOfPatterns; i++) {
+				patIdx.put(label,i);
+			}
+			
+	    }
+		return (patIdx);
+	}
+	
+	private boolean validNumOthers(String positiveLabel, int numOther) {
+		ArrayList<String> labels = new ArrayList<String> ();
+		
+		Enumeration <String> e = Collections.enumeration(labels);
+		if (e==null) {
+			System.out.println ("There is no labeled samples !! ");
+			return (false);
+		}
+		String label = e.nextElement();
+		while(e.hasMoreElements()) {
+			if ( (label!=positiveLabel) && (this.patterns.getPatterns(label).size()<(3*numOther)) ) {
+				return (false);
+			}
+	    }
+		return (true);
 	}
 	
 	private boolean dataIsReady (String filter, String positiveLabel) {
