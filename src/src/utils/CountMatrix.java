@@ -276,7 +276,7 @@ public class CountMatrix implements RateMatrixI{
 	
 	public DoubleMatrix1D getPattern() {
 		
-		DoubleMatrix1D pattern = new DenseDoubleMatrix1D(this.numberOfRows*this.windowWidth);
+		
 		
 		String errorMsg = "";
 		int firstCol = this.cursor;
@@ -300,16 +300,14 @@ public class CountMatrix implements RateMatrixI{
 	//	int pattern[] = new int[this.numberOfRows*windowWidth];
 		int colLimit = firstCol + windowWidth;
 		 
-		
+		DoubleMatrix1D pattern = new DenseDoubleMatrix1D(this.numberOfRows*this.windowWidth);
 		for (int row=0, i=0; row<this.numberOfRows; row++) {
 			for (int col=firstCol; col<colLimit; col++,i++) {		
 				pattern.setQuick(i, this.matrix[row][col]);
 			}
 		} 
 		this.cursor++;
-		return (pattern);
-			
-		
+		return (pattern);	
 		
 	}
 	

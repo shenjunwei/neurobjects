@@ -162,7 +162,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 		if (name==null) {
 			return false;
 		} 
-		String dataSourcePath = path+'/'+filter+".txt";
+		String dataSourcePath = path+'/'+filter+".spk";
 		this.neurons = new ArrayList<SpikeTrain>();
 		int numberOfNeurons = name.length;
 		if (numberOfNeurons>0) {
@@ -191,7 +191,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 	//TODO Rebuild this mode to read spikes. Use more try and catch.
 	private boolean readSpikes (String path, String filter, double a, double b) {
 		
-		String dataSourcePath = path+'/'+filter+".txt"; 
+		String dataSourcePath = path+'/'+filter+".spk"; 
 		// Gets the list of files in the dataset path
 		File dir = new File(path);
 		String name[] = dir.list();

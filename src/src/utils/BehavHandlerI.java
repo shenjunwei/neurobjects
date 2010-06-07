@@ -37,20 +37,24 @@ import cern.colt.matrix.DoubleMatrix1D;
  */
 public interface BehavHandlerI {
 	
-	/** \brief Returns a list of intervals tagged with a give label.
-	 *  
-	 *  This method allow knows, from the animal behavior data, the list of time intervals associeted with 
-	 *  a give label.
-	 *  Ex: If one needs know the set of time intervals in which the time was labeled with 'north' the 
-	 *  following call will provide:
-	 *  
-	 *   \code ArrayList<DoubleMatrix1D> timeList = BH.getIntervals("north"); \endcode
-	 *  
-	 * @param label label target.
-	 * @return Returns a list of intervals tagged with a give label as list of 2D vector.
+	/**
+	 * \brief Returns a list of intervals tagged with a give label.
+	 * 
+	 * This method allow knows, from the animal behavior data, the list of time
+	 * intervals associated with a give label. Ex: If one needs know the set of
+	 * time intervals in which the time was labeled with 'north' the following
+	 * call will provide:
+	 * 
+	 * \code double[] timeList = BH.getIntervals("north"); \endcode
+	 * 
+	 * @param label
+	 *            label target.
+	 * @return Returns a list of intervals tagged with a give label as list of
+	 *         1D vector, or a \c null if the label was not found in animal
+	 *         behavior description.
 	 * @author Nivaldo Vasconcelos
 	 */
-	public ArrayList<DoubleMatrix1D> 		getIntervals(String label);
+	public ArrayList<double[]> 		getIntervals(String label);
 	
 	/**
 	 * \brief Returns a big interval in which the animal execute a set of given

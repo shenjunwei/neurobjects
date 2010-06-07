@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,12 +20,19 @@ public class BehavHandlerFile implements BehavHandlerI {
 	String filePath;
 //	/ArrayList<double[]> intervals = null;
 	Hashtable<String,  ArrayList<double[]>> intervals = null;
+	boolean valid = false;
 	
 	public BehavHandlerFile(String filename) {
 		// TODO Auto-generated constructor stub
 		this.intervals = new Hashtable<String, ArrayList<double[]>> ();
 		this.filePath = filename;
-
+		
+		
+		if (!(new File(filename)).exists()) {
+		    // gerar exception 
+			System.out.println("File not found: "+filename);
+			return;
+		} 
 		try { 
 			BufferedReader in = new BufferedReader(new FileReader(
 					filename));
@@ -45,7 +53,12 @@ public class BehavHandlerFile implements BehavHandlerI {
 			System.err.println ("BehavHandlerFile\n ERROR: Problems reading from file : " + filename);
 			
 		}
+		this.valid = true;
 
+	}
+	
+	public boolean isValid() {
+		return valid;
 	}
 	
 	public void addInterval (double[] interval, String label) {
@@ -151,6 +164,7 @@ public class BehavHandlerFile implements BehavHandlerI {
 				if (interval[0]<minBegin) {
 					minBegin = interval[0];
 				}
+				interval = list.get(list.size()-1);
 				if (interval[1]>maxEnd) {
 					maxEnd = interval[1];
 				}
@@ -164,9 +178,10 @@ public class BehavHandlerFile implements BehavHandlerI {
 	}
 
 	@Override
-	public ArrayList<DoubleMatrix1D> getIntervals(String label) {
+	public ArrayList<double []> getIntervals(String label) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		return this.intervals.get(label);
 	}
 	
 

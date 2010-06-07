@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.ArrayList;
+
 import cern.colt.matrix.DoubleMatrix1D;
 
 /** \page RateMatrixCursor Rate Matrix Cursor 
@@ -213,6 +215,10 @@ public interface RateMatrixI {
 	 * @param neuron index of the column; 
 	 * @return the value of average of given column \b or NaN if the matrix content is not valid; */
 	public double   avgColumn (int idx);
+	
+	//TODO Doc
+	/** Returns a set of pattern give a time interval */
+	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2);
 	
 
 }
