@@ -2,14 +2,15 @@ package utils;
 
 import hep.aida.IHistogram1D;
 import hep.aida.ref.Histogram1D;
-//import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+
+import java.util.ArrayList;
+
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
-//import java.io.*;
-import java.util.*;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 //import errors.InvalidArgumentException;
+
 
 /** @brief Create the Matrix of spike count given a interval
  * 
@@ -17,7 +18,10 @@ import java.util.*;
  * this class build a matrix where the correspondent spike counting is stored for that given interval. 
  * 
  * The matrix is implemented using the Colt class termed DoubleMatrix2D.
- * 
+ *
+ *  \todo This class should throws the specific exceptions when something is wrong, and not just save the messages in this.log attribute.
+ *   
+ *
  *  @see DoubleMatrix2D
  */
 public class CountMatrix implements RateMatrixI{
@@ -46,7 +50,9 @@ public class CountMatrix implements RateMatrixI{
 	/** String where are stored the log msgs */
 	private String 					log = "";
 	
-	/**  Matrix where are stored all count for the given interval. Each row stores the spike count for a neuron  */
+	/**  Matrix where are stored all count for the given interval. Each row stores the spike count for a neuron  
+	 *   \todo and each column is what??
+	 * */
 	public int						matrix[][]; 
 	
 	/** Minimum number of spikes to consider a spike train as valid within a interval */
@@ -179,7 +185,7 @@ public class CountMatrix implements RateMatrixI{
 	 * to this time.  
 	 * 
 	 * @param time value to be converted in number of columns in Count Matrix.
-	 * @return number of number of columns in Count Matrix corresponding
+	 * @return number of columns in Count Matrix corresponding
 	 * to given time.  */
 	public int getLen (double time) {
 		return (this.getIdx(this.first+time));
@@ -204,12 +210,17 @@ public class CountMatrix implements RateMatrixI{
 	 * Returns the neuron names, in a String vector. The names are in alphabetical order. 
 	 * @return a String[] vector with the neuron names */
 	public String[] getNeuronsNames() {
-		return ((String []) this.neuronNames.toArray() );
+		return ((String []) this.neuronNames.toArray(new String[0]) );
 	}
 	/* ------------------------------------------------------------------------------------------ */
 	
 	// TODO Doc
-	/** Returns a set of pattern give a time interval */
+	/** 
+	 * Returns a set of pattern give a time interval 
+	 * 
+	 * \todo This method should describe better the structure of Pattern (what each line and column means, how the pattern is assembled)
+	 * */
+	
 	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) {
 	
 		ArrayList<DoubleMatrix1D> patterns = null;
@@ -239,7 +250,8 @@ public class CountMatrix implements RateMatrixI{
 	 * @param windowWidth : window width to form the pattern.
 	 * @return pattern: a int vector with the correspondent pattern derive from the window.
 	 * 
-	 * todo: check it !!
+	 * \todo This method should describe better the structure of Pattern (what each line and column means, how the pattern is assembled) 
+	 * \n    check it !!
 	 */
 	private DoubleMatrix1D getPattern(int firstCol, int windowWidth){
 		
@@ -273,7 +285,9 @@ public class CountMatrix implements RateMatrixI{
 	}
 	
 	
-	
+	/**
+	 * \todo This method should describe better the structure of Pattern (what each line and column means, how the pattern is assembled)
+	 */
 	public DoubleMatrix1D getPattern() {
 		
 		
@@ -388,7 +402,7 @@ public class CountMatrix implements RateMatrixI{
 	private boolean setupInterval(double binSize, double a, double b) {
 		
 		
-		if ( (a==Double.NaN) || (b==Double.NaN) ) {
+		if ( (Double.isNaN(a)) || (Double.isNaN(b)) ) {
 			return false;	
 		}
 		if (a>b) {
@@ -417,7 +431,10 @@ public class CountMatrix implements RateMatrixI{
 	
 	/** Shows the Count Matrix 
 	 * 
-	 * Shows, only, the Count Matrix elements, one Count Matrix row per line */
+	 * Shows, only, the Count Matrix elements, one Count Matrix row per line 
+	 * 
+	 * \todo This documentation should describe better the structure of class CountMatrix.
+	 * */
 	public void showMatrix2D () {
 		String str="";
 		
@@ -471,7 +488,11 @@ public class CountMatrix implements RateMatrixI{
 	 * columns since corresponding column to time until the corresponding column to time+width. 
 	 * @param time time instant where start the window
 	 * @param width time width of the window
-	 * @return TRUE if window is possible, or FALSE otherwise.*/ 
+	 * @return TRUE if window is possible, or FALSE otherwise.
+	 * 
+	 * \todo this explanation is confusing (the documentation of this method should explain everything in other words)
+	 * 
+	 * */ 
 	public boolean windowPossible(double time,double width) {
 		boolean result = false;
 		
@@ -496,10 +517,16 @@ public class CountMatrix implements RateMatrixI{
 		return (this.binSize);
 	}
 
+	/**
+	 * \brief The biggest bin limit smaller than a;
+	 */
 	public double firstTime() {
 		return (this.first);
 	}
 
+	/**
+	 * \brief The smallest bin limit bigger than b;
+	 */
 	public double lastTime() {
 		return (this.last);
 	}
@@ -512,7 +539,13 @@ public class CountMatrix implements RateMatrixI{
 		return windowWidth;
 	}
  
+	/**
+	 * \todo This method should be implemented
+	 */
      public int                        numPatterns(int width){return (-1);}
+ 	/**
+ 	 * \todo This method should be implemented
+ 	 */
      public int                        numPatterns(int width, double beginTime) {return (-1);}
      
      

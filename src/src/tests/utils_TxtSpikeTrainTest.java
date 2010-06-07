@@ -1,5 +1,8 @@
 package tests;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import utils.TxtSpikeTrain;
 import cern.colt.matrix.DoubleMatrix1D;
 import errors.InvertedParameterException;
@@ -11,8 +14,10 @@ public class utils_TxtSpikeTrainTest {
 	 * 
 	 * 
 	 * @throws InvertedParameterException 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 */
-	public static void main(String[] args) throws InvertedParameterException {
+	public static void main(String[] args) throws InvertedParameterException, FileNotFoundException, IOException {
 		
 				String filePath="/tmp/S1_02a.txt"; //A true neuron file (one timestamp per line)
 /**

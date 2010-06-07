@@ -1,6 +1,11 @@
 package utils;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import errors.InvertedParameterException;
+import errors.MissingDataFileException;
 
 
 public class TxtSpkHandler implements SpkHandlerI {
@@ -11,9 +16,11 @@ public class TxtSpkHandler implements SpkHandlerI {
 	double a=Double.NaN;
 	double b=Double.NaN;
 	ArrayList<SpikeTrain> neurons = null;
+	/** \brief The file extension of spike files where some methods will look for spikes */
+	private String spkFileExtension = ".spk"; 
 	
 	
-	public TxtSpkHandler (String dataSourcePath, String filter) {
+	public TxtSpkHandler (String dataSourcePath, String filter) throws MissingDataFileException {
 		this.filter = filter;
 		this.dataPath = dataSourcePath;
 		this.readSpikes(dataSourcePath, filter);
@@ -21,7 +28,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 		
 	}
 	
-	public TxtSpkHandler (String dataSourcePath, String filter, double a, double b ) {
+	public TxtSpkHandler (String dataSourcePath, String filter, double a, double b ) throws MissingDataFileException, InvertedParameterException, IOException {
 		// TODO implements
 		if (!this.validateInterval(a, b)) {
 		return;
@@ -155,92 +162,118 @@ public class TxtSpkHandler implements SpkHandlerI {
 		
 	}
 	
-	private boolean readSpikes (String path, String filter) {
-		
-		 // Getting the directory listing	 
-		String name[] = this.getDirList(path);
-		if (name==null) {
-			return false;
-		} 
-		String dataSourcePath = path+'/'+filter+".spk";
+	/**
+	 * \brief This method read the spikes that are on spike data files, given the Path and the filter
+	 * @param path - Folder where the spike data files are
+	 * @param filter - Part of the name of desired data files (can also be an empty string)
+	 * @throws MissingDataFileException
+	 */
+	private void readSpikes (String path, String filter) throws MissingDataFileException {
+
 		this.neurons = new ArrayList<SpikeTrain>();
-		int numberOfNeurons = name.length;
-		if (numberOfNeurons>0) {
-			if (filter.isEmpty()) {
-				for (int i = 0; i < numberOfNeurons; i++) {
+		String filterLowerCase = filter.toLowerCase(); //Used inside loops
+		
+		String name[] = this.getDirList(path); // Getting the directory listing	 
+		if (name==null) {
+			throw new MissingDataFileException();
+		} 
+
+		int numberOfFiles = name.length;
+		if (numberOfFiles==0)
+		{
+			throw new MissingDataFileException();
+		}
+		
+		//When no filter is passed as argument this method try to read all files that have the extension this.spkFileExtension (in directory) 
+		if (filter.isEmpty()) {
+			for (int i = 0; i < numberOfFiles; i++) {
+				String fileName = name[i].toLowerCase();
+				if (fileName.endsWith(this.spkFileExtension)) {
 					this.neurons.add(new TxtSpikeTrain(path + "/"+name[i]));
 				}
-				
 			}
-			else {
-				for (int i = 0; i < numberOfNeurons; i++) {
-					if (name[i].toLowerCase().startsWith(filter.toLowerCase())) {
-						this.neurons.add(new TxtSpikeTrain(path + "/"+name[i]));
-					}
-				}
-				
-			}
-			return true;
 		}
-		else {
-			System.err.println("(TxtSpikeTrain.readSpikes)\nERROR : There is no available spike data in path: "+dataSourcePath);
-			return false;
+		else { 	//Applying the filter
+			for (int i = 0; i < numberOfFiles; i++) {
+				String fileName = name[i].toLowerCase(); 
+				if (fileName.startsWith(filterLowerCase) && fileName.endsWith(this.spkFileExtension)) {
+					this.neurons.add(new TxtSpikeTrain(path + "/"+name[i]));
+				}
+			}
+		}
+		
+		//If there's no spike data file(s) in directory...
+		if (this.neurons.isEmpty())
+		{
+			throw new MissingDataFileException();
 		}
 	}
+	// --- //
 	
-	//TODO Rebuild this mode to read spikes. Use more try and catch.
-	private boolean readSpikes (String path, String filter, double a, double b) {
+	
+	/**
+	 * \brief This method read the spikes that are on spike data files, given the Path, the filter,  and the interval a, b 
+	 * @param path - Folder where the spike data files are
+	 * @param filter - Part of the name of desired data files (can also be an empty string)
+	 * @param a - First desired time
+	 * @param b - Last desired time
+	 * @throws InvertedParameterException
+	 * @throws MissingDataFileException
+	 * @throws IOException
+	 */
+	private void readSpikes (String path, String filter, double a, double b) throws InvertedParameterException, MissingDataFileException, IOException {
 		
-		String dataSourcePath = path+'/'+filter+".spk"; 
-		// Gets the list of files in the dataset path
-		File dir = new File(path);
+		if (a>b)
+		{
+			throw new InvertedParameterException();
+		}
+		
+		String filterLowerCase = filter.toLowerCase(); //Used inside loops
+		
+		File dir = new File(path); // Gets the list of files in the dataset path
 		String name[] = dir.list();
-		this.neurons = new ArrayList<SpikeTrain>();
 		if (name==null) {
-			System.out.println ("Error:Problems reading spikes: " + dataSourcePath);
-			return false;
+			throw new MissingDataFileException("Error:Problems reading spikes: " + path+'/'+filter+"*.spk");
 		}
-		// Considering that all files in directory store spike data.
-		int numberOfNeurons = name.length;
+		java.util.Arrays.sort(name); // Sort the neuron names 
+
+
+		int numberOfFiles = name.length;
+		if (numberOfFiles==0) {
+			throw new MissingDataFileException();
+		}
+
 		TxtSpikeTrain spikes=null;
-		if (numberOfNeurons>0) {
-			java.util.Arrays.sort(name); // Sort the neuron names 
-			if (filter.length() > 0) {
-				for (int i = 0; i < numberOfNeurons; i++) {
-					if (name[i].toLowerCase().startsWith(filter.toLowerCase())) {
-						try {
-							spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
-							this.neurons.add(spikes);
-						} 
-						catch (Exception e){
-							System.err.println("Caught Exception when open : " + name[i] + " : " 
-				                      + e.getMessage());
-//TODO handle exceptions in a way more precise (file not found, permission).							
-						}
-						
-					}
-				}
-			}
-			else {
-				for (int i = 0; i < numberOfNeurons; i++) {
-					try {
-						spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
-						this.neurons.add(spikes);
-					} 
-					catch (Exception e){
-						System.err.println("Caught Exception when open : " + name[i] + " : " 
-			                      + e.getMessage());
-						
-					}
-				}
-			}
-			return true;
-		}
-		else {
+		this.neurons = new ArrayList<SpikeTrain>();
 		
-			return false;
+		//Applying the filter
+		if (!filter.isEmpty()) {
+			for (int i = 0; i < numberOfFiles; i++) {
+				String fileName = name[i].toLowerCase();
+				if (fileName.startsWith(filterLowerCase) && fileName.endsWith(this.spkFileExtension)) {
+					spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
+					this.neurons.add(spikes);
+				}
+			}
+		}
+		else { //When no filter is passed as argument this method try to read all files that have the extension this.spkFileExtension (in directory) 
+			for (int i = 0; i < numberOfFiles; i++) {
+				String fileName = name[i].toLowerCase();
+				if (fileName.endsWith(this.spkFileExtension))
+				{
+					spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
+					this.neurons.add(spikes);
+				}
+			}
+		}
+
+		//If there's no spike data file(s) in directory...
+		if (this.neurons.isEmpty())
+		{
+			throw new MissingDataFileException();
 		}
 	}
+	// --- //
 	
 	
 	public double beginInterval() {

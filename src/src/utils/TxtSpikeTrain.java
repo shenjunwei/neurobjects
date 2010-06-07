@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -8,6 +9,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import errors.InvalidArgumentException;
 import errors.InvertedParameterException;
+import errors.MissingDataFileException;
 
 /**
  * \page TxtSpikeTrainTests Tests on TxtSpikeTrain
@@ -96,10 +98,12 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * @param a first time in time interval;
 	 * @param b last time in time interval; 
 	 * @throws InvertedParameterException 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 *            
 	 *  
 	 * */
-	public TxtSpikeTrain(String filename, double a, double b) throws InvertedParameterException  {
+	public TxtSpikeTrain(String filename, double a, double b) throws InvertedParameterException, IOException, FileNotFoundException  {
 		
 		if (a > b){
 			throw new InvertedParameterException("First timestamp 'a' must be minor or equal than last timestamp 'b'");
@@ -143,10 +147,12 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * @param a first time in time interval;
 	 * @param b last time in time interval; 
 	 * @throws InvertedParameterException 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
 	 *            
 	 *  
 	 * */
-	public TxtSpikeTrain(String filename, String name, double a, double b) throws InvertedParameterException  {
+	public TxtSpikeTrain(String filename, String name, double a, double b) throws InvertedParameterException, FileNotFoundException, IOException  {
 		
 		if (a > b){
 			throw new InvertedParameterException("First timestamp 'a' must be minor or equal than last timestamp 'b'");
@@ -242,12 +248,8 @@ public class TxtSpikeTrain extends SpikeTrain {
 		
 	}
 	
-	private void fillFromFile(String filename, double a, double b){
-		
-		
-		try { 
-			BufferedReader in = new BufferedReader(new FileReader(
-					filename));
+	private void fillFromFile(String filename, double a, double b) throws  IOException, FileNotFoundException {
+			BufferedReader in = new BufferedReader(new FileReader(filename));
 			String str;
 			int i = 0;
 			double spikeTime=0;
@@ -259,11 +261,6 @@ public class TxtSpikeTrain extends SpikeTrain {
 				}
 			}
 			in.close();
-		} catch (IOException e) {
-			System.err.println ("TxtSpikeTrain.fillFromFile)\n ERROR: Problems reading from file : " + filename);
-			
-		}
-		
 	}
 	
 	/**
