@@ -1,5 +1,7 @@
 package app;
 
+import java.util.Arrays;
+
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import utils.Pattern;
 
@@ -20,6 +22,9 @@ public class PatternApp {
 		Ptmp.setQuick(1, 0);
 		System.out.println(P);
 		System.out.println(P.toWeka("t"));
+		System.out.println(Arrays.toString(P.toWeka(2)));
+		
+		
 		
 		
 		

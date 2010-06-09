@@ -1,8 +1,11 @@
 package app;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import cern.colt.matrix.DoubleMatrix1D;
+import errors.InvertedParameterException;
+import errors.MissingDataFileException;
 
 import utils.TxtSpkHandler;
 import utils.CountMatrix;
@@ -11,8 +14,11 @@ public class TxtSpkHandlerApp {
 
 	/**
 	 * @param args
+	 * @throws IOException 
+	 * @throws InvertedParameterException 
+	 * @throws MissingDataFileException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws MissingDataFileException, InvertedParameterException, IOException {
 		// TODO Auto-generated method stub
 		
 		String path = "/home/nivaldo/projects/crnets/data/spikes/ge5/01/hp";
