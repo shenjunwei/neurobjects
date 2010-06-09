@@ -19,14 +19,16 @@ public class TxtSpkHandler implements SpkHandlerI {
 	/** \brief The file extension of spike files where some methods will look for spikes */
 	private String spkFileExtension = ".spk"; 
 	
-	
+/*	REMOVED 
+ *  Cause: for while, it is not necessary deal with situation in which there are no interval [a;b] definitions 
+ *  Nivaldo 07June2010 
 	public TxtSpkHandler (String dataSourcePath, String filter) throws MissingDataFileException {
 		this.filter = filter;
 		this.dataPath = dataSourcePath;
 		this.readSpikes(dataSourcePath, filter);
 		// TODO implements
 		
-	}
+	} */
 	
 	public TxtSpkHandler (String dataSourcePath, String filter, double a, double b ) throws MissingDataFileException, InvertedParameterException, IOException {
 		// TODO implements

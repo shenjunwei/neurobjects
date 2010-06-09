@@ -1,12 +1,16 @@
 package utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Random;
 
 import cern.colt.matrix.DoubleMatrix1D;
+import errors.InvertedParameterException;
+import errors.MissingDataFileException;
 
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -14,6 +18,12 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 public class DataSetBuilder {
+	
+	
+	private  	int numPositiveSamplesToTrain=0;
+	private  	int numPositiveSamplesToTest=0;
+	private  	int numNegativeSamplesToTrain=0;
+	private  	int numNegativeSamplesToTest=0;
 	
 	SpkHandlerI spikes = null;
 	RateMatrixI matrix = null;
@@ -24,27 +34,32 @@ public class DataSetBuilder {
 	String 			currentFilter = "";
 	
 	public DataSetBuilder (AnimalSetup s) {
+		// Defines the positive set sizes to train and test steps
+		
+		
 		this.setup = s;
+		this.numPositiveSamplesToTrain = (int) Math.floor(this.setup.getTotalSamples()*this.setup.getAlfa());
+		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
+		this.numNegativeSamplesToTrain = (int) Math.floor(this.numPositiveSamplesToTrain*this.setup.getBeta());
+		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
+		
 		
 	}
 	
-	public Instances getInstances (String filter, String positiveLabel) {
-		Instances data = null;
-		
+	public Instances[] getInstances (String filter, String positiveLabel) throws Exception {
+			
 		 
 		if (!this.validBuildParams(filter, positiveLabel)) {
 			//TODO exception  
-			return data;
+			return null;
 		}
+		System.out.println ("Building data");
 		if (!this.dataIsReady(filter, positiveLabel)) {
 			this.buildData(filter);
 		}
 		
-		data = this.buildInstances(filter, positiveLabel);
-		
-		return (data);
-		
-		
+		System.out.println ("Building instances");
+		return(this.buildInstances(positiveLabel));
 	}
 	
 	
@@ -66,34 +81,101 @@ public class DataSetBuilder {
 		
 	}
 	
-	private Instances buildInstances  (String filter, String positiveLabel) {
-		Instances data = null;
-			
+	private Instances[] buildInstances  ( String positiveLabel) {
 		
 		FastVector atts  = buildAtts();
 		int numAllPositive = this.setup.totalSamples;
 		int numAllNegative = (int) Math.floor(numAllPositive*this.setup.getBeta());
+		int numLabels = this.setup.getLabels().size();
+		int numOther = (int) Math.floor(numAllNegative/(numLabels-1));
 		
-								
-		ArrayList<String> labels = this.setup.getLabels();
-		
-		int numOther = (int) Math.floor(numAllNegative/(labels.size()-1));
 		if (!validNumOthers(positiveLabel, numOther)) {
 			System.out.println ("Invalid number of other labels for positive label equal to :" +positiveLabel);
 			return (null);
 		}
-
+		return (buildDataSets(positiveLabel, atts));
+	}
 		
+	private Instances[] buildDataSets(String positiveLabel, FastVector atts) {
 		
-		return (data);
+		ArrayList<String> labels = this.setup.getLabels(); 
+		Hashtable<String, ArrayList<Integer>> patIdxs = buildPatsIdx(labels);
+		
+		Enumeration <String> e = Collections.enumeration(labels);
+		if (e==null) {
+			System.out.println ("There is no labeled samples !! ");
+			return (null);
+		}
+		String label = "";
+		int idx;
+		ArrayList<Integer> list = null;
+		ArrayList<Pattern> patternList = null;
+		double vals[] = null;
+		int numOtherToTrain = (int) Math.floor(this.numNegativeSamplesToTrain/labels.size()-1);
+		int numOtherToTest = (int) Math.floor(this.numNegativeSamplesToTest/labels.size()-1);
+		int i=0;
+		Random R = new Random ();
+		FastVector attClass = new FastVector();
+		attClass.addElement ("yes");
+		attClass.addElement ("no");
+		
+		// Creates the datasets
+		Instances 	data = new Instances("objectId", atts, 0);
+		Instances 	dataTest = new Instances("objectId", atts, 0);
+		Instances 	dataset[] = {data,dataTest};
+		
+		dataset[0] = data;
+		dataset[1] = dataTest;
+			
+		while(e.hasMoreElements()) {
+			label = e.nextElement();
+			list = patIdxs.get(label);
+			patternList = this.patterns.getPatterns(label);
+			if (label==positiveLabel) {
+				// Positive samples to train
+				for (i=0; i<this.numPositiveSamplesToTrain; i++) {
+					idx = R.nextInt(list.size()-1);
+					System.out.print (".");
+					vals = patternList.get(list.get (idx)).toWeka(attClass.indexOf("yes"));
+					data.add(new Instance(1.0, vals.clone()));
+					list.remove(idx);
+				}
+				// Positive samples to test
+				for (i=0; i<this.numPositiveSamplesToTest; i++) {
+					idx = R.nextInt(list.size()-1);
+					vals = patternList.get(list.get (idx)).toWeka(attClass.indexOf("yes"));
+					dataTest.add(new Instance(1.0, vals.clone()));
+					list.remove(idx);
+				}
+				
+			}
+			else {
+				// Negative sample to train
+				for (i=0; i<numOtherToTrain ; i++) {
+					idx = R.nextInt(list.size()-1);
+					vals = patternList.get(list.get (idx)).toWeka(attClass.indexOf("no"));
+					data.add(new Instance(1.0, vals.clone()));
+					list.remove(idx);
+				}
+				// Negative sample to train
+				for (i=0; i<numOtherToTest ; i++) {
+					idx = R.nextInt(list.size()-1);
+					vals = patternList.get(list.get (idx)).toWeka(attClass.indexOf("no"));
+					dataTest.add(new Instance(1.0, vals.clone()));
+					list.remove(idx);
+				}
+			}
+	    }
+		return (dataset);
+		
 	}
 	
-	private Hashtable<String, Integer> buildPatsIdx (ArrayList<String> labels ) {
+	private Hashtable<String, ArrayList<Integer>> buildPatsIdx (ArrayList<String> labels ) {
 		if (labels==null) {
 			System.out.println ("There is no labeled samples !! ");
 			return null;
 		}
-		Hashtable<String, Integer> patIdx = new Hashtable<String, Integer>  ();
+		Hashtable<String, ArrayList<Integer>> patIdx = new Hashtable<String, ArrayList<Integer>>  ();
 		
 		Enumeration <String> e = Collections.enumeration(labels);
 		if (e==null) {
@@ -103,11 +185,14 @@ public class DataSetBuilder {
 		String label = "";
 		int numOfPatterns =0;
 		int i=0;
+		ArrayList<Integer> list = null;
 		while(e.hasMoreElements()) {
-			numOfPatterns = this.patterns.getPatterns(label).size();
 			label = e.nextElement();
+			numOfPatterns = this.patterns.numPatterns(label);
+			list = new ArrayList<Integer>(); 
+			patIdx.put (label,list);
 			for (i=0; i<numOfPatterns; i++) {
-				patIdx.put(label,i);
+				list.add (i);
 			}
 			
 	    }
@@ -115,16 +200,17 @@ public class DataSetBuilder {
 	}
 	
 	private boolean validNumOthers(String positiveLabel, int numOther) {
-		ArrayList<String> labels = new ArrayList<String> ();
+		ArrayList<String> labels = this.setup.getLabels();
 		
 		Enumeration <String> e = Collections.enumeration(labels);
 		if (e==null) {
 			System.out.println ("There is no labeled samples !! ");
 			return (false);
 		}
-		String label = e.nextElement();
+		String label = "";
 		while(e.hasMoreElements()) {
-			if ( (label!=positiveLabel) && (this.patterns.getPatterns(label).size()<(3*numOther)) ) {
+			label = e.nextElement();
+			if ( (label!=positiveLabel) && (this.patterns.numPatterns(label)<(3*numOther)) ) {
 				return (false);
 			}
 	    }
@@ -137,14 +223,15 @@ public class DataSetBuilder {
 			System.out.println ("There is setup definition");
 			return (false);
 		}
+		if (spikes==null) {
+			System.out.println ("There is spikes definition");
+			return (false);
+		}
 		if (patterns==null) {
 			System.out.println ("There is patterns definition");
 			return (false);
 		}
-		if (patterns==null) {
-			System.out.println ("There is spikes definition");
-			return (false);
-		}
+		
 		if ((patterns.getDimension()<=0) || (!patterns.isSingleDimension()) ) {
 			System.out.println ("There is no correct dimension definition");
 			return (false);
@@ -184,27 +271,34 @@ public class DataSetBuilder {
 		
 	}
 	
-	private void buildData(String filter) {
+	private void buildData(String filter) throws Exception {
 		this.behave = new BehavHandlerFile(setup.getPathToBehavior());
 		
 		if (this.behave==null) {
 			System.out.println ("Was not possible read behavior from "+setup.getPathToBehavior());
 		}
-		double intervals[] = this.behave.getBigInterval(this.setup.getLabels().toString());
+		String labels = this.setup.getLabels().toString();
+		labels=labels.replace('[', ' ');
+		labels=labels.replace(']', ' ');
+		labels.trim();
+		double intervals[] = this.behave.getBigInterval(labels);
 		this.spikes = new TxtSpkHandler(this.setup.getPathToSpikes(), filter,intervals[0] , intervals[1]);
-		this.matrix = new CountMatrix (spikes,this.setup.getBinSize());
+		if (this.spikes==null) {
+			System.out.println ("Was not possible read the files !!");
+		}
+		this.matrix = new CountMatrix (this.spikes,this.setup.getBinSize());
 		if (this.matrix==null) {
 			System.out.println ("Was not possible create the count matrix ");
 		}
+		this.matrix.setWindowWidth(this.setup.getWindowWidth());
 		this.patterns = new Patterns ();
-		this.patterns.setNeuronNames(spikes.getNeuronNames());
+		this.patterns.setNeuronNames(this.spikes.getNeuronNames());
 		this.patterns.setSingleDimension(true);
 		if (!this.fillPatterns()) {
 			//TODO
 			System.out.println ("Was not possible create set of patterns");
 			return ;
 		}
-		
 	}
 	
 	private boolean fillPatterns() {
@@ -251,22 +345,29 @@ public class DataSetBuilder {
 		
 		ArrayList<DoubleMatrix1D> pats = null;
 		double interval[] = null;
+		double width = this.setup.getWindowWidth()*this.setup.getBinSize();
 		while(e.hasMoreElements()) {
 			interval = e.nextElement();
-			pats = this.matrix.getPatterns(interval[0], interval[1]);
-			if (pats==null) {
-				System.out.println ("Problems reading patterns from matrix: "+Arrays.toString(interval));
-				return (false);
+			if (this.matrix.possibleInterval(interval[0], interval[1])) {
+				pats = this.matrix.getPatterns(interval[0], interval[1]);
+				if (pats == null) {
+					System.err
+							.println("Problems reading patterns from matrix: "
+									+ Arrays.toString(interval));
+					return (false);
+				}
+				this.patterns.addPatterns(pats, label, interval[0], this.setup
+						.getBinSize());
 			}
-			this.patterns.addPatterns(pats, label, interval[0], this.setup.getBinSize());
 	    }
 		return (true);
 	}
 	
 	private FastVector buildAtts() {
 		FastVector atts=null;
+		FastVector attClass=null;
 		ArrayList <String> neuronNames = spikes.getNeuronNames();
-		int numOfBinsPerNeuron = this.patterns.getDimension()/neuronNames.size();
+		int numOfBinsPerNeuron = this.setup.getWindowWidth();
 		int numOfNeurons = neuronNames.size();
 		
 		Enumeration<String> e = Collections.enumeration(neuronNames);
@@ -285,10 +386,11 @@ public class DataSetBuilder {
 				atts.addElement(new Attribute(neuronName+"_" + i));
 			}
 		}
-		
-		
-	//	int numBins = patterns
-		
+		// Class label
+		attClass = new FastVector();
+		attClass.addElement ("yes");
+		attClass.addElement ("no");
+		atts.addElement(new Attribute("class",attClass));
 		
 		
 		return atts;

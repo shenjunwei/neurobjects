@@ -42,6 +42,16 @@ public class Pattern {
 		return ("Time(s): "+time+"\tLabel: "+label+"\n"+this.pattern.toString() );
 	}
 	
+	public double[] toWeka (double classValue) {
+		double values[] = new double [this.dim+1];
+		
+		
+		this.pattern.toArray(values);
+		values[this.dim] = classValue;
+		
+		return (values);
+	}
+	
 	public String toWeka (String classValue) {
 		String result="";
 		for (int i=0; i<this.pattern.size(); i++) {

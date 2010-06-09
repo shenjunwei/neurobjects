@@ -6,7 +6,7 @@ import org.w3c.dom.*;
 /**
  * \page xml_setup_file_format XML setup file format description
  * 
- * To define the setup informatio to data set builder should be given as input a
+ * To define the setup information to data set builder should be given as input a
  * xml file where the setup information can be found. The information is structured by animal, therefore the description is a list of description how can be found and used
  * the information of a given animal. In this list, can be found nodes (animal) with information from files and nodes with information
  * from database.

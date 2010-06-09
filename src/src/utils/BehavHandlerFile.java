@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.Enumeration;
@@ -150,7 +151,7 @@ public class BehavHandlerFile implements BehavHandlerI {
 		String[] tmpLabels = labels.split(",");
 		ArrayList<String> givenLabels = new ArrayList<String> ();
 		for (int i=0; i<tmpLabels.length ; i++) {
-			givenLabels.add (tmpLabels[i]);
+			givenLabels.add (tmpLabels[i].trim());
 		}
 		int checkedLabels=0;
 		int numGivenLabels = givenLabels.size();

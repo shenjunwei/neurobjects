@@ -229,7 +229,9 @@ public class CountMatrix implements RateMatrixI{
 			return (patterns);
 		}
 		
-		if ( (!this.windowPossible(t1,this.windowWidth)) || (!this.windowPossible(t2,this.windowWidth)))  {
+		//if ( (!this.windowPossible(t1,this.windowWidth)) || (!this.windowPossible(t2,this.windowWidth)))  {
+		if (!this.possibleInterval(t1, t2))  {
+			
 			this.log += "CountMatrix:getPatterns: invalid input arguments can not possible windows";
 			return (patterns);
 		}
@@ -237,8 +239,12 @@ public class CountMatrix implements RateMatrixI{
 		
 		int lastCol = this.getIdx(t2);
 		patterns = new ArrayList<DoubleMatrix1D> ();
-		for (int i=this.getIdx(t1); i<=lastCol; i++) {
-			patterns.add(this.getPattern(i, this.windowWidth));
+		DoubleMatrix1D p = null; 
+		for (int i = this.getIdx(t1); i <= lastCol; i++) {
+			p = this.getPattern(i, this.windowWidth);
+			if (p != null) {
+				patterns.add(p);
+			}
 		}
 		
 		return (patterns);
@@ -501,6 +507,17 @@ public class CountMatrix implements RateMatrixI{
 			
 		}
 		return(result);
+	}
+	
+	public boolean possibleInterval (double t1, double t2) {
+		if (this.windowWidth==0) {
+			System.out.println ("WARNING: Window width not defined !!");
+		}
+		if ( (t1>=this.first) && (t2<=this.last) && ( (t2-t1)>=(this.windowWidth*this.binSize))  ) {
+			return (true);
+		}
+		
+		return (false);
 	}
 
 	

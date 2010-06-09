@@ -220,5 +220,21 @@ public interface RateMatrixI {
 	/** Returns a set of pattern give a time interval */
 	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2);
 	
+	/** Informs if a given window is possible in the Count Matrix 
+	 * Given time instant and a temporal width, informs if the respective window is possible in 
+	 * the count matrix. In the count matrix that time window is defined by all rows and the corresponding
+	 * columns since corresponding column to time until the corresponding column to time+width. 
+	 * @param time time instant where start the window
+	 * @param width time width of the window
+	 * @return TRUE if window is possible, or FALSE otherwise.
+	 * 
+	 * \todo this explanation is confusing (the documentation of this method should explain everything in other words)
+	 * 
+	 * */ 
+	public boolean windowPossible(double time,double width);
+	
+	
+	public boolean possibleInterval (double t1, double t2);
+	
 
 }

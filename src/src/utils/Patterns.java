@@ -249,6 +249,20 @@ public class Patterns {
 		return (this.pats.get(label));
 	}
 	
+	
+	/** Given a label and an index returns the correspondent pattern stored
+	 * 
+	 * If there is no patterns associated with that label returns \c null.
+	 * @param label label to be used to returns the patterns 
+	 * @return A pattern that are associated to label in a given index */
+	public Pattern getPattern (String label, int index) {
+		if (index>this.pats.get(label).size()) {
+			return null;
+		}
+		 
+		return (this.pats.get(label).get(index));
+	}
+	
 	/**
 	 * Informs if the current object is single dimension.
 	 * 
@@ -334,6 +348,15 @@ public class Patterns {
 	
 	public String getLabels () {	
 		return (this.pats.keys().toString());
+	}
+	
+	public int numPatterns (String label) {
+		ArrayList<Pattern> list = this.pats.get(label);
+		if (list==null) {
+			return (0);
+		}
+		return (list.size());
+		
 	}
 		
 	
