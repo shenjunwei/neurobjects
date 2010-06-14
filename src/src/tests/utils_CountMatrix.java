@@ -23,9 +23,8 @@ public class utils_CountMatrix  {
 		double a=0.3;
 		double b=7950;
 		
-		//Falta testar com vários arquivos de neuronios... pois somente com 1 nos so temos uma unica linha na matriz
-//		TxtSpkHandler	spikeHandler = new TxtSpkHandler(dataSourcePath, neuronName, a, b);
-		TxtSpkHandler	spikeHandler = new TxtSpkHandler(dataSourcePath, neuronName);
+		TxtSpkHandler	spikeHandler = new TxtSpkHandler(dataSourcePath, neuronName, a, b);
+//		TxtSpkHandler	spikeHandler = new TxtSpkHandler(dataSourcePath, neuronName);
 
 		
 		CountMatrix cmatrix = new CountMatrix(spikeHandler, binSize);
