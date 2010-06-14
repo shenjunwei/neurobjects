@@ -254,7 +254,9 @@ public class TxtSpkHandler implements SpkHandlerI {
 				String fileName = name[i].toLowerCase();
 				if (fileName.startsWith(filterLowerCase) && fileName.endsWith(this.spkFileExtension)) {
 					spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
-					this.neurons.add(spikes);
+					if (spikes.isValid()) {
+						this.neurons.add(spikes);
+					}
 				}
 			}
 		}
@@ -264,7 +266,9 @@ public class TxtSpkHandler implements SpkHandlerI {
 				if (fileName.endsWith(this.spkFileExtension))
 				{
 					spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
-					this.neurons.add(spikes);
+					if (spikes.isValid()) {
+						this.neurons.add(spikes);
+					}
 				}
 			}
 		}

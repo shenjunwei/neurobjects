@@ -14,22 +14,22 @@ import errors.MissingDataFileException;
 /**
  * \page TxtSpikeTrainTests Tests on TxtSpikeTrain
  *
- * 	The following tests were performed (in tests.utils_TxtSpikeTrainTests):
- *   1- Testing the constructor in normal situation: new TxtSpikeTrain(filePath);
- *   2- Testing the constructor in normal situation: new TxtSpikeTrain(filePath, "neuron_S1_02a");
- *   3- Testing the constructor in normal situation: new TxtSpikeTrain(filePath, "neuron_S1_02a", 0, 100);
- *   4- Testing the constructor in normal situation with a negative firsTime parameter: new TxtSpikeTrain(filePath, "neuron_S1_02a", -10, 100.00000000000000000009);
- *   5- Testing in an erroneous situation with firstTime > lastTime: new TxtSpikeTrain(filePath, "neuron_S1_02a", 100.00000000000000000009, 0);
- *   6- Testing in normal situation with equals parameters 'firstTime' and 'LastTime': new TxtSpikeTrain(filePath, "neuron_S1_02a", 0, 0);
- *   7- Testing in an abnormal situation with a sourceFile that don't is a neuronFile but an Gif binary image file: new TxtSpikeTrain("/tmp/talesmileto01.gif", "neuron_S1_02a", 0, 500);
- *   8- Testing in an abnormal situation with a sourceFile that don't exists: new TxtSpikeTrain("/tmp/huiahsuihsi", "neuron_S1_02a", 0, 200);
- *   9- Testing in an abnormal situation with a source file that comes from /dev/random: new TxtSpikeTrain("/dev/random", "neuron_S1_02a", 0, 100);
- *   10- Testing in an abnormal situation which the 'firstime' and 'lastTime' parameter is much larger than the existing in source file: new TxtSpikeTrain(filePath, "neuron_S1_02a", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY); 
- *
- *   In all performed tests were made the follow commands:
- *    TxtSpikeTrain spkTrain_1 = new TxtSpikeTrain(filePath);
- *	  DoubleMatrix1D spikes_1 = spkTrain_1.getTimes();
- *	  System.out.println("spikes size: "+spkTrain_1.getNumberOfSpikes());
+ * 	The following tests were performed (in tests.utils_TxtSpikeTrainTests): \n
+ *   1- Testing the constructor in normal situation: new TxtSpikeTrain(filePath);  \n
+ *   2- Testing the constructor in normal situation: new TxtSpikeTrain(filePath, "neuron_S1_02a"); \n
+ *   3- Testing the constructor in normal situation: new TxtSpikeTrain(filePath, "neuron_S1_02a", 0, 100); \n
+ *   4- Testing the constructor in normal situation with a negative firsTime parameter: new TxtSpikeTrain(filePath, "neuron_S1_02a", -10, 100.00000000000000000009); \n
+ *   5- Testing in an erroneous situation with firstTime > lastTime: new TxtSpikeTrain(filePath, "neuron_S1_02a", 100.00000000000000000009, 0); \n
+ *   6- Testing in normal situation with equals parameters 'firstTime' and 'LastTime': new TxtSpikeTrain(filePath, "neuron_S1_02a", 0, 0); \n
+ *   7- Testing in an abnormal situation with a sourceFile that don't is a neuronFile but an Gif binary image file: new TxtSpikeTrain("/tmp/talesmileto01.gif", "neuron_S1_02a", 0, 500); \n
+ *   8- Testing in an abnormal situation with a sourceFile that don't exists: new TxtSpikeTrain("/tmp/huiahsuihsi", "neuron_S1_02a", 0, 200); \n
+ *   9- Testing in an abnormal situation with a source file that comes from /dev/random: new TxtSpikeTrain("/dev/random", "neuron_S1_02a", 0, 100); \n
+ *   10- Testing in an abnormal situation which the 'firstime' and 'lastTime' parameter is much larger than the existing in source file: new TxtSpikeTrain(filePath, "neuron_S1_02a", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);  \n
+ *    \n
+ *   In all performed tests were made the follow commands: \n
+ *    TxtSpikeTrain spkTrain_1 = new TxtSpikeTrain(filePath); \n
+ *	  DoubleMatrix1D spikes_1 = spkTrain_1.getTimes(); \n
+ *	  System.out.println("spikes size: "+spkTrain_1.getNumberOfSpikes()); \n \n
  */
 
 
@@ -259,6 +259,12 @@ public class TxtSpikeTrain extends SpikeTrain {
 				if ((spikeTime >= a) && (spikeTime <= b)) {
 					this.times.set(i++, spikeTime);
 				}
+			}
+			
+			//Some times there's no spikes in given interval
+			if (this.times.size()==0) {
+				this.valid = false;
+				System.out.println("TxtSpikeTrain:: WARNING:  "+filename+" has no spikes in given interval [ "+a+" , "+b+" ]");
 			}
 			in.close();
 	}

@@ -33,17 +33,16 @@ public class DataSetBuilder {
 	
 	String 			currentFilter = "";
 	
+	/**
+	 * \brief Sets the configuration parameters from XML file to internal class parameters.
+	 * \n Defines the positive and negative set sizes to train and test steps
+	 */
 	public DataSetBuilder (AnimalSetup s) {
-		// Defines the positive set sizes to train and test steps
-		
-		
 		this.setup = s;
 		this.numPositiveSamplesToTrain = (int) Math.floor(this.setup.getTotalSamples()*this.setup.getAlfa());
 		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
 		this.numNegativeSamplesToTrain = (int) Math.floor(this.numPositiveSamplesToTrain*this.setup.getBeta());
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
-		
-		
 	}
 	
 	public Instances[] getInstances (String filter, String positiveLabel) throws Exception {
@@ -62,7 +61,12 @@ public class DataSetBuilder {
 		return(this.buildInstances(positiveLabel));
 	}
 	
-	
+	/**
+	 * \brief Validate parameters
+	 * @param filter
+	 * @param positiveLabel
+	 * @return
+	 */
 	private boolean validBuildParams (String filter, String positiveLabel) {
 		
 		// Validate parameters
@@ -271,6 +275,12 @@ public class DataSetBuilder {
 		
 	}
 	
+	/**
+	 * \brief Build data reading informations from XML file
+	 * 
+	 * @param filter
+	 * @throws Exception
+	 */
 	private void buildData(String filter) throws Exception {
 		this.behave = new BehavHandlerFile(setup.getPathToBehavior());
 		

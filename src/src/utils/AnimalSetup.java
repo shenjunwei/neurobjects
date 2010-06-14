@@ -1,8 +1,18 @@
 package utils;
 
 import java.util.ArrayList;
-
 import org.w3c.dom.*;
+
+/**
+ * \page todopage TODO page information
+ * 
+ * 1- The XML parser of Behavior file should implements a regex search ([0-9]*, [0-9]*, [a-z]*, [A-Z]*) to warning about parser errors
+ * 
+ * 
+ * 
+ * 
+ */
+
 /**
  * \page xml_setup_file_format XML setup file format description
  * 
@@ -43,7 +53,15 @@ import org.w3c.dom.*;
   .
   </experiment>
  * \endcode	
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * */
+
+
 
 // TODO Generate a page with a xml format descrition.
 public class AnimalSetup extends Setup {
@@ -142,6 +160,9 @@ public class AnimalSetup extends Setup {
 		}
 	}
 	
+	/**
+	 * \brief All important attributes in a better way to print
+	 */
 	public String toString () {
 		String result="";
 		
