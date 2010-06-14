@@ -131,7 +131,7 @@ public class DataSetBuilder {
 			label = e.nextElement();
 			list = patIdxs.get(label);
 			patternList = this.patterns.getPatterns(label);
-			if (label==positiveLabel) {
+			if (label.equals(positiveLabel)) {
 				// Positive samples to train
 				for (i=0; i<this.numPositiveSamplesToTrain; i++) {
 					idx = R.nextInt(list.size()-1);
