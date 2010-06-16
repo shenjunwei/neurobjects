@@ -15,7 +15,7 @@ import org.xml.sax.SAXParseException;
 import utils.AnimalSetup;
 import utils.DataSetBuilder;
 import utils.Dataset;
-import weka.core.Instances;
+import utils.DatasetBuffer;
 
 public class DatasetHndApp {
 
@@ -41,17 +41,27 @@ public class DatasetHndApp {
 			int totalAnimal = listOfAnimal.getLength();
 			System.out.println ("Number of animal description in XML file: " +totalAnimal);
 		
+			ArrayList<String> models = new ArrayList<String> ();
+			models.add("NBayes");
+			models.add("J48");
+			models.add("SVM");
+			models.add("MLP");
+			models.add("RBF");
 			for (int i = 0; i < totalAnimal; i++) {
 				Node animalNode = listOfAnimal.item(i);
 				AnimalSetup animal = null;
 				if (animalNode.getNodeType() == Node.ELEMENT_NODE) {
 
 					animal = new AnimalSetup(animalNode);
+					DatasetBuffer buffer = new DatasetBuffer(models, 10);
+
 					if (animal != null) {
 						animalList.add(animal);
 						DataSetBuilder D = new DataSetBuilder(animal);
 						System.out.println(animal);
 						Dataset data = D.get("v1", "ball");
+						buffer.add(data);
+						
 						System.out.println (data);						
 						return;
 					}
