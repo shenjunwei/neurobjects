@@ -1,3 +1,4 @@
+/** \page */
 package utils;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.Hashtable;
 import java.util.Random;
 
 import cern.colt.matrix.DoubleMatrix1D;
+import errors.InvalidArgumentException;
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
@@ -59,6 +61,34 @@ public class DataSetBuilder {
 		
 		System.out.println ("Building instances");
 		return(this.buildInstances(positiveLabel));
+	}
+	
+	public Dataset get (String filter, String positiveLabel) throws Exception {
+		
+		Instances[] dataVector = this.getInstances(filter, positiveLabel);
+		String area = this.defArea(filter);
+		Dataset	data = new Dataset(dataVector[0], dataVector[1], this.setup.getName(), positiveLabel, area); 
+		return data;
+	
+	}
+	
+	private String defArea (String filter) {
+		if (filter.equals("")) {
+			return ("all");
+		}
+		if (filter.startsWith("hp") ) {
+			return ("hp");
+		}
+		if (filter.startsWith("v1") ) {
+			return ("v1");
+		}
+		if (filter.startsWith("s1") ) {
+			return ("s1");
+		}
+		new InvalidArgumentException("Unknown filter");
+		return filter;
+		
+		
 	}
 	
 	/**
