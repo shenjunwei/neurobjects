@@ -14,6 +14,7 @@ import org.xml.sax.SAXParseException;
 
 import utils.AnimalSetup;
 import utils.DataSetBuilder;
+import utils.Dataset;
 import weka.core.Instances;
 
 public class DataSetBuilderApp {
@@ -50,9 +51,9 @@ public class DataSetBuilderApp {
 						animalList.add(animal);
 						DataSetBuilder D = new DataSetBuilder(animal);
 						System.out.println(animal);
-						Instances dataset[] = D.getInstances("hp", "ball");
-						System.out.println (dataset[0]);
-						System.out.println (dataset[1]);
+						Dataset data = D.get("hp", "ball");
+						System.out.println (data);
+						
 						System.out.println("\n\n");
 						return;
 					}
