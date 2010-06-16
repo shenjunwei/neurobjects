@@ -47,6 +47,30 @@ public class DataSetBuilder {
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
 	}
 	
+	public void run (DatasetBuffer buffer, int numOfSamples) throws Exception {
+		
+		String filter = "";
+		String label = "";
+		Dataset data = null;
+		int i=0;
+		Enumeration <String> f = Collections.enumeration(this.setup.getFilters());
+		while (f.hasMoreElements()) {
+			filter = f.nextElement();
+			Enumeration <String> l = Collections.enumeration(this.setup.getLabels());
+			while (l.hasMoreElements()) {
+				label = l.nextElement();
+				for (i = 0; i < numOfSamples; i++) {
+					while (buffer.isFull()) {
+					}
+					data = this.get(filter, label);
+					buffer.add(data);
+				}
+				
+			}
+		}
+		
+	}
+	
 	private Instances[] getInstances (String filter, String positiveLabel) throws Exception {
 			
 		 
@@ -72,24 +96,7 @@ public class DataSetBuilder {
 	
 	}
 	
-	private String defArea (String filter) {
-		if (filter.equals("")) {
-			return ("all");
-		}
-		if (filter.startsWith("hp") ) {
-			return ("hp");
-		}
-		if (filter.startsWith("v1") ) {
-			return ("v1");
-		}
-		if (filter.startsWith("s1") ) {
-			return ("s1");
-		}
-		new InvalidArgumentException("Unknown filter");
-		return filter;
-		
-		
-	}
+	
 	
 	/**
 	 * \brief Validate parameters

@@ -12,13 +12,14 @@ public class ModelEvaluater extends Thread {
 	Instances trainData=null;
 	Instances testData=null;
 	Context context=null;
-	ModelEvaluater(Setup info, Instances trainData, Instances testData) {
+	ModelEvaluater(Setup info, Instances trainData, Instances testData, String model) {
 		
         super();
-        this.model = C.getModel();
+       
+        this.model = model;
         this.trainData = trainData;
         this.testData = testData;
-        this.context = new Context (info,);
+       // this.context = new Context (info,);
         
     }
 	public void run () {
@@ -70,14 +71,14 @@ public class ModelEvaluater extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.setAUROC(eval.weightedAreaUnderROC());
-		C.setFMeasure(eval.fMeasure(0));
-		C.setKappa(eval.kappa());
-		C.setPctCorrect(eval.pctCorrect());
-		C.setEndTime(System.currentTimeMillis());
+		this.context.setAUROC(eval.weightedAreaUnderROC());
+		this.context.setFMeasure(eval.fMeasure(0));
+		this.context.setKappa(eval.kappa());
+		this.context.setPctCorrect(eval.pctCorrect());
+		this.context.setEndTime(System.currentTimeMillis());
 		
 	
-		C.showSQL("ioc_results_basic2");
+		this.context.showSQL("ioc_results_basic2");
 	
 		
 	}
