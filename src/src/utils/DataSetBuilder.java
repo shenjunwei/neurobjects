@@ -298,7 +298,7 @@ public class DataSetBuilder {
 			return (false);
 		}
 		
-		if (currentFilter==filter) {
+		if (currentFilter.equals(filter)) {
 			return (true);
 		}
 		return (false);
