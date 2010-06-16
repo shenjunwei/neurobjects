@@ -47,7 +47,7 @@ public class DataSetBuilder {
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
 	}
 	
-	public Instances[] getInstances (String filter, String positiveLabel) throws Exception {
+	private Instances[] getInstances (String filter, String positiveLabel) throws Exception {
 			
 		 
 		if (!this.validBuildParams(filter, positiveLabel)) {
@@ -61,7 +61,7 @@ public class DataSetBuilder {
 		
 		System.out.println ("Building instances");
 		return(this.buildInstances(positiveLabel));
-	}
+	} 
 	
 	public Dataset get (String filter, String positiveLabel) throws Exception {
 		
