@@ -1,9 +1,9 @@
 package utils;
 
 public abstract class Setup {
-	String name="";
+    String name="";
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 }
