@@ -16,30 +16,28 @@ public class Context {
 	private 	long	startTime=0;
 	private 	long	endTime=0;
 	private		double	duration=0;
-	private 	String animal="";
-	private 	String object="";
-	private 	String area="";
-	private 	double binSize=0;
-	private 	int windowWidth=0;
-	private 	String hostname="";
-	private 	String ip="";
-	private 	String time="";
+	private 	String 	animal="";
+	private 	String 	object="";
+	private 	String 	area="";
+	private 	double 	binSize=0;
+	private 	int 	windowWidth=0;
+	private 	String 	hostname="";
+	private 	String 	ip="";
+	private 	String 	time="";
 	
 	private 	double AUROC=0;
 	private 	double fMeasure=0;
 	private 	double kappa=0;
 	private 	double pctCorrect=0;
-	private 	weka.classifiers.bayes.NaiveBayes cModel=null;
 	private 	String tableName;
 	private 	String lasSQLQuery="";
 	
 	
-	public Context (AnimalSetup info, String model, String area, String label) {
+	public Context (AnimalSetup info, String model, String filter, String label) {
 		
 		this.model = model;
-		this.area = area;
+		this.area = info.getArea(filter);
 		this.object = label;
-		this.cModel = null;
 		// save the current time in mille seconds
 		this.startTime = System.currentTimeMillis();
 		Calendar cal = Calendar.getInstance();

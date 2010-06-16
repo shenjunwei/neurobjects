@@ -84,39 +84,7 @@ public class AnimalSetup extends Setup {
 	/** List of filter to be used   */
 	ArrayList<String> 	filters=null;
 	
-	public String getConfiFile() {
-		return confiFile;
-	}
-	public String getDatasetType() {
-		return datasetType;
-	}
-	public String getPathToSpikes() {
-		return pathToSpikes;
-	}
-	public String getPathToBehavior() {
-		return pathToBehavior;
-	}
-	public ArrayList<String> getFilters() {
-		return filters;
-	}
-	public ArrayList<String> getLabels() {
-		return labels;
-	}
-	public double getBinSize() {
-		return binSize;
-	}
-	public int getWindowWidth() {
-		return windowWidth;
-	}
-	public int getTotalSamples() {
-		return totalSamples;
-	}
-	public double getAlfa() {
-		return alfa;
-	}
-	public double getBeta() {
-		return beta;
-	}
+	
 
 	/** List of time labels */
 	ArrayList<String> 	labels=null;
@@ -182,6 +150,23 @@ public class AnimalSetup extends Setup {
 		return (result);
 	}
 	
+	public String getArea (String filter) {
+		
+		if (filter.equals("")) {
+			return ("all");
+		}
+		if (filter.startsWith("hp")) {
+			return ("hp");
+		}
+		if (filter.startsWith("v1")) {
+			return ("v1");
+		}
+		if (filter.startsWith("s1")) {
+			return ("s1");
+		}
+		return null;
+	}
+	
 		
 		
 	private String parseSingle(Element animalElement, String name) {
@@ -245,6 +230,40 @@ public class AnimalSetup extends Setup {
 			this.pathToSpikes =  this.parsePath(dataset , "pathToSpikes");
 			this.pathToBehavior =  this.parsePath(dataset , "pathToBehavior");
 						
+		}
+		
+		public String getConfiFile() {
+			return confiFile;
+		}
+		public String getDatasetType() {
+			return datasetType;
+		}
+		public String getPathToSpikes() {
+			return pathToSpikes;
+		}
+		public String getPathToBehavior() {
+			return pathToBehavior;
+		}
+		public ArrayList<String> getFilters() {
+			return filters;
+		}
+		public ArrayList<String> getLabels() {
+			return labels;
+		}
+		public double getBinSize() {
+			return binSize;
+		}
+		public int getWindowWidth() {
+			return windowWidth;
+		}
+		public int getTotalSamples() {
+			return totalSamples;
+		}
+		public double getAlfa() {
+			return alfa;
+		}
+		public double getBeta() {
+			return beta;
 		}
 		
 		

@@ -90,7 +90,10 @@ public class DataSetBuilder {
 	public Dataset get (String filter, String positiveLabel) throws Exception {
 		
 		Instances[] dataVector = this.getInstances(filter, positiveLabel);
-		String area = this.defArea(filter);
+		String area = this.setup.getArea(filter);
+		if (area==null) {
+			new InvalidArgumentException("invalid filter value to define area");
+		}
 		Dataset	data = new Dataset(dataVector[0], dataVector[1], this.setup.getName(), positiveLabel, area); 
 		return data;
 	

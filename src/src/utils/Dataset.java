@@ -25,6 +25,9 @@ public class Dataset {
 		this.label = label;
 		this.area = area;
 		
+		this.trainData.setClassIndex(this.trainData.numAttributes()-1);
+		this.testData.setClassIndex(this.testData.numAttributes()-1);
+		
 	}
 	
 	public String toString () {

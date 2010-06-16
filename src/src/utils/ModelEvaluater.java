@@ -12,14 +12,14 @@ public class ModelEvaluater extends Thread {
 	Instances trainData=null;
 	Instances testData=null;
 	Context context=null;
-	ModelEvaluater(Setup info, Instances trainData, Instances testData, String model) {
+	public ModelEvaluater(AnimalSetup info, Dataset data, String model, String filter, String label) {
 		
         super();
        
         this.model = model;
-        this.trainData = trainData;
-        this.testData = testData;
-       // this.context = new Context (info,);
+        this.trainData = data.getTrainData();
+        this.testData = data.getTestData();
+        this.context = new Context(info, model, filter, label);
         
     }
 	public void run () {
