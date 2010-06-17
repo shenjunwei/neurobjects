@@ -3,6 +3,8 @@ package utils;
 import java.util.ArrayList;
 import org.w3c.dom.*;
 
+import errors.InvalidArgumentException;
+
 /**
  * \page todopage TODO page information
  * 
@@ -264,6 +266,30 @@ public class AnimalSetup extends Setup {
 		}
 		public double getBeta() {
 			return beta;
+		}
+		
+		public boolean validFilters() {
+			
+			if (filters == null) {
+				return (false);
+			}
+			if (filters.size() == 0) {
+				return (false);
+			}
+
+			return (true);
+
+		}
+		public boolean validLabels() {
+			if (labels == null) {				
+				return (false);
+			}
+			if (labels.size() == 0) {
+				return (false);
+			}
+
+			return (true);
+
 		}
 		
 		
