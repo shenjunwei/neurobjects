@@ -157,7 +157,8 @@ public class AnimalSetup extends Setup {
 		if (filter.equals("")) {
 			return ("all");
 		}
-		if (filter.startsWith("hp")) {
+		// HP or DG ou CA
+		if ((filter.startsWith("hp")) || (filter.startsWith("dg")) || (filter.startsWith("ca")) ) {
 			return ("hp");
 		}
 		if (filter.startsWith("v1")) {
