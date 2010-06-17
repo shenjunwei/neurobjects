@@ -11,13 +11,13 @@ import weka.core.Instances;
 
 public class ModelEvaluater<syncronized> extends Thread {
 	
-	String model="";
-	Instances trainData=null;
-	Instances testData=null;
-	Context context=null;
+	String 			model="";
+	Instances 		trainData=null;
+	Instances 		testData=null;
+	Context 		context=null;
 	weka.classifiers.Classifier cModel = null;
-	DatasetBuffer dataBuffer = null;
-	boolean done = false;
+	DatasetBuffer 	dataBuffer = null;
+	boolean 		done = false;
 	
 	public ModelEvaluater(DatasetBuffer buffer) {
 		
@@ -26,10 +26,7 @@ public class ModelEvaluater<syncronized> extends Thread {
         //this.model = model;
         //this.trainData = data.getTrainData();
         //this.testData = data.getTestData();
-        this.dataBuffer = buffer;
-        
-        
-        
+        this.dataBuffer = buffer; 
     }
 
 	public void run() {
@@ -41,7 +38,6 @@ public class ModelEvaluater<syncronized> extends Thread {
 					wait();
 				} catch (InterruptedException e) {
 				}
-
 			}
 			synchronized (this) {
 				try {
