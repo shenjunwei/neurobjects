@@ -19,12 +19,14 @@ public class Dataset {
 
 	
 	
-	public Dataset (Instances trainData, Instances testData, String animal, String label, String area ) {
+	public Dataset (Instances trainData, Instances testData,AnimalSetup animal, String label, String area ) {
 		
 		this.trainData = new Instances (trainData);
 		this.testData = new Instances (testData);
 		
-		this.animal= animal;
+		this.animal= animal.getName();
+		this.binSize = animal.getBinSize();
+		this.windowWidth = animal.getWindowWidth();
 		this.label = label;
 		this.area = area;
 		
