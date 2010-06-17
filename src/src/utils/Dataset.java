@@ -13,6 +13,9 @@ public class Dataset {
 	String    animal="";
 	String    label="";
 	String    area="";
+	double 	  binSize=0.0;
+	int 	  windowWidth=0;
+	String 	  tag = "";
 
 	
 	
@@ -57,6 +60,18 @@ public class Dataset {
 
 	public String getArea() {
 		return area;
+	}
+	
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+	
+	public double getBinSize() {
+		return (this.binSize);
+	}
+
+	public int getWindowWidth() {
+		return windowWidth;
 	}
 
 	

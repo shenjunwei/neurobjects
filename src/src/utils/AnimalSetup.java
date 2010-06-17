@@ -164,7 +164,7 @@ public class AnimalSetup extends Setup {
 		if (filter.startsWith("s1")) {
 			return ("s1");
 		}
-		return null;
+		return "ukn";
 	}
 	
 		

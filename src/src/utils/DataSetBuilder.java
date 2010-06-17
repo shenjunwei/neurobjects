@@ -61,8 +61,13 @@ public class DataSetBuilder {
 				label = l.nextElement();
 				for (i = 0; i < numOfSamples; i++) {
 					while (buffer.isFull()) {
+						try {
+			                wait();
+			            } catch (InterruptedException e) {}
 					}
+					try {
 					data = this.get(filter, label);
+					} catch (Exception e) {};
 					buffer.add(data);
 				}
 				
@@ -91,9 +96,9 @@ public class DataSetBuilder {
 		
 		Instances[] dataVector = this.getInstances(filter, positiveLabel);
 		String area = this.setup.getArea(filter);
-		if (area==null) {
+		/*if (area==null) {
 			new InvalidArgumentException("invalid filter value to define area");
-		}
+		} */
 		Dataset	data = new Dataset(dataVector[0], dataVector[1], this.setup.getName(), positiveLabel, area); 
 		return data;
 	
@@ -287,16 +292,28 @@ public class DataSetBuilder {
 		
 		// Is there enough samples with this positive label ?
 		if (patterns.getPatterns(positiveLabel).size()<setup.totalSamples) {
-			System.out.println ("There is no enough samples with this positive label: " +positiveLabel);
-			return (false);
+			new InvalidArgumentException("There is no enough samples with this positive label: " +positiveLabel);
+			
 		}
 		
-		// Is there enough samples with this negative label ?
-		ArrayList<String> others = (ArrayList<String>)setup.getLabels().clone();
+		// Is there enough samples with this negative label ?		
+		if (!this.isEnoughNegSamples(positiveLabel)) {
+			new InvalidArgumentException("There is no enough negative samples with this positive label: " +positiveLabel);
+		}
+		
+		if (currentFilter.equals(filter)) {
+			return (true);
+		}
+		return (false);
+		
+	}
+	
+	private boolean isEnoughNegSamples(String positiveLabel) {
+		ArrayList<String> others = new ArrayList<String>();
+		others.addAll(setup.getLabels());
 		others.remove(positiveLabel);
 		Enumeration<String> e = Collections.enumeration(others);
 		if (e==null) {
-			System.out.println ("There is no negative samples with this positive label: " +positiveLabel);
 			return (false);
 		}
 		int totalNegativeSamples = 0;
@@ -304,14 +321,9 @@ public class DataSetBuilder {
 			totalNegativeSamples += patterns.getPatterns(e.nextElement()).size();
 	    }
 		if (totalNegativeSamples<(setup.getBeta()*setup.totalSamples)) {
-			System.out.println ("There is no enough negative samples with this positive label: " +positiveLabel);
 			return (false);
 		}
-		
-		if (currentFilter.equals(filter)) {
-			return (true);
-		}
-		return (false);
+		return (true);
 		
 	}
 	

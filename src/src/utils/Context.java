@@ -33,19 +33,19 @@ public class Context {
 	private 	String lasSQLQuery="";
 	
 	
-	public Context (AnimalSetup info, String model, String filter, String label) {
+	public Context (Dataset data, String model) {
 		
 		this.model = model;
-		this.area = info.getArea(filter);
-		this.object = label;
+		this.area = data.getArea();
+		this.object = data.getLabel();
 		// save the current time in mille seconds
 		this.startTime = System.currentTimeMillis();
 		Calendar cal = Calendar.getInstance();
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	    this.time=sdf.format(cal.getTime());
-	    this.animal = info.getName();
-	    this.binSize = info.getBinSize();
-	    this.windowWidth = info.getWindowWidth();
+	    this.animal = data.getAnimal();
+	    this.binSize = data.getBinSize();
+	    this.windowWidth = data.getWindowWidth();
 	    try {
 			this.setNetInfo();
 		}

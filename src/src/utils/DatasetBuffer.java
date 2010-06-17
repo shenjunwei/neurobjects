@@ -52,7 +52,7 @@ public class DatasetBuffer {
 	    }
 	}
 	
-	public int size () {
+	public synchronized int size () {
 		
 		int total = 0;
 		Enumeration<String> e = this.data.keys();
@@ -66,14 +66,14 @@ public class DatasetBuffer {
 		return total;
 	}
 	
-	public boolean isEmpty () {
+	public synchronized boolean isEmpty () {
 		if (this.size()==0) {
 			return true;
 		}
 		return (false);
 	}
 	
-	public boolean isFull () {
+	public synchronized boolean isFull () {
 		
 		boolean result = false;
 		
@@ -86,7 +86,7 @@ public class DatasetBuffer {
 		return (result);
 	}
 	
-	public boolean add (Dataset d) {
+	public synchronized boolean add (Dataset d) {
 		
 		if (this.isFull()) {
 			return false;
@@ -100,12 +100,14 @@ public class DatasetBuffer {
 			if (!list.offer(d)) {
 				return false;
 			}			
-		}		
+		}
+		notifyAll();
 		return true;
 	}
 	
-	public Dataset getDataset (String model) throws EmptySourceException, InvalidArgumentException {
+	public synchronized Dataset getDataset (String model) throws EmptySourceException, InvalidArgumentException {	
 		
+		Dataset data=null;
 		
 		if (this.isEmpty()) {
 			throw new EmptySourceException("Data set empty!!");   
@@ -114,8 +116,34 @@ public class DatasetBuffer {
 		if (!this.data.containsKey(model)) {
 			throw new InvalidArgumentException("Model not defined !");		
 		}
-		return (this.data.get(model).poll());
+		data = this.data.get(model).poll();
+		//data.setTag(model);
+		notifyAll();
+		return (data);
 		
 	}
-
+	
+	public synchronized String nextModel() throws EmptySourceException {
+		
+		if (this.isEmpty()) {
+			throw new EmptySourceException("Data set empty!!");   
+		}		
+		Enumeration<String> e = this.data.keys();
+		String model="";
+		Queue<Dataset> list = null;
+		int maxSize=-1;
+		int currentSize=0;
+		String nextModel="";
+		while (e.hasMoreElements()) {
+			model = e.nextElement();
+			list = this.data.get(model);
+			currentSize = list.size();
+			if (currentSize>maxSize) {
+				maxSize = currentSize;
+				nextModel = model;
+			}					
+		}		
+		return (nextModel); 
+		
+	}
 }
