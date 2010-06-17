@@ -17,7 +17,7 @@ import utils.DataSetBuilder;
 import utils.Dataset;
 import utils.DatasetBuffer;
 
-public class DatasetHndApp {
+public class DatasetBufferApp {
 
 	/**
 	 * @param args
@@ -27,6 +27,13 @@ public class DatasetHndApp {
 		
 		String configFile = "/home/nivaldo/tmp/nda/animal_file_setup_ge5.xml";
 		ArrayList<AnimalSetup> animalList = new ArrayList<AnimalSetup>(); 
+		String modelName[] = {"NBayes","MLP","J48","SVM","RBF"};
+		
+		ArrayList<String> models = new ArrayList<String> ();
+		for (int i=0; i<modelName.length; i++) {
+			models.add(modelName[i]);
+		}
+		
 		
 		try {
 
@@ -41,12 +48,7 @@ public class DatasetHndApp {
 			int totalAnimal = listOfAnimal.getLength();
 			System.out.println ("Number of animal description in XML file: " +totalAnimal);
 		
-			ArrayList<String> models = new ArrayList<String> ();
-			models.add("NBayes");
-			models.add("J48");
-			models.add("SVM");
-			models.add("MLP");
-			models.add("RBF");
+			
 			for (int i = 0; i < totalAnimal; i++) {
 				Node animalNode = listOfAnimal.item(i);
 				AnimalSetup animal = null;
