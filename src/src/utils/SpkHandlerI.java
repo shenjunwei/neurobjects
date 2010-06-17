@@ -226,5 +226,8 @@ public interface SpkHandlerI {
 	public double endInterval();
 	
 	public SpikeTrain getSpikeTrain( int i);
+	
+	public int getTotalOfSpikes();
+
 
 }
