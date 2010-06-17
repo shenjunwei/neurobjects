@@ -18,6 +18,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 	ArrayList<SpikeTrain> neurons = null;
 	/** \brief The file extension of spike files where some methods will look for spikes */
 	private String spkFileExtension = ".spk"; 
+	private int totalOfSpikes = 0;
 	
 /*	REMOVED 
  *  Cause: for while, it is not necessary deal with situation in which there are no interval [a;b] definitions 
@@ -255,6 +256,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 				if (fileName.startsWith(filterLowerCase) && fileName.endsWith(this.spkFileExtension)) {
 					spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
 					if (spikes.isValid()) {
+						totalOfSpikes+=spikes.numberOfSpikes;
 						this.neurons.add(spikes);
 					}
 				}
@@ -294,6 +296,9 @@ public class TxtSpkHandler implements SpkHandlerI {
 	public SpikeTrain getSpikeTrain( int i) {
 		
 	return (this.neurons.get(i));	
+	}
+	public int getTotalOfSpikes() {
+		return totalOfSpikes;
 	}
 }
 
