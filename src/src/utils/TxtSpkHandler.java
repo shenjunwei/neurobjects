@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.activity.InvalidActivityException;
+
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
@@ -69,6 +71,8 @@ public class TxtSpkHandler implements SpkHandlerI {
 	}
 	
 	public SpikeTrain getSpikes(String name, double a, double b) {
+		
+		new InvalidActivityException("SpikeTrain getSpikes(String name, double a, double b): method not implemented !!");
 		// TODO implements
 		// TODO implement this method in SpikeTrain.
 		return ((SpikeTrain) null);			
