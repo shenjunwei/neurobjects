@@ -3,9 +3,12 @@ package tests;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import cern.colt.matrix.DoubleMatrix1D;
+
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
+import utils.TxtSpikeTrain;
 import utils.TxtSpkHandler;
 //import utils.SpikeTrain;
 
@@ -19,7 +22,7 @@ public class utils_TxtSpkHandler {
 	 */
 	public static void main(String[] args) throws MissingDataFileException, InvertedParameterException, IOException {
 		String dataSourcePath = "/tmp/";
-		String filter = "S1_02";
+		String filter = "S1";
 		double a=0.3;
 		double b=7950;
 		TxtSpkHandler txtSpkH = new TxtSpkHandler(dataSourcePath, filter, a, b);
@@ -27,6 +30,14 @@ public class utils_TxtSpkHandler {
 		txtSpkH.beginInterval();
 		txtSpkH.endInterval();
 		txtSpkH.firstSpike();
+		
+		TxtSpikeTrain spike = (TxtSpikeTrain) txtSpkH.getSpikes("s1_02a"); 
+		
+		spike.isValid();
+		spike.getName();
+		System.out.println(spike.getNumberOfSpikes());
+		
+		
 		
 	    //ArrayList<>	txtSpkH.getAllSpikes();
 

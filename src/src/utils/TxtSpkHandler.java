@@ -10,7 +10,22 @@ import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
 
-/** \todo Implements using hash table */
+/**
+ * \page TxtSpkHandlerTests Tests on TxtSpkHandler
+ * 
+ * The following tests were performed (in tests.utils_TxtSpkHandler): \n
+ * 
+ * 
+ * 
+ */
+
+
+/** \todo Implements using hash table 
+ * 
+ * 
+ *   
+ * 
+ * */
 public class TxtSpkHandler implements SpkHandlerI {
 	
 	String animal="";
@@ -59,17 +74,21 @@ public class TxtSpkHandler implements SpkHandlerI {
 		int i=0;
 		
 		// is there this neuron
-		while ((this.neurons.get(i).getName() != name)
-				&& (i < this.neurons.size())) {
+		while (i < this.neurons.size() && 
+		(!this.neurons.get(i).getName().equalsIgnoreCase(name)))
+ 	    {
 			i++;
 		}
-		if (this.neurons.get(i).getName()==name) {
+		if (this.neurons.get(i).getName().equalsIgnoreCase(name)) {
 			return (this.neurons.get(i));
 		}
 		// TODO implements
 		return ((SpikeTrain) null);
 	}
 	
+	/**
+	 * \todo implement this method in SpikeTrain.
+	 */
 	public SpikeTrain getSpikes(String name, double a, double b) {
 		
 		new InvalidActivityException("SpikeTrain getSpikes(String name, double a, double b): method not implemented !!");
