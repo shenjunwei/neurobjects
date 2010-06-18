@@ -8,6 +8,7 @@ import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
 
+/** \todo Implements using hash table */
 public class TxtSpkHandler implements SpkHandlerI {
 	
 	String animal="";
@@ -54,7 +55,12 @@ public class TxtSpkHandler implements SpkHandlerI {
 	
 	public SpikeTrain getSpikes(String name) {
 		int i=0;
-		while ( (this.neurons.get(i++).getName()!=name) && (i<this.neurons.size()) ) ;
+		
+		// is there this neuron
+		while ((this.neurons.get(i).getName() != name)
+				&& (i < this.neurons.size())) {
+			i++;
+		}
 		if (this.neurons.get(i).getName()==name) {
 			return (this.neurons.get(i));
 		}
