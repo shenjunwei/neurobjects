@@ -9,86 +9,105 @@ import errors.InvalidArgumentException;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
 
-public class ModelEvaluater<syncronized> extends Thread {
+public class ModelEvaluater extends Thread {
 	
-	String 			model="";
-	Instances 		trainData=null;
-	Instances 		testData=null;
-	Context 		context=null;
+	String 						model="";
+	Instances 					trainData=null;
+	Instances 					testData=null;
+	Context 					context=null;
 	weka.classifiers.Classifier cModel = null;
-	DatasetBuffer 	dataBuffer = null;
-	boolean 		done = false;
+	DatasetBuffer 				dataBuffer = null;
+	boolean 					done = false;
+	String 						models[] = {"NBayes","MLP","J48","RBF","SVM"};
+	ArrayList<String> 			supportedModels=null;
+//	boolean						singleMode = false;
+//	String 						stdModel = "NBayes";
 	
 	public ModelEvaluater(DatasetBuffer buffer) {
 		
         super();
-       
-        //this.model = model;
-        //this.trainData = data.getTrainData();
-        //this.testData = data.getTestData();
+        this.buildModelList();
         this.dataBuffer = buffer; 
     }
+	
+	private void buildModelList () {
+		this.supportedModels = new ArrayList<String>();
+		int numModels = this.models.length;
+		int i=0;
+		
+		for (i=0; i<numModels; i++) {
+			this.supportedModels.add (this.models[i]);
+		}
+		
+	}
 
 	public void run() {
 		Dataset data = null;
 		Evaluation eval = null;
 		while (!this.done) {
-			while (this.dataBuffer.isEmpty()) {
+			while ((this.dataBuffer.isEmpty()) && (!this.done)) {
 				try {
-					wait();
+					Thread.sleep(200);
 				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			synchronized (this) {
+				if ((!this.dataBuffer.isEmpty())  && (!this.done)) {
+					try {
+						this.model = this.dataBuffer.nextModel();
+					} catch (EmptySourceException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					try {
+						data = this.dataBuffer.getDataset(this.model);
+					} catch (EmptySourceException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvalidArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			if (data != null) {
+				this.trainData = data.getTrainData();
+				this.testData = data.getTestData();
+				this.context = new Context(data, this.model);
+				this.setModel();
+				
+				// Builds the classifier based on training data informations
 				try {
-					this.model = this.dataBuffer.nextModel();
-				} catch (EmptySourceException e) {
+					this.cModel.buildClassifier(this.trainData);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				// Evaluates the classifier model
+				try {
+					eval = new Evaluation(this.trainData);
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				try {
-					data = this.dataBuffer.getDataset(this.model);
-				} catch (EmptySourceException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvalidArgumentException e) {
+					eval.evaluateModel(cModel, this.testData);
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				this.context.setAUROC(eval.weightedAreaUnderROC());
+				this.context.setFMeasure(eval.fMeasure(0));
+				this.context.setKappa(eval.kappa());
+				this.context.setPctCorrect(eval.pctCorrect());
+				this.context.setEndTime(System.currentTimeMillis());
+				this.context.showSQL("ioc_results_basic2");
 			}
 
-			this.trainData = data.getTrainData();
-			this.testData = data.getTestData();
-			this.context = new Context(data, this.model);
-			this.setModel();
-
-			// Builds the classifier based on training data informations
-			try {
-				this.cModel.buildClassifier(this.trainData);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
-			// Evaluates the classifier model
-			try {
-				eval = new Evaluation(this.trainData);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				eval.evaluateModel(cModel, this.testData);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			this.context.setAUROC(eval.weightedAreaUnderROC());
-			this.context.setFMeasure(eval.fMeasure(0));
-			this.context.setKappa(eval.kappa());
-			this.context.setPctCorrect(eval.pctCorrect());
-			this.context.setEndTime(System.currentTimeMillis());
-			this.context.showSQL("ioc_results_basic2");
 		}
 
 	}
@@ -123,6 +142,20 @@ public class ModelEvaluater<syncronized> extends Thread {
 			return;
 		}
 		
+	}
+
+	public ArrayList<String> getSupportedModels() {
+		return supportedModels;
+	}
+
+	
+
+	public boolean isDone() {
+		return done;
+	}
+
+	public synchronized void setDone(boolean done) {
+		this.done = done;
 	}
 
 }
