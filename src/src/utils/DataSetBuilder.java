@@ -1,7 +1,7 @@
 /** \page */
 package utils;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,9 +11,6 @@ import java.util.Random;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import errors.InvalidArgumentException;
-import errors.InvertedParameterException;
-import errors.MissingDataFileException;
-
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -33,7 +30,9 @@ public class DataSetBuilder {
 	Patterns 	  patterns = null;
 	AnimalSetup   setup = null;
 	
+	
 	String 			currentFilter = "";
+	
 	
 	/**
 	 * \brief Sets the configuration parameters from XML file to internal class parameters.
@@ -47,12 +46,46 @@ public class DataSetBuilder {
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
 	}
 	
+	
+	/**
+	 * \brief Sets the configuration parameters from XML file to internal class parameters.
+	 * \n Defines the positive and negative set sizes to train and test steps
+	 * @throws Exception 
+	 */
+	public DataSetBuilder (AnimalSetup s, String path, String currentFilter) throws Exception {
+		this.setup = s;
+		this.numPositiveSamplesToTrain = (int) Math.floor(this.setup.getTotalSamples()*this.setup.getAlfa());
+		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
+		this.numNegativeSamplesToTrain = (int) Math.floor(this.numPositiveSamplesToTrain*this.setup.getBeta());
+		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
+		
+		
+		
+	}
+	
 	public void run (DatasetBuffer buffer, int numOfSamples) throws Exception {
 		
 		String filter = "";
 		String label = "";
 		Dataset data = null;
 		int i=0;
+		if (!this.setup.validFilters())  {
+			new InvalidArgumentException("Invalid filter!"
+					+ this.setup.getFilters());
+			return;
+		}
+		if (!this.setup.validLabels())  {
+			new InvalidArgumentException("Invalid labels!"
+					+ this.setup.getFilters());
+			return;
+		}
+		if (numOfSamples<=0) {
+			new InvalidArgumentException("Invalid number of samples !"
+					+ numOfSamples);
+			return;
+		}
+		
+		
 		Enumeration <String> f = Collections.enumeration(this.setup.getFilters());
 		while (f.hasMoreElements()) {
 			filter = f.nextElement();
@@ -61,20 +94,22 @@ public class DataSetBuilder {
 				label = l.nextElement();
 				for (i = 0; i < numOfSamples; i++) {
 					while (buffer.isFull()) {
-						try {
-			                wait();
-			            } catch (InterruptedException e) {}
+						Thread.sleep(200);			            
 					}
 					try {
 					data = this.get(filter, label);
 					} catch (Exception e) {};
 					buffer.add(data);
-				}
-				
+					System.out.println (filter+">"+label);
+				}				
 			}
 		}
+		System.out.println ("DataSetBuilder DONE");
+		
 		
 	}
+	
+	
 	
 	private Instances[] getInstances (String filter, String positiveLabel) throws Exception {
 			
@@ -83,12 +118,12 @@ public class DataSetBuilder {
 			//TODO exception  
 			return null;
 		}
-		System.out.println ("Building data");
+	//	System.out.println ("Building data");
 		if (!this.dataIsReady(filter, positiveLabel)) {
 			this.buildData(filter);
 		}
 		
-		System.out.println ("Building instances");
+	//	System.out.println ("Building instances");
 		return(this.buildInstances(positiveLabel));
 	} 
 	
@@ -99,7 +134,11 @@ public class DataSetBuilder {
 		/*if (area==null) {
 			new InvalidArgumentException("invalid filter value to define area");
 		} */
-		Dataset	data = new Dataset(dataVector[0], dataVector[1], this.setup.getName(), positiveLabel, area); 
+		if (spikes.getNumberOfNeurons()==0) {
+			new InvalidArgumentException("There is no spike with given information");
+		}
+		Dataset	data = new Dataset(dataVector[0], dataVector[1], this.setup, positiveLabel, area);
+		
 		return data;
 	
 	}
@@ -184,7 +223,7 @@ public class DataSetBuilder {
 				// Positive samples to train
 				for (i=0; i<this.numPositiveSamplesToTrain; i++) {
 					idx = R.nextInt(list.size()-1);
-					System.out.print (".");
+					//System.out.print (".");
 					vals = patternList.get(list.get (idx)).toWeka(attClass.indexOf("yes"));
 					data.add(new Instance(1.0, vals.clone()));
 					list.remove(idx);
@@ -268,16 +307,26 @@ public class DataSetBuilder {
 	
 	private boolean dataIsReady (String filter, String positiveLabel) {
 		
-		if (setup==null) {
-			System.out.println ("There is setup definition");
+	/*	if (setup==null) {
+			//System.out.println ("There is setup definition");
 			return (false);
 		}
 		if (spikes==null) {
-			System.out.println ("There is spikes definition");
+			//System.out.println ("There is no spikes definition");
 			return (false);
 		}
+		if (spikes.getNumberOfNeurons()==0) {
+			new InvalidArgumentException("There are no spikes !!");
+			return (false);
+		} 
+		
+		if (spikes.getTotalOfSpikes()==0) {
+			new InvalidArgumentException("There is no spike !");
+			return (false);
+		}
+		*/
 		if (patterns==null) {
-			System.out.println ("There is patterns definition");
+			//System.out.println ("There is patterns definition");
 			return (false);
 		}
 		
@@ -285,10 +334,7 @@ public class DataSetBuilder {
 			System.out.println ("There is no correct dimension definition");
 			return (false);
 		}
-		if (spikes.getNeuronNames().size()==0) {
-			System.out.println ("The neuron names aren't defined ");
-			return (false);
-		}
+		
 		
 		// Is there enough samples with this positive label ?
 		if (patterns.getPatterns(positiveLabel).size()<setup.totalSamples) {
@@ -457,5 +503,7 @@ public class DataSetBuilder {
 		
 		return atts;
 	}
+
+	
 
 }
