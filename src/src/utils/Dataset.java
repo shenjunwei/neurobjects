@@ -163,6 +163,10 @@ public class Dataset {
 	public int getWindowWidth() {
 		return windowWidth;
 	}
+	
+	public int getNumAtts() {
+		return (this.trainData.numAttributes());
+	}
 
 	
 }

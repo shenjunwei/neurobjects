@@ -110,6 +110,78 @@ public class DataSetBuilder {
 	}
 	
 	
+	public ArrayList<String> run (DatasetBufferSingle buffer, int numOfSamples) throws Exception {
+		
+		String filter = "";
+		String label = "";
+		String path = buffer.getWorkDir();
+		Dataset data = null;
+		ArrayList<String> zipfiles = new ArrayList<String> ();
+		int i=0;
+		if (!this.setup.validFilters())  {
+			new InvalidArgumentException("Invalid filter!"
+					+ this.setup.getFilters());
+			return null;
+		}
+		if (!this.setup.validLabels())  {
+			new InvalidArgumentException("Invalid labels!"
+					+ this.setup.getFilters());
+			return null;
+		}
+		if (numOfSamples<=0) {
+			new InvalidArgumentException("Invalid number of samples !"
+					+ numOfSamples);
+			return null;
+		}
+		
+		String zipfilename = "";
+		int zipCount = 0;
+		Enumeration <String> f = Collections.enumeration(this.setup.getFilters());
+		while (f.hasMoreElements()) {
+			filter = f.nextElement();
+			Enumeration <String> l = Collections.enumeration(this.setup.getLabels());
+			while (l.hasMoreElements()) {
+				label = l.nextElement();
+				System.out.println (filter+">"+label);
+				for (i = 0; i < numOfSamples; i++) {
+					
+					try {
+					data = this.get(filter, label);
+					} catch (Exception e) {};
+				
+					if (!buffer.add(data)) {
+						if (buffer.isFull()) {
+							zipfilename = this.setup.getName() + "."
+									+ this.setup.getArea(filter) + "."
+									+ buffer.hashCode() + "." + zipCount
+									+ ".zip";
+							zipfiles.add(zipfilename);
+							zipfilename = path + File.separatorChar
+									+ zipfilename;
+							buffer.saveZip(zipfilename); // empty buffer
+							zipCount++;
+						}
+						buffer.add(data); // Stay here !!
+					}
+					 
+					
+				}				
+			}
+		}
+		if (!buffer.isEmpty()) {
+			zipfilename = this.setup.getName()+"."+this.setup.getArea(filter)+"."+ buffer.hashCode()+"."+zipCount+".zip";
+			zipfiles.add (zipfilename);
+			zipfilename=path+File.separatorChar+zipfilename;
+			buffer.saveZip(zipfilename);		            
+			zipCount++;
+		}
+		return (zipfiles);
+		
+		
+		
+	}
+	
+	
 	
 	private Instances[] getInstances (String filter, String positiveLabel) throws Exception {
 			
@@ -120,6 +192,7 @@ public class DataSetBuilder {
 		}
 	//	System.out.println ("Building data");
 		if (!this.dataIsReady(filter, positiveLabel)) {
+			System.out.println ("Building data");
 			this.buildData(filter);
 		}
 		
@@ -307,16 +380,16 @@ public class DataSetBuilder {
 	
 	private boolean dataIsReady (String filter, String positiveLabel) {
 		
-	/*	if (setup==null) {
-			//System.out.println ("There is setup definition");
+		if (setup==null) {
+			System.out.println ("There is setup definition");
 			return (false);
 		}
 		if (spikes==null) {
-			//System.out.println ("There is no spikes definition");
+			System.out.println ("There is no spikes definition");
 			return (false);
 		}
 		if (spikes.getNumberOfNeurons()==0) {
-			new InvalidArgumentException("There are no spikes !!");
+			new InvalidArgumentException("There is no neuron !!");
 			return (false);
 		} 
 		
@@ -324,9 +397,9 @@ public class DataSetBuilder {
 			new InvalidArgumentException("There is no spike !");
 			return (false);
 		}
-		*/
+		
 		if (patterns==null) {
-			//System.out.println ("There is patterns definition");
+			System.out.println ("There is patterns definition");
 			return (false);
 		}
 		
@@ -347,10 +420,11 @@ public class DataSetBuilder {
 			new InvalidArgumentException("There is no enough negative samples with this positive label: " +positiveLabel);
 		}
 		
-		if (currentFilter.equals(filter)) {
-			return (true);
+		if (!currentFilter.equals(filter)) {
+			System.out.println ("Changed filter");
+			return (false);
 		}
-		return (false);
+		return (true);
 		
 	}
 	
@@ -407,6 +481,7 @@ public class DataSetBuilder {
 			System.out.println ("Was not possible create set of patterns");
 			return ;
 		}
+		this.currentFilter = filter;
 	}
 	
 	private boolean fillPatterns() {
