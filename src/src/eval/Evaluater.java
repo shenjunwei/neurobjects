@@ -1,10 +1,18 @@
 package eval;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.zip.Adler32;
+import java.util.zip.CheckedInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import utils.Context;
 import utils.DatasetBuffer;
@@ -14,7 +22,7 @@ import errors.InvalidArgumentException;
 
 public class Evaluater {
 	
-	
+	static final int BUFFER = 128*1024;
 	weka.classifiers.Classifier cModel = null;
 	String 						models[] = {"NBayes","MLP","J48","RBF","SVM"};
 	ArrayList<String> 			supportedModels=null;
@@ -24,6 +32,7 @@ public class Evaluater {
 	public Evaluater (String dataFiles[]) {
 		
 		this.buildModelList();
+		this.dataFiles = dataFiles;
 		
 	}
 	
@@ -37,19 +46,51 @@ public class Evaluater {
 		}
 		
 	}
-	public synchronized void  run () throws FileNotFoundException, IOException {
+	
+	public synchronized void unzip (String dir, String zipfilename) throws IOException {
+		
+		BufferedOutputStream dest = null;
+        FileInputStream fis = new 
+	   FileInputStream(zipfilename);
+        CheckedInputStream checksum = new 
+          CheckedInputStream(fis, new Adler32());
+        ZipInputStream zis = new 
+          ZipInputStream(new 
+            BufferedInputStream(checksum));
+        ZipEntry entry;
+        while((entry = zis.getNextEntry()) != null) {
+           System.out.println("Extracting: " +entry);
+           int count;
+           byte data[] = new byte[BUFFER];
+           // write the files to the disk
+           FileOutputStream fos = new 
+             FileOutputStream(entry.getName());
+           dest = new BufferedOutputStream(fos, 
+             BUFFER);
+           while ((count = zis.read(data, 0, 
+             BUFFER)) != -1) {
+              dest.write(data, 0, count);
+           }
+           dest.flush();
+           dest.close();
+        }
+        zis.close();
+        System.out.println("Checksum:  "+checksum.getChecksum().getValue());
+		
+	}
+	
+	
+	public synchronized void  runAll () throws FileNotFoundException, IOException {
 		
 		String trainFilename = "";
 		String testFilename = "";
-		for (int i=0; i<this.dataFiles.length; i++) {
+		Evaluation e = null;
+		for (int i = 0; i < this.dataFiles.length; i++) {
 			trainFilename = this.dataFiles[i];
 			testFilename = trainFilename.replaceFirst(".trn.", ".tst.");
-			for (int j=0; j<this.models.length; j++ ) {
+			for (int j = 0; j < this.models.length; j++) {
 				this.setModel(this.models[j]);
-				this.eval (trainFilename,testFilename);
-                
-
-
+				e = this.eval(trainFilename, testFilename);
 			}
 		}
 	}

@@ -1,6 +1,9 @@
 package app;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -13,29 +16,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import utils.AnimalSetup;
-import utils.DataSetBuilder;
-import utils.Dataset;
-import utils.DatasetBuffer;
-import utils.DatasetBufferSingle;
 
-public class DataBufferSingleApp {
-	
+public class DataHolderApp2 {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-		String configFile = "/home/nivaldo/tmp/nda/animal_file_setup_ge5.xml";
+		String configFile = "/home/nivaldo/tmp/nda/animal_file_setup_ge4.xml";
 		ArrayList<AnimalSetup> animalList = new ArrayList<AnimalSetup>(); 
-		String modelName[] = {"NBayes","MLP","J48","SVM","RBF"};
-		
-		ArrayList<String> models = new ArrayList<String> ();
-		for (int i=0; i<modelName.length; i++) {
-			models.add(modelName[i]);
-		}
-		
+		String filename = "/home/nivaldo/tmp/nda/data/teste.obj";
 		
 		try {
 
@@ -50,23 +40,29 @@ public class DataBufferSingleApp {
 			int totalAnimal = listOfAnimal.getLength();
 			System.out.println ("Number of animal description in XML file: " +totalAnimal);
 		
-			
 			for (int i = 0; i < totalAnimal; i++) {
 				Node animalNode = listOfAnimal.item(i);
 				AnimalSetup animal = null;
 				if (animalNode.getNodeType() == Node.ELEMENT_NODE) {
 
 					animal = new AnimalSetup(animalNode);
-					DatasetBufferSingle buffer = new DatasetBufferSingle(3000, "/tmp");
-
 					if (animal != null) {
 						animalList.add(animal);
-						DataSetBuilder D = new DataSetBuilder(animal);
-						ArrayList<String> zipfiles = D.run(buffer, 10);
-						System.out.println (zipfiles);
-												
-						//System.out.println (data);						
-						return;
+						DataHolder holder = new DataHolder(animal);
+						
+						FileOutputStream fos = null;
+						ObjectOutputStream out = null;
+						try
+						{
+						fos = new FileOutputStream(filename);
+						out = new ObjectOutputStream(fos);
+						out.writeObject(holder);
+						out.close();
+						}
+						catch(IOException ex)
+						{
+						ex.printStackTrace();
+						}
 					}
 				}
 				
@@ -86,8 +82,6 @@ public class DataBufferSingleApp {
 			t.printStackTrace ();
 
 		}
-		
-		
 	}
 
 }
