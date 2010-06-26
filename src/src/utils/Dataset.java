@@ -96,6 +96,19 @@ public class Dataset {
 	
 	public void saveSingleDatasetZip (String filename, String data, ZipOutputStream out) throws IOException {
 		
+		String fileContent = this.buildHeaderInfo();
+		
+		fileContent +=  data.toString();
+		
+		byte content[] = fileContent.getBytes("UTF-8");
+		ZipEntry entry = new ZipEntry(filename);
+		out.putNextEntry(entry);
+		out.write(content, 0, content.length);
+		
+	}
+	
+	private String buildHeaderInfo() {
+		
 		String fileContent = "%<setup>\n";
 		fileContent +=  "%animal="+this.animal+"\n";
 		fileContent +=  "%area="+this.area+"\n";
@@ -103,12 +116,7 @@ public class Dataset {
 		fileContent +=  "%bin_size="+this.binSize+"\n";
 		fileContent +=  "%window_width="+this.windowWidth+"\n";
 		fileContent +=   "%</setup>\n\n";
-		fileContent +=  data.toString();
-		
-		byte content[] = fileContent.getBytes("UTF-8");
-		ZipEntry entry = new ZipEntry(filename);
-		out.putNextEntry(entry);
-		out.write(content, 0, content.length);
+		return fileContent;
 		
 	}
 	
