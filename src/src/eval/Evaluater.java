@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
@@ -15,6 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import utils.Context;
+import utils.Dataset;
 import utils.DatasetBuffer;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
@@ -22,10 +24,11 @@ import errors.InvalidArgumentException;
 
 public class Evaluater {
 	
-	static final int BUFFER = 128*1024;
+	static final int BUFFER = 1024*1024;
 	weka.classifiers.Classifier cModel = null;
 	String 						models[] = {"NBayes","MLP","J48","RBF","SVM"};
 	ArrayList<String> 			supportedModels=null;
+	ArrayList<Dataset>			data=null;
 	String 						dataFiles[]=null;			
 	
 	
@@ -33,6 +36,38 @@ public class Evaluater {
 		
 		this.buildModelList();
 		this.dataFiles = dataFiles;
+		
+	}
+	
+	public Evaluater (String zipFilename) throws IOException {
+		this.buildModelList();
+		this.data = new ArrayList<Dataset> ();
+		
+		BufferedOutputStream dest = null;
+        FileInputStream fis = new FileInputStream(zipFilename);
+        CheckedInputStream checksum = new 
+          CheckedInputStream(fis, new Adler32());
+        ZipInputStream zis = new 
+          ZipInputStream(new 
+            BufferedInputStream(checksum));
+        ZipEntry entry;
+        while((entry = zis.getNextEntry()) != null) {
+           System.out.println("Extracting: " +entry);
+           int count;
+           byte data[] = new byte[BUFFER];
+           String str = null;
+           String result = ""; 
+           while ((count = zis.read(data, 0, 
+             BUFFER)) != -1) {
+        	   str = new String (data,"UTF-8");
+        	   result+=str;
+        	   	
+           }
+           StringReader strReader = new StringReader (result);
+           Instances tmpData = new Instances (strReader);
+        }
+        zis.close();
+		
 		
 	}
 	
@@ -69,7 +104,7 @@ public class Evaluater {
              BUFFER);
            while ((count = zis.read(data, 0, 
              BUFFER)) != -1) {
-              dest.write(data, 0, count);
+        	   dest.write(data, 0, count);
            }
            dest.flush();
            dest.close();

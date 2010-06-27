@@ -1,11 +1,9 @@
 package utils;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.Adler32;
@@ -90,8 +88,11 @@ public class Dataset {
 	}
 	
 	public void saveZip (ZipOutputStream out) throws IOException {
-		this.saveSingleDatasetZip(this.getTrainFilename(), this.trainData.toString(), out);
-        this.saveSingleDatasetZip(this.getTstFilename(), this.testData.toString(), out);
+		
+		String dirPath = "."+File.separatorChar+this.hashCode()+File.separatorChar; 
+	
+		this.saveSingleDatasetZip(dirPath+this.getTrainFilename(), this.trainData.toString(), out);
+        this.saveSingleDatasetZip(dirPath+this.getTstFilename(), this.testData.toString(), out);
 	}
 	
 	public void saveSingleDatasetZip (String filename, String data, ZipOutputStream out) throws IOException {
@@ -113,7 +114,7 @@ public class Dataset {
 		fileContent +=  "%animal="+this.animal+"\n";
 		fileContent +=  "%area="+this.area+"\n";
 		fileContent +=  "%label="+this.label+"\n";
-		fileContent +=  "%bin_size="+this.binSize+"\n";
+		fileContent +=  "%bin_size="+this.binSize*1000+"\n";
 		fileContent +=  "%window_width="+this.windowWidth+"\n";
 		fileContent +=   "%</setup>\n\n";
 		return fileContent;
@@ -145,7 +146,7 @@ public class Dataset {
 	}
 	
 	private String buildBaseFilename () {
-		String baseFilename = this.animal+"."+this.area+"."+this.label+"."+this.binSize+"."+this.windowWidth+"."+this.hashCode();
+		String baseFilename = ""+this.hashCode();
 		return (baseFilename);
 	}
 	
