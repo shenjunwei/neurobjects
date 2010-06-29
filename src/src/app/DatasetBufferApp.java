@@ -62,7 +62,9 @@ public class DatasetBufferApp {
 						animalList.add(animal);
 						DataSetBuilder D = new DataSetBuilder(animal);
 						System.out.println(animal);
-						Dataset data = D.get("v1", "ball");
+						Dataset data = D.get("s1", "ball");
+						System.out.println (data);
+						
 						buffer.add(data);
 						
 						System.out.println (data);						

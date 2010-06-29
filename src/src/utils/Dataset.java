@@ -11,6 +11,8 @@ import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.omg.CORBA.DynAnyPackage.InvalidValue;
+
 import weka.core.Instances;
 
 
@@ -19,14 +21,12 @@ import weka.core.Instances;
  * */
 public class Dataset {
 	
-	Instances trainData;
-	Instances testData;
-	String    animal="";
-	String    label="";
-	String    area="";
-	double 	  binSize=0.0;
-	int 	  windowWidth=0;
+	Instances trainData=null;
+	Instances testData=null;
+
 	String 	  tag = "";
+	Properties properties = null;
+	
 
 	
 	
@@ -34,21 +34,40 @@ public class Dataset {
 		
 		this.trainData = new Instances (trainData);
 		this.testData = new Instances (testData);
+		this.properties = new Properties();
 		
-		this.animal= animal.getName();
-		this.binSize = animal.getBinSize();
-		this.windowWidth = animal.getWindowWidth();
-		this.label = label;
-		this.area = area;
+		this.properties.setProperty("animal", animal.getName());
+		this.properties.setProperty("bin_size", animal.getBinSize()+"");
+		this.properties.setProperty("window_width", animal.getWindowWidth()+"");
+		this.properties.setProperty("label", label);
+		this.properties.setProperty("area", area);
 		
 		this.trainData.setClassIndex(this.trainData.numAttributes()-1);
 		this.testData.setClassIndex(this.testData.numAttributes()-1);
 		
 	}
 	
+	public Dataset (Properties setup) {
+		this.properties.setProperty("animal", setup.getValue("animal"));
+		this.properties.setProperty("bin_size", setup.getValue("bin_size"));
+		this.properties.setProperty("window_width", setup.getValue("window_width"));
+		this.properties.setProperty("label", setup.getValue("label"));
+		this.properties.setProperty("area", setup.getValue("area"));
+		
+		
+	}
+	
+	public void setTrainData (Instances trainData) {
+		this.trainData = new Instances (trainData);
+	}
+	
+	public void setTestData (Instances testData) {
+		this.testData = new Instances (testData);
+	}
+	
 	public String toString () {
 		
-		String result="\nAnimal: "+animal + "\tLabel: "+this.label+"\tArea:"+this.area+"\n";
+		String result="\nAnimal: "+this.properties.getValue("animal")+ "\tLabel: "+this.properties.getValue("label")+"\tArea:"+this.properties.getValue("area")+"\n";
 		
 		result+="\nTraining set:\n "+this.trainData;
 		result+="\nTest set: \n "+this.testData;
@@ -74,17 +93,26 @@ public class Dataset {
 	}
 	
 	public void saveZip (String zipfilename) throws IOException {
+		if (!this.isValid()) {
+			new InvalidValue("Dataset internal content is not valid!!");
+		}
 		String baseFilename = this.buildBaseFilename();
 		String trnFilename=baseFilename+".trn.arff";
 		String tstFilename=baseFilename+".tst.arff";
-		
-		
+				
         FileOutputStream dest = new FileOutputStream(zipfilename);
         CheckedOutputStream checksum = new CheckedOutputStream(dest, new Adler32());
         ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(checksum));
         this.saveSingleDatasetZip(trnFilename, this.trainData.toString(), out);
         this.saveSingleDatasetZip(tstFilename, this.testData.toString(), out);
         out.close();
+	}
+	
+	public boolean isValid() {
+		if ((this.trainData != null) && (this.testData != null)) {
+			return (true);
+		}
+		return (false);
 	}
 	
 	public void saveZip (ZipOutputStream out) throws IOException {
@@ -96,6 +124,10 @@ public class Dataset {
 	}
 	
 	public void saveSingleDatasetZip (String filename, String data, ZipOutputStream out) throws IOException {
+		
+		if (!this.isValid()) {
+			new InvalidValue("Dataset internal content is not valid!!");
+		}
 		
 		String fileContent = this.buildHeaderInfo();
 		
@@ -111,11 +143,11 @@ public class Dataset {
 	private String buildHeaderInfo() {
 		
 		String fileContent = "%<setup>\n";
-		fileContent +=  "%animal="+this.animal+"\n";
-		fileContent +=  "%area="+this.area+"\n";
-		fileContent +=  "%label="+this.label+"\n";
-		fileContent +=  "%bin_size="+this.binSize*1000+"\n";
-		fileContent +=  "%window_width="+this.windowWidth+"\n";
+		fileContent +=  "%animal="+this.properties.getValue("animal")+"\n";
+		fileContent +=  "%area="+this.properties.getValue("area")+"\n";
+		fileContent +=  "%label="+this.properties.getValue("label")+"\n";
+		fileContent +=  "%bin_size="+this.getBinSize()*1000+"\n";
+		fileContent +=  "%window_width="+this.getWindowWidth()+"\n";
 		fileContent +=   "%</setup>\n\n";
 		return fileContent;
 		
@@ -123,6 +155,9 @@ public class Dataset {
 	
 	private void saveSingleDataset(String filename, String data) throws UnsupportedEncodingException {
 		FileOutputStream out = null;
+		if (!this.isValid()) {
+			new InvalidValue("Dataset internal content is not valid!!");
+		}
 		try {
 			out = new FileOutputStream(filename);
 		} catch (FileNotFoundException e1) {
@@ -159,15 +194,15 @@ public class Dataset {
 	}
 
 	public String getAnimal() {
-		return animal;
+		return this.properties.getValue("animal");
 	}
 
 	public String getLabel() {
-		return label;
+		return this.properties.getValue("label");
 	}
 
 	public String getArea() {
-		return area;
+		return this.properties.getValue("area");
 	}
 	
 	public void setTag(String tag) {
@@ -175,15 +210,32 @@ public class Dataset {
 	}
 	
 	public double getBinSize() {
-		return (this.binSize);
+		return Double.parseDouble(this.properties.getValue("bin_size"));
+		//return (this.binSize);
 	}
 
 	public int getWindowWidth() {
-		return windowWidth;
+		return Integer.parseInt(this.properties.getValue("window_width"));
 	}
 	
 	public int getNumAtts() {
 		return (this.trainData.numAttributes());
+	}
+	
+	public boolean isTrainingFilename(String filename) {
+		
+		if (filename.endsWith(".trn.arff")){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isTestingFilename(String filename) {
+		
+		if (filename.endsWith(".tst.arff")){
+			return true;
+		}
+		return false;
 	}
 
 	

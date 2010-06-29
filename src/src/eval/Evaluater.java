@@ -9,7 +9,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.concurrent.BlockingQueue;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.ZipEntry;
@@ -18,18 +21,20 @@ import java.util.zip.ZipInputStream;
 import utils.Context;
 import utils.Dataset;
 import utils.DatasetBuffer;
+import utils.Properties;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
 import errors.InvalidArgumentException;
 
 public class Evaluater {
-	
-	static final int BUFFER = 1024*1024;
-	weka.classifiers.Classifier cModel = null;
-	String 						models[] = {"NBayes","MLP","J48","RBF","SVM"};
-	ArrayList<String> 			supportedModels=null;
-	ArrayList<Dataset>			data=null;
-	String 						dataFiles[]=null;			
+	static final int 					KB = 1024;
+	static final int 					MB = 1024*KB;
+	static final int 					BUFFER_SIZE = 1*MB;
+	weka.classifiers.Classifier 		cModel = null;
+	String 								models[] = {"NBayes","MLP","J48","RBF","SVM"};
+	ArrayList<String> 					supportedModels=null;
+	protected Hashtable<String, Dataset> data = null;
+	String 								dataFiles[]=null;			
 	
 	
 	public Evaluater (String dataFiles[]) {
@@ -41,7 +46,7 @@ public class Evaluater {
 	
 	public Evaluater (String zipFilename) throws IOException {
 		this.buildModelList();
-		this.data = new ArrayList<Dataset> ();
+		this.data = new Hashtable<String, Dataset> ();
 		
 		BufferedOutputStream dest = null;
         FileInputStream fis = new FileInputStream(zipFilename);
@@ -50,24 +55,78 @@ public class Evaluater {
         ZipInputStream zis = new 
           ZipInputStream(new 
             BufferedInputStream(checksum));
-        ZipEntry entry;
-        while((entry = zis.getNextEntry()) != null) {
-           System.out.println("Extracting: " +entry);
-           int count;
-           byte data[] = new byte[BUFFER];
-           String str = null;
-           String result = ""; 
-           while ((count = zis.read(data, 0, 
-             BUFFER)) != -1) {
-        	   str = new String (data,"UTF-8");
-        	   result+=str;
-        	   	
-           }
-           StringReader strReader = new StringReader (result);
-           Instances tmpData = new Instances (strReader);
-        }
+        this.getAllData(zis);
         zis.close();
 		
+		
+	}
+	
+	private String getDatasetName(ZipEntry entry) {
+		int pos1, pos2;
+		String name = "";
+		String datasetName = "";
+		name = entry.getName();
+		pos1 = name.indexOf('/');
+		pos2 = name.indexOf('/', pos1 + 1);
+		datasetName = name.substring(pos1 + 1, pos2 - 1);
+		return datasetName;
+
+	}
+	
+	
+	
+	private void getAllData(ZipInputStream zis) throws UnsupportedEncodingException, IOException {
+		
+		ZipEntry entry;
+		String datasetName = "";
+		String filename = "";
+		int count;
+		String str = null;
+		String result = "";
+       
+        Dataset dataTmp = null;
+        byte data[] = new byte[BUFFER_SIZE];
+		while ((entry = zis.getNextEntry()) != null) {
+			datasetName = this.getDatasetName(entry);
+			filename = entry.getName();
+			if (!entry.isDirectory()) {
+				System.out.println("Unziping: " + datasetName);
+				while ((count = zis.read(data, 0, BUFFER_SIZE)) != -1) {
+					str = new String(data, 0, count, "UTF-8");
+					result += str;
+
+				}
+
+				Properties prop = new Properties(this.getSetupInfo(result));
+				BufferedReader reader = new BufferedReader(new StringReader(result));
+				Instances tmpData = new Instances(reader);
+				if (this.data.containsKey(datasetName)) {
+					dataTmp = this.data.get(datasetName);
+				} else {
+					dataTmp = new Dataset(prop);
+				}
+				
+				if (dataTmp.isTrainingFilename(filename)) {
+					dataTmp.setTrainData(tmpData);
+				}
+				else if (dataTmp.isTestingFilename(filename)) {
+					dataTmp.setTestData(tmpData);
+				}
+				this.data.put(datasetName, dataTmp);
+
+			}
+
+		}
+
+	}
+	
+	private String getSetupInfo (String data) {
+		
+		int pos1 = data.indexOf("<setup>");
+        int pos2 = data.indexOf("</setup>",pos1+1);
+		String setup = data.substring(pos1+"<setup>".length(), pos2-1);
+		setup= setup.replace("\n%", "\n");
+		return (setup);
 		
 	}
 	
@@ -82,37 +141,7 @@ public class Evaluater {
 		
 	}
 	
-	public synchronized void unzip (String dir, String zipfilename) throws IOException {
-		
-		BufferedOutputStream dest = null;
-        FileInputStream fis = new 
-	   FileInputStream(zipfilename);
-        CheckedInputStream checksum = new 
-          CheckedInputStream(fis, new Adler32());
-        ZipInputStream zis = new 
-          ZipInputStream(new 
-            BufferedInputStream(checksum));
-        ZipEntry entry;
-        while((entry = zis.getNextEntry()) != null) {
-           System.out.println("Extracting: " +entry);
-           int count;
-           byte data[] = new byte[BUFFER];
-           // write the files to the disk
-           FileOutputStream fos = new 
-             FileOutputStream(entry.getName());
-           dest = new BufferedOutputStream(fos, 
-             BUFFER);
-           while ((count = zis.read(data, 0, 
-             BUFFER)) != -1) {
-        	   dest.write(data, 0, count);
-           }
-           dest.flush();
-           dest.close();
-        }
-        zis.close();
-        System.out.println("Checksum:  "+checksum.getChecksum().getValue());
-		
-	}
+	
 	
 	
 	public synchronized void  runAll () throws FileNotFoundException, IOException {
@@ -130,31 +159,10 @@ public class Evaluater {
 		}
 	}
 	
-	private synchronized Evaluation eval(String trainFilename,
-			String testFilename) {
-		Instances dataTrain = null;
-		try {
-			dataTrain = new Instances(new BufferedReader(new FileReader(
-					trainFilename)));
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// Test set
-		Instances dataTest = null;
-		try {
-			dataTest = new Instances(new BufferedReader(new FileReader(
-					testFilename)));
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	private synchronized Evaluation eval(Dataset data) {
+		Instances dataTrain = data.getTrainData();
+		Instances dataTest = data.getTestData();
+		
 		dataTrain.setClassIndex(dataTrain.numAttributes() - 1);
 		dataTest.setClassIndex(dataTest.numAttributes() - 1);
 		try {

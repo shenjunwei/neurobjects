@@ -21,6 +21,25 @@ public class Properties {
 		
 	}
 	
+	public Properties (Properties info) {
+		
+		values = info.cloneTable();
+		
+	}
+	
+	public Hashtable<String, String> cloneTable () {
+		Hashtable<String, String> tmp = new Hashtable<String, String> ();
+		
+		Enumeration <String> k = this.values.keys();
+		
+		while (k.hasMoreElements()) {
+			String key = k.nextElement();
+			tmp.put(key, this.getValue(key));
+		}
+		return (tmp);
+		
+	}
+	
 	public Properties(String content) {
 		
 		String str;
@@ -40,7 +59,8 @@ public class Properties {
 	}
 	
 	private void lineParser (String str) {
-		String info[] = str.split("=");
+		if (str.isEmpty()) return;
+		String info[] = str.split("=");	
 		this.setProperty(info[0].trim(), info[1].trim());
 	}
 	
