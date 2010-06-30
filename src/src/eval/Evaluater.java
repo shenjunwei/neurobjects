@@ -162,7 +162,7 @@ public class Evaluater {
 	
 	
 	
-	public synchronized void  runAll (String tableName) throws FileNotFoundException, IOException {
+	public synchronized void  runAll () throws FileNotFoundException, IOException {
 		
 		String trainFilename = "";
 		String testFilename = "";

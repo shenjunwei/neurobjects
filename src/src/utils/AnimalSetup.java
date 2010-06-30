@@ -112,6 +112,8 @@ public class AnimalSetup extends Setup {
 	 */
 	double				beta=Double.NaN;
 	
+	/** \todo use \ref Properties to stores these informations */
+	
 	public AnimalSetup (Node animal) {
 		
 		if(animal.getNodeType() == Node.ELEMENT_NODE){

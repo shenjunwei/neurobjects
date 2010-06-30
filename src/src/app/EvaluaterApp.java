@@ -14,7 +14,7 @@ public class EvaluaterApp {
 
 		String filename=args[0];
 		Evaluater eval = new Evaluater (filename);
-		eval.runAll("ioc_results_basic3");
+		eval.runAll();
 		
 		
 	}

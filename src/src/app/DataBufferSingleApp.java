@@ -27,15 +27,18 @@ public class DataBufferSingleApp {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		String pathToJDF = "/tmp";
-		String configFile = "/home/nivaldo/tmp/nda/animal_file_setup_ge5.xml";
+		 
+		String pathToJDF = "/tmp/tmp";
+		String tableName = "ioc_results_basic3";
+		String pathToXMLCfg = "/home/nivaldo/tmp/nda/animal_file_setup_ge5.xml";
+		String pathToApp = "/tmp/nda.jar";
 		ArrayList<AnimalSetup> animalList = new ArrayList<AnimalSetup>(); 
 		
 		try {
 
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse (new File(configFile));
+			Document doc = docBuilder.parse (new File(pathToXMLCfg));
 
 			// normalize text representation
 			doc.getDocumentElement ().normalize ();
@@ -49,12 +52,17 @@ public class DataBufferSingleApp {
 				if (animalNode.getNodeType() == Node.ELEMENT_NODE) {
 
 					animal = new AnimalSetup(animalNode);
-					DatasetBufferSingle buffer = new DatasetBufferSingle(3000, "/tmp");
+					DatasetBufferSingle buffer = new DatasetBufferSingle(2000, pathToJDF);
 
 					if (animal != null) {
 						animalList.add(animal);
 						DataSetBuilder D = new DataSetBuilder(animal);
-						D.saveFile(D.buildJDF(D.run(buffer, 10), "nda.jar"),pathToJDF+File.separatorChar+animal.getName()+".jdf");
+
+						ArrayList<String> zipfiles = D.run(buffer, tableName,10);
+						System.out.println (zipfiles);
+
+						D.saveFile(D.buildJDF(D.run(buffer, tableName,10), pathToApp),pathToJDF+File.separatorChar+animal.getName()+".jdf");
+
 												
 						return;
 					}

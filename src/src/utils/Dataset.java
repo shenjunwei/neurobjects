@@ -144,11 +144,7 @@ public class Dataset {
 	private String buildHeaderInfo() {
 		
 		String fileContent = "%<setup>\n";
-		fileContent +=  "%animal="+this.properties.getValue("animal")+"\n";
-		fileContent +=  "%area="+this.properties.getValue("area")+"\n";
-		fileContent +=  "%label="+this.properties.getValue("label")+"\n";
-		fileContent +=  "%bin_size="+this.getBinSize()*1000+"\n";
-		fileContent +=  "%window_width="+this.getWindowWidth()+"\n";
+		fileContent += this.properties.toComment("%");
 		fileContent +=   "%</setup>\n\n";
 		return fileContent;
 		

@@ -78,8 +78,22 @@ public class Properties {
 		return (this.values.toString());
 		
 	}
-	public String toSQLString (String table) {
+	
+	public String toComment (String tagComment) {
+		String result="";
+		String key="";
+		Enumeration <String> k = this.values.keys();
+		while (k.hasMoreElements()) {
+			key = k.nextElement();
+			result+=tagComment+key+"="+this.getValue(key)+"\n";
+		}		
+		return (result);
 		
+	}
+	public String toSQLString (String table) {
+		if (this.keys().contains("table_name")) {
+			this.delProperty("table_name");
+		}
 		return ("INSERT INTO "+table+" "+this.keys()+" VALUES "+this.values()+";");
 		
 	}

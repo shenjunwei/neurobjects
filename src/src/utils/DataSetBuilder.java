@@ -111,18 +111,20 @@ public class DataSetBuilder {
 		
 	}
 	
-	public String buildJDF (ArrayList<String> zipfiles, String appName) {
+	public String buildJDF (ArrayList<String> zipfiles, String pathToApp) {
 		
 		Enumeration<String> f = Collections.enumeration(zipfiles);
 		String filename="";
 		String jdfContent="job : \nlabel  : NDA."+this.hashCode()+"\n\n";
+		String tmp[] = pathToApp.split(File.separatorChar+"");
+		String appName = tmp[tmp.length-1];
 		
 		
 		while (f.hasMoreElements()) {
 			jdfContent += "task :\n";
 			filename = f.nextElement();
 			jdfContent +="init : store "+filename+" "+filename+"\n";
-			jdfContent +="\tstore "+appName+" "+appName+"\n";
+			jdfContent +="\tstore "+pathToApp+" "+appName+"\n";
 			jdfContent +="remote : java -jar $STORAGE/"+appName+" $STORAGE/"+filename+" > output-$JOB.$TASK.log\n";
 			jdfContent +="final: get output-$JOB.$TASK.log output-$JOB.$TASK.log\n\n\n";
 			
@@ -130,7 +132,7 @@ public class DataSetBuilder {
 		return (jdfContent);
 	}
 	
-	public ArrayList<String> run (DatasetBufferSingle buffer, int numOfSamples) throws Exception {
+	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, int numOfSamples) throws Exception {
 		
 		String filter = "";
 		String label = "";
@@ -167,6 +169,7 @@ public class DataSetBuilder {
 					
 					try {
 					data = this.get(filter, label);
+					data.properties.setProperty("table_name", table_name);
 					} catch (Exception e) {};
 				
 					if (!buffer.add(data)) {
