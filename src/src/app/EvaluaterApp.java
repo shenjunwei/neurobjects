@@ -12,8 +12,9 @@ public class EvaluaterApp {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
-		String filename="/tmp/ge5.hp.1813126941.0.zip";
+		String filename=args[0];
 		Evaluater eval = new Evaluater (filename);
+		eval.runAll("ioc_results_basic3");
 		
 		
 	}

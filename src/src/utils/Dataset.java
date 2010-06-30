@@ -48,12 +48,13 @@ public class Dataset {
 	}
 	
 	public Dataset (Properties setup) {
+		this.properties = new Properties();
 		this.properties.setProperty("animal", setup.getValue("animal"));
 		this.properties.setProperty("bin_size", setup.getValue("bin_size"));
 		this.properties.setProperty("window_width", setup.getValue("window_width"));
 		this.properties.setProperty("label", setup.getValue("label"));
 		this.properties.setProperty("area", setup.getValue("area"));
-		
+		 
 		
 	}
 	
@@ -236,6 +237,10 @@ public class Dataset {
 			return true;
 		}
 		return false;
+	}
+
+	public Properties getProperties() {
+		return properties;
 	}
 
 	

@@ -80,7 +80,7 @@ public class Properties {
 	}
 	public String toSQLString (String table) {
 		
-		return ("INSERT INTO "+table+" "+this.keys()+" VALUES "+this.values());
+		return ("INSERT INTO "+table+" "+this.keys()+" VALUES "+this.values()+";");
 		
 	}
 	

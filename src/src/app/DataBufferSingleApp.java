@@ -27,15 +27,9 @@ public class DataBufferSingleApp {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
+		String pathToJDF = "/tmp";
 		String configFile = "/home/nivaldo/tmp/nda/animal_file_setup_ge5.xml";
 		ArrayList<AnimalSetup> animalList = new ArrayList<AnimalSetup>(); 
-		String modelName[] = {"NBayes","MLP","J48","SVM","RBF"};
-		
-		ArrayList<String> models = new ArrayList<String> ();
-		for (int i=0; i<modelName.length; i++) {
-			models.add(modelName[i]);
-		}
-		
 		
 		try {
 
@@ -48,8 +42,6 @@ public class DataBufferSingleApp {
 
 			NodeList listOfAnimal = doc.getElementsByTagName("animal");
 			int totalAnimal = listOfAnimal.getLength();
-			System.out.println ("Number of animal description in XML file: " +totalAnimal);
-		
 			
 			for (int i = 0; i < totalAnimal; i++) {
 				Node animalNode = listOfAnimal.item(i);
@@ -62,10 +54,8 @@ public class DataBufferSingleApp {
 					if (animal != null) {
 						animalList.add(animal);
 						DataSetBuilder D = new DataSetBuilder(animal);
-						ArrayList<String> zipfiles = D.run(buffer, 10);
-						System.out.println (zipfiles);
+						D.saveFile(D.buildJDF(D.run(buffer, 10), "nda.jar"),pathToJDF+File.separatorChar+animal.getName()+".jdf");
 												
-						//System.out.println (data);						
 						return;
 					}
 				}

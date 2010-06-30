@@ -20,7 +20,7 @@ public class DatasetBufferSingle {
 	protected int maxAtts=0;
 	protected int numAtts=0;
 	protected String workDir="";
-	protected ZipHnd zipHnd = null;
+//	protected ZipHnd zipHnd = null;
 	
 	
 	
@@ -38,7 +38,7 @@ public class DatasetBufferSingle {
 		this.workDir = workDir;
 		this.maxAtts= max;
 		this.data = new LinkedBlockingQueue<Dataset> ();
-		this.zipHnd = new ZipHnd();
+	//	this.zipHnd = new ZipHnd();
 		
 	}
 	

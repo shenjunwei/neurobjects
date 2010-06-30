@@ -2,6 +2,8 @@
 package utils;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -109,6 +111,24 @@ public class DataSetBuilder {
 		
 	}
 	
+	public String buildJDF (ArrayList<String> zipfiles, String appName) {
+		
+		Enumeration<String> f = Collections.enumeration(zipfiles);
+		String filename="";
+		String jdfContent="job : \nlabel  : NDA."+this.hashCode()+"\n\n";
+		
+		
+		while (f.hasMoreElements()) {
+			jdfContent += "task :\n";
+			filename = f.nextElement();
+			jdfContent +="init : store "+filename+" "+filename+"\n";
+			jdfContent +="\tstore "+appName+" "+appName+"\n";
+			jdfContent +="remote : java -jar $STORAGE/"+appName+" $STORAGE/"+filename+" > output-$JOB.$TASK.log\n";
+			jdfContent +="final: get output-$JOB.$TASK.log output-$JOB.$TASK.log\n\n\n";
+			
+		}
+		return (jdfContent);
+	}
 	
 	public ArrayList<String> run (DatasetBufferSingle buffer, int numOfSamples) throws Exception {
 		
@@ -544,6 +564,13 @@ public class DataSetBuilder {
 			}
 	    }
 		return (true);
+	}
+	
+	public void saveFile (String str, String path) throws IOException {
+		File f = new File(path);
+		FileWriter fw = new FileWriter(f);
+		fw.write(str);
+		fw.close();
 	}
 	
 	private FastVector buildAtts() {

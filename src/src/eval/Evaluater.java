@@ -1,5 +1,21 @@
 package eval;
 
+/*
+ * 
+ * 
+ * Evaluation eval = new Evaluation(dataTrain);
+                eval.evaluateModel(cModel, dataTest);
+
+                C.setAUROC(eval.weightedAreaUnderROC());
+                C.setFMeasure(eval.fMeasure(0));
+                C.setKappa(eval.kappa());
+                C.setPctCorrect(eval.pctCorrect());
+                C.setEndTime(System.currentTimeMillis());
+
+                C.showSQL("ioc_results_basic2");
+*/
+ 
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -10,7 +26,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.concurrent.BlockingQueue;
 import java.util.zip.Adler32;
@@ -34,13 +53,15 @@ public class Evaluater {
 	String 								models[] = {"NBayes","MLP","J48","RBF","SVM"};
 	ArrayList<String> 					supportedModels=null;
 	protected Hashtable<String, Dataset> data = null;
-	String 								dataFiles[]=null;			
+	
+	
 	
 	
 	public Evaluater (String dataFiles[]) {
 		
 		this.buildModelList();
-		this.dataFiles = dataFiles;
+		
+		
 		
 	}
 	
@@ -48,13 +69,10 @@ public class Evaluater {
 		this.buildModelList();
 		this.data = new Hashtable<String, Dataset> ();
 		
-		BufferedOutputStream dest = null;
+		
         FileInputStream fis = new FileInputStream(zipFilename);
-        CheckedInputStream checksum = new 
-          CheckedInputStream(fis, new Adler32());
-        ZipInputStream zis = new 
-          ZipInputStream(new 
-            BufferedInputStream(checksum));
+        CheckedInputStream checksum = new CheckedInputStream(fis, new Adler32());
+        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(checksum));
         this.getAllData(zis);
         zis.close();
 		
@@ -84,35 +102,35 @@ public class Evaluater {
 		String str = null;
 		String result = "";
        
-        Dataset dataTmp = null;
+        Dataset datasetTmp = null;
         byte data[] = new byte[BUFFER_SIZE];
 		while ((entry = zis.getNextEntry()) != null) {
 			datasetName = this.getDatasetName(entry);
 			filename = entry.getName();
 			if (!entry.isDirectory()) {
 				System.out.println("Unziping: " + datasetName);
+				result="";
 				while ((count = zis.read(data, 0, BUFFER_SIZE)) != -1) {
 					str = new String(data, 0, count, "UTF-8");
 					result += str;
-
 				}
-
 				Properties prop = new Properties(this.getSetupInfo(result));
 				BufferedReader reader = new BufferedReader(new StringReader(result));
 				Instances tmpData = new Instances(reader);
+				
 				if (this.data.containsKey(datasetName)) {
-					dataTmp = this.data.get(datasetName);
+					datasetTmp = this.data.get(datasetName);
 				} else {
-					dataTmp = new Dataset(prop);
+					datasetTmp = new Dataset(prop);
 				}
 				
-				if (dataTmp.isTrainingFilename(filename)) {
-					dataTmp.setTrainData(tmpData);
+				if (datasetTmp.isTrainingFilename(filename)) {
+					datasetTmp.setTrainData(tmpData);
 				}
-				else if (dataTmp.isTestingFilename(filename)) {
-					dataTmp.setTestData(tmpData);
+				else if (datasetTmp.isTestingFilename(filename)) {
+					datasetTmp.setTestData(tmpData);
 				}
-				this.data.put(datasetName, dataTmp);
+				this.data.put(datasetName, datasetTmp); 
 
 			}
 
@@ -144,19 +162,46 @@ public class Evaluater {
 	
 	
 	
-	public synchronized void  runAll () throws FileNotFoundException, IOException {
+	public synchronized void  runAll (String tableName) throws FileNotFoundException, IOException {
 		
 		String trainFilename = "";
 		String testFilename = "";
 		Evaluation e = null;
-		for (int i = 0; i < this.dataFiles.length; i++) {
-			trainFilename = this.dataFiles[i];
-			testFilename = trainFilename.replaceFirst(".trn.", ".tst.");
+		Enumeration<String> d = this.data.keys();
+		Dataset data=null;
+		Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long begin_time,end_time,duration;
+        
+		while (d.hasMoreElements()) {
+			data = this.data.get(d.nextElement()); 
 			for (int j = 0; j < this.models.length; j++) {
 				this.setModel(this.models[j]);
-				e = this.eval(trainFilename, testFilename);
+				cal = Calendar.getInstance();
+				data.getProperties().setProperty("time", sdf.format(cal.getTime()));
+				begin_time =  System.currentTimeMillis();
+				e = this.eval(data);
+				end_time =  System.currentTimeMillis();
+				data.getProperties().setProperty("model", this.models[j]);
+				duration = end_time-begin_time;
+				data.getProperties().setProperty("duration", duration+"");
+				data.getProperties().setProperty("status", "OK");
+				this.recordEval(data, e, tableName);
+				System.out.println(data.getProperties().toSQLString(tableName));
 			}
+			
 		}
+		
+	}
+	
+	
+	private void recordEval (Dataset data,Evaluation e,String tableName) {
+		data.getProperties().setProperty("auroc", e.weightedAreaUnderROC()+"");
+		data.getProperties().setProperty("fmeasure", e.fMeasure(0)+"");
+		data.getProperties().setProperty("kappa", e.kappa()+"");
+		data.getProperties().setProperty("pctcorrect", e.pctCorrect()+"");
+		data.getProperties().setProperty("pctcorrect", e.pctCorrect()+"");
+		
 	}
 	
 	private synchronized Evaluation eval(Dataset data) {
@@ -186,6 +231,7 @@ public class Evaluater {
 			e.printStackTrace();
 		}
 		return (eval);
+		
 
 	}
 
