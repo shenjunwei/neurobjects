@@ -49,11 +49,12 @@ public class Dataset {
 	
 	public Dataset (Properties setup) {
 		this.properties = new Properties();
-		this.properties.setProperty("animal", setup.getValue("animal"));
+		this.properties.values = setup.cloneTable();
+		/*this.properties.setProperty("animal", setup.getValue("animal"));
 		this.properties.setProperty("bin_size", setup.getValue("bin_size"));
 		this.properties.setProperty("window_width", setup.getValue("window_width"));
 		this.properties.setProperty("label", setup.getValue("label"));
-		this.properties.setProperty("area", setup.getValue("area"));
+		this.properties.setProperty("area", setup.getValue("area")); */
 		 
 		
 	}

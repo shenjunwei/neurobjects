@@ -164,9 +164,9 @@ public class Evaluater {
 	
 	public synchronized void  runAll () throws FileNotFoundException, IOException {
 		
-		String trainFilename = "";
-		String testFilename = "";
+		
 		Evaluation e = null;
+		String SQLQuery="";
 		Enumeration<String> d = this.data.keys();
 		Dataset data=null;
 		Calendar cal = Calendar.getInstance();
@@ -186,8 +186,16 @@ public class Evaluater {
 				duration = end_time-begin_time;
 				data.getProperties().setProperty("duration", duration+"");
 				data.getProperties().setProperty("status", "OK");
-				this.recordEval(data, e, tableName);
-				System.out.println(data.getProperties().toSQLString(tableName));
+				this.recordEval(data, e);
+				SQLQuery=data.getProperties().toSQLString(); 
+				if (SQLQuery.isEmpty()) {
+					System.out.println ("Problems SQL Query generation "+data.getProperties());
+				}
+				else {
+					System.out.println (SQLQuery);
+				}
+				
+				
 			}
 			
 		}
@@ -195,7 +203,7 @@ public class Evaluater {
 	}
 	
 	
-	private void recordEval (Dataset data,Evaluation e,String tableName) {
+	private void recordEval (Dataset data,Evaluation e) {
 		data.getProperties().setProperty("auroc", e.weightedAreaUnderROC()+"");
 		data.getProperties().setProperty("fmeasure", e.fMeasure(0)+"");
 		data.getProperties().setProperty("kappa", e.kappa()+"");

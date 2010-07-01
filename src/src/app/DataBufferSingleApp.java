@@ -1,7 +1,11 @@
 package app;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,6 +21,7 @@ import utils.DataSetBuilder;
 import utils.Dataset;
 import utils.DatasetBuffer;
 import utils.DatasetBufferSingle;
+import utils.DatasetBufferSingle;
 
 public class DataBufferSingleApp {
 	
@@ -27,11 +32,27 @@ public class DataBufferSingleApp {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		 
-		String pathToJDF = "/tmp/tmp";
-		String tableName = "ioc_results_basic3";
-		String pathToXMLCfg = "/home/nivaldo/tmp/nda/animal_file_setup_ge5.xml";
-		String pathToApp = "/tmp/nda.jar";
+		String cfgFilename = args[0].trim(); 
+		String str="";
+		String info = "";
+		
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(cfgFilename));
+
+			while ((str = in.readLine()) != null) {
+				info += str+"\n";
+			}
+			in.close();
+		} catch (IOException e) {
+		}
+		utils.Properties prop = new utils.Properties(info);
+		String pathToJDF = prop.getValue("pathToJDF");
+		String tableName = prop.getValue("tableName");
+		String pathToXMLCfg = prop.getValue("pathToXMLCfg");
+		String pathToApp = prop.getValue("pathToApp");
+		String jobName = prop.getValue("jobName");
+		int numOfSamples = Integer.parseInt(prop.getValue("numOfSamples"));
+		
 		ArrayList<AnimalSetup> animalList = new ArrayList<AnimalSetup>(); 
 		
 		try {
@@ -58,10 +79,10 @@ public class DataBufferSingleApp {
 						animalList.add(animal);
 						DataSetBuilder D = new DataSetBuilder(animal);
 
-						ArrayList<String> zipfiles = D.run(buffer, tableName,10);
+						ArrayList<String> zipfiles = D.run(buffer, tableName, jobName, numOfSamples);
 						System.out.println (zipfiles);
 
-						D.saveFile(D.buildJDF(D.run(buffer, tableName,10), pathToApp),pathToJDF+File.separatorChar+animal.getName()+".jdf");
+						D.saveFile(D.buildJDF(zipfiles, pathToApp),pathToJDF+File.separatorChar+animal.getName()+".jdf");
 
 												
 						return;

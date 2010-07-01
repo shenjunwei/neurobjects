@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<experiment>
+  <animal>
+    <name> ge4 </name>
+    <dataset>
+      <type> file </type>
+      <pathToSpikes path="/home/nivaldo/projects/crnets/data/spikes/ge4/01"> </pathToSpikes>
+      <pathToBehavior path="setup/ge4_contacts.txt"> </pathToBehavior>
+    </dataset>
+    <params date="June 03, 2010">
+      <fileFilter> hp </fileFilter>
+      <fileFilter> s1 </fileFilter>
+      <fileFilter> v1 </fileFilter>
+      <label> ball </label>
+      <label> brush </label>
+      <label> food </label>
+      <label> urchin </label>
+      <binSize> .250 </binSize>
+      <windowWidth> 10 </windowWidth>
+      <totalSamples> 70</totalSamples>
+      <alfa> .80 </alfa>
+      <beta> 2 </beta>
+    </params>
+  </animal>
+</experiment>
+

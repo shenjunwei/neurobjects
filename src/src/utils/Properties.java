@@ -3,6 +3,7 @@ package utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -90,13 +91,44 @@ public class Properties {
 		return (result);
 		
 	}
-	public String toSQLString (String table) {
+	public String toSQLString () {
+		String tableName = "";
+		String result = "";
+		try {
+			this.setNetInfo();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (this.keys().contains("table_name")) {
+			tableName = this.getValue("table_name");
 			this.delProperty("table_name");
 		}
-		return ("INSERT INTO "+table+" "+this.keys()+" VALUES "+this.values()+";");
+		else {
+			new InvalidArgumentException("Undefined table name !!");
+			return "";
+		}
+		String keys =this.keys();
+		keys = keys.replace(",", "`,`");
+		keys = keys.replace("(", "(`");
+		keys = keys.replace(")", "`)");
+		result = "INSERT INTO "+tableName+" "+keys+" VALUES "+this.values()+";";
+		if (!tableName.isEmpty()) {
+			this.setProperty("table_name", tableName);
+		}
+		return (result);
 		
 	}
+	
+	private void setNetInfo() throws Exception{
+
+
+        InetAddress iAddr = InetAddress.getLocalHost () ;
+        this.values.put("hostname",iAddr.getHostName());
+        this.values.put("ip",iAddr.getHostAddress());
+        
+
+}
 	
 	public String keys() {
 		

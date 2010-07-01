@@ -125,14 +125,14 @@ public class DataSetBuilder {
 			filename = f.nextElement();
 			jdfContent +="init : store "+filename+" "+filename+"\n";
 			jdfContent +="\tstore "+pathToApp+" "+appName+"\n";
-			jdfContent +="remote : java -jar $STORAGE/"+appName+" $STORAGE/"+filename+" > output-$JOB.$TASK.log\n";
+			jdfContent +="remote : nice java -jar $STORAGE/"+appName+" $STORAGE/"+filename+" > output-$JOB.$TASK.log\n";
 			jdfContent +="final: get output-$JOB.$TASK.log output-$JOB.$TASK.log\n\n\n";
 			
 		}
 		return (jdfContent);
 	}
 	
-	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, int numOfSamples) throws Exception {
+	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, String jobName, int numOfSamples) throws Exception {
 		
 		String filter = "";
 		String label = "";
@@ -170,6 +170,7 @@ public class DataSetBuilder {
 					try {
 					data = this.get(filter, label);
 					data.properties.setProperty("table_name", table_name);
+					data.properties.setProperty("job", jobName);
 					} catch (Exception e) {};
 				
 					if (!buffer.add(data)) {
