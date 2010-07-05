@@ -69,12 +69,12 @@ public class ModelEvaluaterApp {
 						System.out.println(animal);
 						Dataset data = D.get(area, label);
 						buffer.add(data);
-						ModelEvaluater NBayes= new ModelEvaluater(animal,buffer,"NBayes",area,label).start();
+			/*			ModelEvaluater NBayes= new ModelEvaluater(animal,buffer,"NBayes",area,label).start();
 					    new ModelEvaluater(animal,buffer,"J48",area,label).start();
 					    new ModelEvaluater(animal,buffer,"MLP",area,label).start();
 					    new ModelEvaluater(animal,buffer,"SVM",area,label).start();
 					    new ModelEvaluater(animal,buffer,"RBF",area,label).start();
-					    new ModelEvaluater(animal,buffer,"J48",area,label).start();
+					    new ModelEvaluater(animal,buffer,"J48",area,label).start(); */
 						//System.out.println (data);						
 						return;
 					}

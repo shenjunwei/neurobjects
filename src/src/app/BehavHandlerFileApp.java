@@ -31,8 +31,8 @@ public class BehavHandlerFileApp {
 		System.out.println(BHF);
 		bigInterval = BHF.getBigInterval(labels);
 		System.out.println("Big Interval for '"+labels+"': "+Arrays.toString(bigInterval));
-		TxtSpkHandler spikes = new TxtSpkHandler (path, filter, bigInterval[0], bigInterval[1]);
-		CountMatrix   matrix = new CountMatrix (spikes,0.25);
+	//	TxtSpkHandler spikes = new TxtSpkHandler (path, filter, bigInterval[0], bigInterval[1]);
+	//	CountMatrix   matrix = new CountMatrix (spikes,0.25);
 		//Patterns P = new Patterns ()
 		//System.out.println(matrix);
 		
