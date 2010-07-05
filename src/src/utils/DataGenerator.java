@@ -1,5 +1,9 @@
 package utils;
 
+import DataGenerator.AnimalSetup;
+import DataGenerator.DataSetBuilder;
+import DataGenerator.DatasetBuffer;
+
 public class DataGenerator  extends Thread{
 	
 	DataSetBuilder 		data = null;

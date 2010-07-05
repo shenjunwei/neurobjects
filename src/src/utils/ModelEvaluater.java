@@ -3,6 +3,9 @@ package utils;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import DataGenerator.Dataset;
+import DataGenerator.DatasetBuffer;
+
 import errors.EmptySourceException;
 import errors.InvalidArgumentException;
 

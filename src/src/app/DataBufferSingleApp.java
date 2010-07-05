@@ -16,12 +16,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import utils.AnimalSetup;
-import utils.DataSetBuilder;
-import utils.Dataset;
-import utils.DatasetBuffer;
-import utils.DatasetBufferSingle;
-import utils.DatasetBufferSingle;
+import DataGenerator.AnimalSetup;
+import DataGenerator.DataSetBuilder;
+import DataGenerator.Dataset;
+import DataGenerator.DatasetBuffer;
+import DataGenerator.DatasetBufferSingle;
+
 
 public class DataBufferSingleApp {
 	
@@ -45,7 +45,7 @@ public class DataBufferSingleApp {
 			in.close();
 		} catch (IOException e) {
 		}
-		utils.Properties prop = new utils.Properties(info);
+		DataGenerator.Properties prop = new DataGenerator.Properties(info);
 		String pathToJDF = prop.getValue("pathToJDF");
 		String tableName = prop.getValue("tableName");
 		String pathToXMLCfg = prop.getValue("pathToXMLCfg");

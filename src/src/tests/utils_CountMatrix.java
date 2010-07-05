@@ -2,10 +2,11 @@ package tests;
 
 import java.io.IOException;
 
+import DataGenerator.CountMatrix;
+import DataGenerator.TxtSpkHandler;
+
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
-import utils.CountMatrix;
-import utils.TxtSpkHandler;
 
 
 public class utils_CountMatrix  {

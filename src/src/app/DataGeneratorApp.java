@@ -12,11 +12,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import utils.AnimalSetup;
+import DataGenerator.AnimalSetup;
+import DataGenerator.DataSetBuilder;
+import DataGenerator.Dataset;
+import DataGenerator.DatasetBuffer;
+
 import utils.DataGenerator;
-import utils.DataSetBuilder;
-import utils.Dataset;
-import utils.DatasetBuffer;
 import utils.ModelEvaluater;
 
 public class DataGeneratorApp {

@@ -15,9 +15,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import utils.AnimalSetup;
-import utils.DataSetBuilder;
-import utils.Setup;
+import DataGenerator.AnimalSetup;
+import DataGenerator.DataSetBuilder;
+import DataGenerator.Setup;
+
 import weka.core.Instances;
 
 public class utils_DataSetBuilder {

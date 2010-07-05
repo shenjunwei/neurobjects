@@ -37,10 +37,11 @@ import java.util.zip.CheckedInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import DataGenerator.Dataset;
+import DataGenerator.DatasetBuffer;
+import DataGenerator.Properties;
+
 import utils.Context;
-import utils.Dataset;
-import utils.DatasetBuffer;
-import utils.Properties;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
 import errors.InvalidArgumentException;

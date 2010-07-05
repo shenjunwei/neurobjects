@@ -3,12 +3,13 @@ package app;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import DataGenerator.CountMatrix;
+import DataGenerator.TxtSpkHandler;
+
 import cern.colt.matrix.DoubleMatrix1D;
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
-import utils.TxtSpkHandler;
-import utils.CountMatrix;
 
 public class TxtSpkHandlerApp {
 

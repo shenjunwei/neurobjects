@@ -3,7 +3,8 @@ package tests;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import utils.TxtSpikeTrain;
+import DataGenerator.TxtSpikeTrain;
+
 import cern.colt.matrix.DoubleMatrix1D;
 import errors.InvertedParameterException;
 

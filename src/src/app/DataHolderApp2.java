@@ -15,7 +15,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import utils.AnimalSetup;
+import DataGenerator.AnimalSetup;
+
 
 public class DataHolderApp2 {
 

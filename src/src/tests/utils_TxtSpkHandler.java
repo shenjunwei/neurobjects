@@ -3,14 +3,14 @@ package tests;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import DataGenerator.TxtSpikeTrain;
+import DataGenerator.TxtSpkHandler;
+
 import cern.colt.matrix.DoubleMatrix1D;
 
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
-import utils.TxtSpikeTrain;
-import utils.TxtSpkHandler;
-//import utils.SpikeTrain;
 
 public class utils_TxtSpkHandler {
 

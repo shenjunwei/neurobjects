@@ -12,9 +12,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import utils.AnimalSetup;
-import utils.DataSetBuilder;
-import utils.Dataset;
+import DataGenerator.AnimalSetup;
+import DataGenerator.DataSetBuilder;
+import DataGenerator.Dataset;
+
 import weka.core.Instances;
 
 public class DataSetBuilderApp {

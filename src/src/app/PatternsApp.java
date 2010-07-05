@@ -3,8 +3,9 @@ package app;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import utils.Pattern;
-import utils.Patterns;
+import DataGenerator.Pattern;
+import DataGenerator.Patterns;
+
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 public class PatternsApp {

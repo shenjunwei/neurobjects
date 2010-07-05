@@ -2,7 +2,8 @@ package app;
 
 import java.io.Serializable;
 
-import utils.AnimalSetup;
+import DataGenerator.AnimalSetup;
+
 import weka.core.Instances;
 
 public class DataHolder implements Serializable {

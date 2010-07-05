@@ -1,6 +1,6 @@
 package eval;
 
-import utils.Properties;
+import DataGenerator.Properties;
 
 public class ResultHnd {
 	

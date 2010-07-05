@@ -1,6 +1,5 @@
 package app;
 
-import utils.AnimalSetup;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -10,6 +9,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException; 
+
+import DataGenerator.AnimalSetup;
 
 
 public class AnimalSetupApp {
