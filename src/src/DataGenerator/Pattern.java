@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
-/** Define a pattern */
+/** \brief Models a neuronal response patterns */
 public class Pattern {
 	
 	/** vector with the patterns elements*/

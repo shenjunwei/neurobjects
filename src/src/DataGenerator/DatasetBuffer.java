@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import errors.EmptySourceException;
 import errors.InvalidArgumentException;
 
+/** \brief Models a set of buffers of dataset */
 public class DatasetBuffer {
 	
 	protected Hashtable<String, BlockingQueue<Dataset>> data = null;

@@ -9,13 +9,12 @@ import java.util.Hashtable;
 
 import errors.InvalidArgumentException;
 
+/** \brief Stores a set of properties */
 public class Properties {
 	
 	
 	protected Hashtable<String, String> values = null;
 
-	
-	
 	public Properties () {
 	
 		values = new Hashtable<String, String> ();
@@ -93,6 +92,35 @@ public class Properties {
 	}
 	public String toSQLString () {
 		String tableName = "";
+		String result = "";
+		try {
+			this.setNetInfo();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (this.keys().contains("table_name")) {
+			tableName = this.getValue("table_name");
+			this.delProperty("table_name");
+		}
+		else {
+			new InvalidArgumentException("Undefined table name !!");
+			return "";
+		}
+		String keys =this.keys();
+		keys = keys.replace(",", "`,`");
+		keys = keys.replace("(", "(`");
+		keys = keys.replace(")", "`)");
+		result = "INSERT INTO "+tableName+" "+keys+" VALUES "+this.values()+";";
+		if (!tableName.isEmpty()) {
+			this.setProperty("table_name", tableName);
+		}
+		return (result);
+		
+	}
+	
+	public String toSQLString (String tableName) {
+		
 		String result = "";
 		try {
 			this.setNetInfo();

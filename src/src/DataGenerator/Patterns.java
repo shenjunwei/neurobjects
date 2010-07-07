@@ -8,7 +8,7 @@ import java.util.Hashtable;
 
 import cern.colt.matrix.DoubleMatrix1D;
 
-/** Defines a set of numeric patterns */
+/** \brief Defines a set of neuronal responses patterns */
 public class Patterns {
 	
 	Hashtable<String, ArrayList<Pattern>> pats = null; 

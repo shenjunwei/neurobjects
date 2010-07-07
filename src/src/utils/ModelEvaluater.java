@@ -12,12 +12,13 @@ import errors.InvalidArgumentException;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
 
+/** \brief Thread to implements a set of evaluaters */
 public class ModelEvaluater extends Thread {
 	
 	String 						model="";
 	Instances 					trainData=null;
 	Instances 					testData=null;
-	Context 					context=null;
+	
 	weka.classifiers.Classifier cModel = null;
 	DatasetBuffer 				dataBuffer = null;
 	boolean 					done = false;
@@ -78,7 +79,6 @@ public class ModelEvaluater extends Thread {
 			if (data != null) {
 				this.trainData = data.getTrainData();
 				this.testData = data.getTestData();
-				this.context = new Context(data, this.model);
 				this.setModel();
 				
 				// Builds the classifier based on training data informations
@@ -102,12 +102,12 @@ public class ModelEvaluater extends Thread {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				this.context.setAUROC(eval.weightedAreaUnderROC());
+		/*		this.context.setAUROC(eval.weightedAreaUnderROC());
 				this.context.setFMeasure(eval.fMeasure(0));
 				this.context.setKappa(eval.kappa());
 				this.context.setPctCorrect(eval.pctCorrect());
 				this.context.setEndTime(System.currentTimeMillis());
-				this.context.showSQL("ioc_results_basic2");
+				this.context.showSQL("ioc_results_basic2"); */
 			}
 
 			

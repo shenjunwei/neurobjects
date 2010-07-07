@@ -18,6 +18,8 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 
+
+/** \brief Generates and handles datasets */
 public class DataSetBuilder {
 	
 	

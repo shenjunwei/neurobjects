@@ -15,8 +15,11 @@ import org.omg.CORBA.DynAnyPackage.InvalidValue;
 
 import weka.core.Instances;
 
-
-/** Defines the dataset model 
+/**
+ * \brief Defines the dataset model
+ * 
+ * A dataset object is mainly defined by two sets: training set and a testing
+ * set. This class provides a set of methods to handle this kind of information.
  * 
  * */
 public class Dataset {
@@ -24,12 +27,19 @@ public class Dataset {
 	Instances trainData=null;
 	Instances testData=null;
 
-	String 	  tag = "";
+	//String 	  tag = "";
 	Properties properties = null;
-	
 
-	
-	
+	/** \brief Creates a dataset object.
+	 * 
+	 * Creates a dataset object based on: training dataset, testing dataset, information about the animal set
+	 * up, label, and area. Uses as class index the last attribute.
+	 * @param trainData training dataset 
+	 * @param testData testing dataset 
+	 * @param animal nformation about the animal setup
+	 * @param label label to be used by the dataset
+	 * @param area area related to dataset 
+	 */
 	public Dataset (Instances trainData, Instances testData,AnimalSetup animal, String label, String area ) {
 		
 		this.trainData = new Instances (trainData);
@@ -47,26 +57,52 @@ public class Dataset {
 		
 	}
 	
+	/**
+	 * \brief Creates a dataset instances
+	 * 
+	 * Creates a dataset instances based on a Properties object in which should
+	 * be defined the following properties: 
+	 *  - animal: name of the animal in which the dataset has been built. Ex: "ge5";
+	 *  - bin_size: size, in milliseconds, of bin used to build the dataset. Ex: 250;
+	 *  - window_width: number of bins for each neuron;
+	 *  - label: label to be used by the dataset. Ex: "HP", "High";
+	 *  - area: name of area related to dataset. Ex: "HP"
+	 * 
+	 * @param setup
+	 */
 	public Dataset (Properties setup) {
 		this.properties = new Properties();
 		this.properties.values = setup.cloneTable();
-		/*this.properties.setProperty("animal", setup.getValue("animal"));
-		this.properties.setProperty("bin_size", setup.getValue("bin_size"));
-		this.properties.setProperty("window_width", setup.getValue("window_width"));
-		this.properties.setProperty("label", setup.getValue("label"));
-		this.properties.setProperty("area", setup.getValue("area")); */
-		 
 		
 	}
+	 
 	
+	/** \brief Defines the training dataset
+	 * 
+	 * Creates a new Instances based on given dataset and use it as the training dataset.
+	 * 
+	 * @param trainData training dataset
+	 */
 	public void setTrainData (Instances trainData) {
 		this.trainData = new Instances (trainData);
 	}
 	
+	/** \brief Defines the testing dataset
+	 * 
+	 * Creates a new Instances based on given dataset and use it as the training dataset.
+	 * 
+	 * @param testData testing dataset
+	 */
 	public void setTestData (Instances testData) {
 		this.testData = new Instances (testData);
 	}
 	
+	/** \brief Returns a string with the dataset informations 
+	 * 
+	 * Very useful to print a dataset
+	 * 
+	 * @return a String in which there are informations about the dataset
+	 */
 	public String toString () {
 		
 		String result="\nAnimal: "+this.properties.getValue("animal")+ "\tLabel: "+this.properties.getValue("label")+"\tArea:"+this.properties.getValue("area")+"\n";
@@ -76,6 +112,16 @@ public class Dataset {
 		return (result);
 	}
 	
+	/**
+	 * \brief Saves the dataset in file
+	 * 
+	 * Given a path, saves the dataset in two files, with specific names. The
+	 * training set will be saved using sufix filename ".trn.arff" and the
+	 * testing set will be saved using the sufix filename ".tst.arff" 
+	 * 
+	 * @param path path to directory where the files should be saved.
+	 * \todo verify the give path (exists, permissions, etc)
+	 * */
 	public void save (String path) throws UnsupportedEncodingException, FileNotFoundException {
 		String baseFilename = path+File.separatorChar+this.buildBaseFilename();
 		String trnFilename=baseFilename+".trn.arff";
@@ -85,15 +131,35 @@ public class Dataset {
 		this.saveSingleDataset(tstFilename,this.testData.toString());
 	}
 	
+	/** \brief Returns the training filename 
+	 * 
+	 * @return the training filename 
+	 */
 	public String getTrainFilename() {
 		String baseFilename = this.buildBaseFilename();
 		return (baseFilename+".trn.arff");		
-	}
+	} 
+	
+	/** \brief Returns the testing filename 
+	 * 
+	 * @return the testing filename 
+	 */
 	public String getTstFilename() {
 		String baseFilename = this.buildBaseFilename();
 		return (baseFilename+".tst.arff");		
 	}
 	
+	/**
+	 * \brief Saves the dataset into a zip file
+	 * 
+	 * Given a filename, saves the dataset in a zip file with that filename, one
+	 * file for training, and one file for testing dataset. The training file
+	 * uses the sufix filename ".trn.arff", and the testing file uses the sufix
+	 * filename ".tst.arff"
+	 * 
+	 * @param zipfilename String with the zipfile filename
+	 * @throws IOException
+	 */
 	public void saveZip (String zipfilename) throws IOException {
 		if (!this.isValid()) {
 			new InvalidValue("Dataset internal content is not valid!!");
@@ -110,6 +176,11 @@ public class Dataset {
         out.close();
 	}
 	
+	
+	/** \brief Informs if the current dataset is valid 
+	 * 
+	 * @return \c true if is valid or \c false otherwise.
+	 */
 	public boolean isValid() {
 		if ((this.trainData != null) && (this.testData != null)) {
 			return (true);
@@ -117,6 +188,18 @@ public class Dataset {
 		return (false);
 	}
 	
+	
+	/**
+	 * \brief Put the dataset files into a zip file stream 
+	 * 
+	 * Given a zip stream, saves the dataset in a zip file with that filename, one
+	 * file for training, and one file for testing dataset. The training file
+	 * uses the sufix filename ".trn.arff", and the testing file uses the sufix
+	 * filename ".tst.arff"
+	 * 
+	 * @param out zip output stream in which should be saved the dataset files
+	 * @throws IOException
+	 */
 	public void saveZip (ZipOutputStream out) throws IOException {
 		
 		String dirPath = "."+File.separatorChar+this.hashCode()+File.separatorChar; 
@@ -125,6 +208,17 @@ public class Dataset {
         this.saveSingleDatasetZip(dirPath+this.getTstFilename(), this.testData.toString(), out);
 	}
 	
+	/**
+	 * \brief Saves a single dataset file into a into a zip file stream
+	 * 
+	 * This methods saves into that zip stream the String data with the filename
+	 * 
+	 * @param out zip stream in which should be saved the String data;
+	 * @param filename filename to be used in zip out strem, when the String data is saved;
+	 * @parm data String data that should be saved in zip out stream.
+	 *            zip output stream in which should be saved the dataset files
+	 * @throws IOException
+	 */
 	public void saveSingleDatasetZip (String filename, String data, ZipOutputStream out) throws IOException {
 		
 		if (!this.isValid()) {
@@ -183,39 +277,90 @@ public class Dataset {
 		return (baseFilename);
 	}
 	
+	/** \brief Returns the training data 
+	 * 
+	 * @return The training data in the Instances format.
+	 */
 	public Instances getTrainData() {
 		return trainData;
 	}
 
+	/** \brief Returns the testing data 
+	 * 
+	 * @return The testing data in the Instances format.
+	 */
 	public Instances getTestData() {
 		return testData;
 	}
 
+	/** \brief Returns the animal name related to the dataset. 
+	 * 
+	 * When is created the dataset should be related to a animal name. For example: ge5.
+	 * This methods returns this information.
+	 * 
+	 * @return The animal name related to the dataset.
+	 */
 	public String getAnimal() {
 		return this.properties.getValue("animal");
 	}
 
+	/** \brief Returns the label related to the dataset. 
+	 * 
+	 * When is created the dataset should be related to a label. For example: "HP", or "High"
+	 * This methods returns this information.
+	 * 
+	 * @return The label related to the dataset.
+	 */
 	public String getLabel() {
 		return this.properties.getValue("label");
 	}
 
+	/**
+	 * \brief Returns the area related to the dataset.
+	 * 
+	 * When is created the dataset should be related to a area. Normally this
+	 * information is used to associate the dataset with a anatomic area, ex: S1, V1.
+	 * 
+	 * @return The area related to the dataset.
+	 */
 	public String getArea() {
 		return this.properties.getValue("area");
 	}
 	
-	public void setTag(String tag) {
+	/*public void setTag(String tag) {
 		this.tag = tag;
-	}
+	} */
 	
+	/**
+	 * \brief Returns the size of bins used to build the dataset.
+	 * 
+	 * The dataset is built based from a spike counting process, and in this
+	 * process is used a size of bin to get the counting. This method returns,
+	 * in milliseconds, this size of bin used.
+	 * 
+	 * @return The size of bins used to build the dataset.
+	 */
 	public double getBinSize() {
 		return Double.parseDouble(this.properties.getValue("bin_size"));
 		//return (this.binSize);
 	}
 
+	/**
+	 * \brief Returns the size of window used to build the dataset.
+	 * 
+	 * The dataset is built getting the information  based from a spike counting process, and in this
+	 * process is used a size of bin to get the counting. This method returns,
+	 * in milliseconds, this size of bin used.
+	 * 
+	 * @return The size of bins used to build the dataset.
+	 */
 	public int getWindowWidth() {
 		return Integer.parseInt(this.properties.getValue("window_width"));
 	}
 	
+	/** \brief Returns the number of attributes in the dataset
+	 * 
+	 * @return number of attributes in the dataset*/
 	public int getNumAtts() {
 		return (this.trainData.numAttributes());
 	}

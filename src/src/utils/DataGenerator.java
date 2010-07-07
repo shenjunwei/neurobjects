@@ -4,6 +4,7 @@ import DataGenerator.AnimalSetup;
 import DataGenerator.DataSetBuilder;
 import DataGenerator.DatasetBuffer;
 
+/** \brief Thread to generate data */
 public class DataGenerator  extends Thread{
 	
 	DataSetBuilder 		data = null;

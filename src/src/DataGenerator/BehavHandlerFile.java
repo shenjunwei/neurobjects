@@ -16,10 +16,10 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
+/** \brief Handles a animal behavior file */
 public class BehavHandlerFile implements BehavHandlerI {
 
 	String filePath;
-//	/ArrayList<double[]> intervals = null;
 	Hashtable<String,  ArrayList<double[]>> intervals = null;
 	boolean valid = false;
 	

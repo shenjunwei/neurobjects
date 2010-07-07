@@ -13,6 +13,7 @@ import java.util.zip.ZipOutputStream;
 
 import errors.InvalidArgumentException;
 
+/** \brief Models a single buffer of dataset */ 
 public class DatasetBufferSingle {
 	
 	protected BlockingQueue<Dataset> data = null;
