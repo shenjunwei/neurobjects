@@ -16,13 +16,30 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
-/** \brief Handles a animal behavior file */
+/**
+ * \brief Handles a animal behavior file
+ * 
+ * In our model the animal behavior is captured as a set of: label and a time
+ * interval. \n The label must be a string and time interval must be formed
+ * using two numbers . This class implements the interface BehavHandlerI when
+ * the animal behavior is in a file. Please, see the \ref behaveDataSpec about 
+ * the specification of this kind of file.
+ * 
+ * */
 public class BehavHandlerFile implements BehavHandlerI {
 
 	String filePath;
 	Hashtable<String,  ArrayList<double[]>> intervals = null;
 	boolean valid = false;
 	
+	
+	/** \brief Creates a BehavHandlerFile object given a filename 
+	 * 
+	 * The file should be in a Behavior Data Format
+	 * 
+	 * @param filename name of file in which there is the animal behavior description
+	 * @see \ref behaveDataSpec.
+	 */
 	public BehavHandlerFile(String filename) {
 		// TODO Auto-generated constructor stub
 		this.intervals = new Hashtable<String, ArrayList<double[]>> ();
@@ -58,10 +75,18 @@ public class BehavHandlerFile implements BehavHandlerI {
 
 	}
 	
+	/** \brief Tells whether the object is valid 
+	 * 
+	 * @return \c true if the object is valid or \c false otherwise. */
 	public boolean isValid() {
 		return valid;
 	}
 	
+	/** \brief Adds a time interval with a given label to animal behavior description
+	 * 
+	 * @param interval a 2 position double array where which must contain the time interval 	 
+	 * @param label tag to be used in that time interval 
+	 */
 	public void addInterval (double[] interval, String label) {
 		//String currentLabel = ; 
 		ArrayList<double[]> list = this.intervals.get(label);
@@ -94,6 +119,9 @@ public class BehavHandlerFile implements BehavHandlerI {
 		}	
 	}
 	
+	/** \brief Sorts the time intervals list 
+	 * 
+	 * Based on the beginning of each interval, sorts the list of time intervals */
 	public void sort() {
 		ArrayList<double[]> list = null;
 		String currentLabel="";
@@ -108,7 +136,9 @@ public class BehavHandlerFile implements BehavHandlerI {
 		}
 	}
  
-	
+	/** \brief Returns view of animal behavior description. 
+	 * 
+	 * @return a String with animal behavior description.*/
 	public String toString () {
 		ArrayList<double[]> list = null;
 		Enumeration labels = this.intervals.keys();
@@ -136,7 +166,27 @@ public class BehavHandlerFile implements BehavHandlerI {
 		return (result);
 	}
 	
-	@Override
+	/**
+	 * \brief Returns a big interval in which the animal execute a set of given
+	 * behavior
+	 * 
+	 * Given a set of labels this method returns a interval I in which all
+	 * intervals associated with each given label is contained. \n For example,
+	 * consider that in animal behavior data there is the following information:
+	 * \code 1010,1014,label01 
+	 * 1015,1020,label03 
+	 * 900,902,label04 
+	 * 900,915,label01
+	 * \endcode
+	 * 
+	 * If the given list of labels is: {label01,label03}; should be returned the
+	 * following interval: \code [900;1020] \endcode
+	 * 
+	 * @param labels
+	 *            list of target labels
+	 * @return a 2D vector with the big interval [a,b].
+	 * @author Nivaldo Vasconcelos
+	 * */
 	public double[] getBigInterval(String labels) {
 		double minBegin=Double.MAX_VALUE;
 		double maxEnd=Double.MIN_VALUE;
@@ -178,7 +228,23 @@ public class BehavHandlerFile implements BehavHandlerI {
 		
 	}
 
-	@Override
+	/**
+	 * \brief Returns a list of intervals tagged with a give label.
+	 * 
+	 * This method allow knows, from the animal behavior data, the list of time
+	 * intervals associated with a give label. Ex: If one needs know the set of
+	 * time intervals in which the time was labeled with 'north' the following
+	 * call will provide:
+	 * 
+	 * \code double[] timeList = BH.getIntervals("north"); \endcode
+	 * 
+	 * @param label
+	 *            label target.
+	 * @return Returns a list of intervals tagged with a give label as list of
+	 *         1D vector, or a \c null if the label was not found in animal
+	 *         behavior description.
+	 * @author Nivaldo Vasconcelos
+	 */
 	public ArrayList<double []> getIntervals(String label) {
 		// TODO Auto-generated method stub
 		
