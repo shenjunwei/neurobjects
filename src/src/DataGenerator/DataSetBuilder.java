@@ -19,7 +19,9 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 
-/** \brief Generates and handles datasets */
+/** \brief Generates and handles Dataset's 
+ * 
+ * */
 public class DataSetBuilder {
 	
 	
@@ -32,15 +34,14 @@ public class DataSetBuilder {
 	RateMatrixI matrix = null;
 	BehavHandlerI behave = null;
 	Patterns 	  patterns = null;
-	AnimalSetup   setup = null;
-	
+	AnimalSetup   setup = null;	
 	
 	String 			currentFilter = "";
-	
-	
+		
 	/**
 	 * \brief Sets the configuration parameters from XML file to internal class parameters.
-	 * \n Defines the positive and negative set sizes to train and test steps
+	 * 
+	 * Defines the positive and negative set sizes to train and test steps
 	 */
 	public DataSetBuilder (AnimalSetup s) {
 		this.setup = s;
@@ -50,11 +51,14 @@ public class DataSetBuilder {
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
 	}
 	
-	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/**
-	 * \brief Sets the configuration parameters from XML file to internal class parameters.
-	 * \n Defines the positive and negative set sizes to train and test steps
-	 * @throws Exception 
+	 * \brief Sets the configuration parameters from XML file to internal class
+	 * parameters.
+	 * 
+	 * Defines the positive and negative set sizes to train and test steps
+	 * 
+	 * @throws Exception
 	 */
 	public DataSetBuilder (AnimalSetup s, String path, String currentFilter) throws Exception {
 		this.setup = s;
@@ -62,57 +66,25 @@ public class DataSetBuilder {
 		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
 		this.numNegativeSamplesToTrain = (int) Math.floor(this.numPositiveSamplesToTrain*this.setup.getBeta());
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
-		
-		
-		
-	}
 	
-	public void run (DatasetBuffer buffer, int numOfSamples) throws Exception {
-		
-		String filter = "";
-		String label = "";
-		Dataset data = null;
-		int i=0;
-		if (!this.setup.validFilters())  {
-			new InvalidArgumentException("Invalid filter!"
-					+ this.setup.getFilters());
-			return;
-		}
-		if (!this.setup.validLabels())  {
-			new InvalidArgumentException("Invalid labels!"
-					+ this.setup.getFilters());
-			return;
-		}
-		if (numOfSamples<=0) {
-			new InvalidArgumentException("Invalid number of samples !"
-					+ numOfSamples);
-			return;
-		}
-		
-		
-		Enumeration <String> f = Collections.enumeration(this.setup.getFilters());
-		while (f.hasMoreElements()) {
-			filter = f.nextElement();
-			Enumeration <String> l = Collections.enumeration(this.setup.getLabels());
-			while (l.hasMoreElements()) {
-				label = l.nextElement();
-				for (i = 0; i < numOfSamples; i++) {
-					while (buffer.isFull()) {
-						Thread.sleep(200);			            
-					}
-					try {
-					data = this.get(filter, label);
-					} catch (Exception e) {};
-					buffer.add(data);
-					System.out.println (filter+">"+label);
-				}				
-			}
-		}
-		System.out.println ("DataSetBuilder DONE");
-		
-		
 	}
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
+	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/**
+	 * \brief Builds a Job Description File
+	 * 
+	 * Based on a list of zip files, in whose there are the datasets saved, and
+	 * a path to application builds the content of a Job Description File (jdf)
+	 * to run over those datasets.
+	 * 
+	 * @param zipfiles
+	 *            list of zip files
+	 * @param pathToApp
+	 *            path to application
+	 * @return
+	 */
 	public String buildJDF (ArrayList<String> zipfiles, String pathToApp) {
 		
 		Enumeration<String> f = Collections.enumeration(zipfiles);
@@ -127,12 +99,14 @@ public class DataSetBuilder {
 			filename = f.nextElement();
 			jdfContent +="init : store "+filename+" "+filename+"\n";
 			jdfContent +="\tstore "+pathToApp+" "+appName+"\n";
-			jdfContent +="remote : nice java -jar $STORAGE/"+appName+" $STORAGE/"+filename+" > output-$JOB.$TASK.log\n";
+			jdfContent +="remote : java -jar $STORAGE/"+appName+" $STORAGE/"+filename+" > output-$JOB.$TASK.log\n";
 			jdfContent +="final: get output-$JOB.$TASK.log output-$JOB.$TASK.log\n\n\n";
 			
 		}
 		return (jdfContent);
 	}
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
 	
 	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, String jobName, int numOfSamples) throws Exception {
 		
