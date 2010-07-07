@@ -20,11 +20,16 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
  * The matrix is implemented using the Colt class termed DoubleMatrix2D.
  *
  *  \todo This class should throws the specific exceptions when something is wrong, and not just save the messages in this.log attribute.
+ *  \todo implement the patterns reading 
  *   
  *
  *  @see DoubleMatrix2D
  */
-public class CountMatrix implements RateMatrixI{
+/**
+ * @author nivaldo
+ *
+ */
+public class CountMatrix implements RateMatrixI {
 	
 	/** Size of bins used to build the count. Using this bin size, in seconds, are defined the count intervals. Given 
 	 * the time interval where the count is taken, I=[a,b], this interval is considered in sub-intervals I'_1 = [a,a+binSize]
@@ -80,6 +85,12 @@ public class CountMatrix implements RateMatrixI{
 	private String title="";
 	
 	
+	
+	/** \brief Given a set of spikes and a size of bin, creates a Couting Matrix object 
+	 * 
+	 * @param spikes set of spikes in whose must be done the spike couting.
+	 * @param binSize size of bins, in milliseconds, to be used in spike counting process. 
+	 * */
 	public CountMatrix (SpkHandlerI spikes, double binSize) {
 		
 		
@@ -118,7 +129,7 @@ public class CountMatrix implements RateMatrixI{
 	
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Creates the Count Matrix 2D.
+	/** \brief Creates the Count Matrix 2D.
 	 * 
 	 * Using internal information about the Count Matrix dimensions, creates a DenseDoubleMatrix2D 
 	 * matrix where will be stored the spike trains count for all neurons.
@@ -137,7 +148,7 @@ public class CountMatrix implements RateMatrixI{
 	/* ------------------------------------------------------------------------------------------ */
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Fills a Count Matrix row with values from a histogram.
+	/** \brief Fills a Count Matrix row with values from a histogram.
 	 * 
 	 * The Count Matrix row and the histogram matrix must have compatible. In other words,
 	 * the number of entries in the histogram shall be not smaller than number of columns in the count
@@ -165,7 +176,7 @@ public class CountMatrix implements RateMatrixI{
 	/* ------------------------------------------------------------------------------------------ */
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Returns a index in the Count Matrix of a given time 
+	/** \brief Returns a index in the Count Matrix of a given time 
 	 * 
 	 * @param time which wants the index in the Count Matrix.
 	 * @return index in the Count Matrix of the given time*/
@@ -179,7 +190,7 @@ public class CountMatrix implements RateMatrixI{
 	
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Returns the length of a time in columns in the Count Matrix 
+	/** \brief Returns the length of a time in columns in the Count Matrix 
 	 * 
 	 * Given a time, since zero, this method returns the number of columns in Count Matrix corresponding
 	 * to this time.  
@@ -193,7 +204,7 @@ public class CountMatrix implements RateMatrixI{
 	/* ------------------------------------------------------------------------------------------ */
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Returns the log messages
+	/** \brief Returns the log messages
 	 * 
 	 * This is useful when is looking for cause of problems. 
 	 * 
@@ -205,7 +216,7 @@ public class CountMatrix implements RateMatrixI{
 	
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Returns the neuron names. 
+	/** \brief Returns the neuron names. 
 	 * 
 	 * Returns the neuron names, in a String vector. The names are in alphabetical order. 
 	 * @return a String[] vector with the neuron names */
@@ -216,7 +227,7 @@ public class CountMatrix implements RateMatrixI{
 	
 	// TODO Doc
 	/** 
-	 * Returns a set of pattern give a time interval 
+	 * \brief Returns a set of pattern give a time interval 
 	 * 
 	 * \todo This method should describe better the structure of Pattern (what each line and column means, how the pattern is assembled)
 	 * */
@@ -250,7 +261,7 @@ public class CountMatrix implements RateMatrixI{
 		return (patterns);
 	}
 	
-	/** Given the column position and window width, returns an array of spikes of Count Matrix.
+	/** \brief Given the column position and window width, returns an array of spikes of Count Matrix.
 	  *  
 	 * @param firstCol : first column from which the pattern will be formed.
 	 * @param windowWidth : window width to form the pattern.
@@ -333,7 +344,7 @@ public class CountMatrix implements RateMatrixI{
 	
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Inserts spike trains for a given neuron in the Count Matrix.
+	/** \brief Inserts spike trains for a given neuron in the Count Matrix.
 	 * 
 	 *  Given a histogram and a spike train this method:
 	 *   (1) Reads the corresponding data file where the spikes train is stored;
@@ -376,7 +387,7 @@ public class CountMatrix implements RateMatrixI{
 	/* ------------------------------------------------------------------------------------------ */
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Informs if the current Count Matrix is valid.
+	/** \brief Informs if the current Count Matrix is valid.
 	 * 
 	 * This method should be callled before the use Count Matrix. 
 	 * 
@@ -387,7 +398,7 @@ public class CountMatrix implements RateMatrixI{
 	/* ------------------------------------------------------------------------------------------ */
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Returns the number of neurons used to build the matrix. 
+	/** \brief Returns the number of neurons used to build the matrix. 
 	 * 
 	 * If there is no spikes for a neuron within given interval this neuron is not counted. 
 	 * @return the number of neurons in the Count Matrix */
@@ -398,7 +409,7 @@ public class CountMatrix implements RateMatrixI{
 	
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Setups the internal time interval.
+	/** \brief Setups the internal time interval.
 	 * 
 	 * 
 	 *  @param binSize size of bin used to build the count matrix (seconds).  
@@ -425,7 +436,7 @@ public class CountMatrix implements RateMatrixI{
 	}
 	
 	
-	/** Shows the Count Matrix informations
+	/** \brief Shows the Count Matrix informations
 	 * 
 	 * Using the internal method toString shows informations about the Count Matrix 
 	 * */
@@ -435,7 +446,7 @@ public class CountMatrix implements RateMatrixI{
 
 	}
 	
-	/** Shows the Count Matrix 
+	/** \brief Shows the Count Matrix 
 	 * 
 	 * Shows, only, the Count Matrix elements, one Count Matrix row per line 
 	 * 
@@ -456,7 +467,7 @@ public class CountMatrix implements RateMatrixI{
 	}
 	
 	/* ------------------------------------------------------------------------------------------ */
-	/** Shows the neurons names.
+	/** \brief Shows the neurons names.
 	 * 
 	 * Shows, in a line, the neuron names */
 	public void showNeuronNames() {
@@ -469,7 +480,7 @@ public class CountMatrix implements RateMatrixI{
 	}
 	/* ------------------------------------------------------------------------------------------ */
 	
-	/** Convert in a String the Count Matrix information 
+	/** \brief Convert in a String the Count Matrix information 
 	 * 
 	 * Are shown: time interval, bin size and Count Matrix elements; */
 	public String toString () {
@@ -488,7 +499,8 @@ public class CountMatrix implements RateMatrixI{
 	
 	
 	
-	/** Informs if a given window is possible in the Count Matrix 
+	/** \brief Informs if a given window is possible in the Count Matrix 
+	 * 
 	 * Given time instant and a temporal width, informs if the respective window is possible in 
 	 * the count matrix. In the count matrix that time window is defined by all rows and the corresponding
 	 * columns since corresponding column to time until the corresponding column to time+width. 
@@ -521,15 +533,24 @@ public class CountMatrix implements RateMatrixI{
 	}
 
 	
-	 //public DoubleMatrix1D rawPattern (double a, double b) {return ((DoubleMatrix1D)null);}
+	/** \brief Tells the number of rows in the Counting Matrix
+	 * 
+	 * @return number of rows in the Counting Matrix */ 
 	public int numRows() {
 		return (this.numberOfRows);
 	}
 
+	/** \brief Tells the number of columns in the Counting Matrix
+	 * 
+	 * @return number of columns in the Counting Matrix */
 	public int numCols() {
 		return (this.numberOfCols);
 	}
 
+	/** \brief Tells the size of bins used 
+	 * 
+	 * @return the size of bins used to build the Counting Matrix
+	 */
 	public double binSize() {
 		return (this.binSize);
 	}
@@ -548,10 +569,21 @@ public class CountMatrix implements RateMatrixI{
 		return (this.last);
 	}
 
+	/** \brief Sets the window width to be used in the patterns building 
+	 * 
+	 * @param width number of bins used for each neuron
+	 */
 	public void setWindowWidth(int width) {
 		windowWidth = width;
 	}
 
+	/**
+	 * \brief Tells the window width to be used in the patterns building
+	 * 
+	 * @return the number of bins, for each neuron, to be used in the patterns
+	 *         building
+	 * @see DataGenerator.RateMatrixI#getWindowWidth()
+	 */
 	public int getWindowWidth() {
 		return windowWidth;
 	}
@@ -566,6 +598,9 @@ public class CountMatrix implements RateMatrixI{
      public int                        numPatterns(int width, double beginTime) {return (-1);}
      
      
+     /** \brief Increments the reading cursor 
+      * 
+      * @return \c true If the operation was successful, or \c false otherwise. */
      public boolean  incCursor(int inc) {
        int newCursor = this.cursor + inc;
        if(isValidCursor(newCursor)) {
@@ -577,17 +612,32 @@ public class CountMatrix implements RateMatrixI{
      }
      
      
-     
-     public double             getCursor() {
+     /** \brief Tells the cursor position
+      * 
+      * 
+      * @return the current cursor position
+      */
+     public double  getCursor() {
     	 return (this.first+(this.cursor*this.binSize));
      }
+     
+     /** \brief Tells if has next pattern to be read
+      * 
+      * 
+      * @return \c true If there is more patterns to be read from Counting Matrix, or \c false otherwise. 
+      *  
+      */
      public boolean            hasNext() {return (false);}
 
 
 	
+     /** \brief Sets a title associated to Counting Matrix object */ 
      public void setTitle (String title){
     	 this.title = title;
      }
+     
+     /** \brief Tells the Counting Matrix title 
+      * */ 
      public String getTitle() {
 		// TODO Auto-generated method stub
 		return this.title;
@@ -595,7 +645,14 @@ public class CountMatrix implements RateMatrixI{
      
      // TODO uses exception
      
-     public double  avgRow (int idx) {
+     
+     /** \brief Returns the average of a given row 
+      * 
+      * @param idx number of row in which must be calculated the average 
+      * @return the average of a given row 
+     * @see DataGenerator.RateMatrixI#avgRow(int)
+     */
+    public double  avgRow (int idx) {
     	 
     	 if (!this.isValidRow(idx)){
     		 return (Double.NaN);
@@ -607,7 +664,13 @@ public class CountMatrix implements RateMatrixI{
     	 return ((double)sum/this.numberOfCols);
      }
      
-     public double  avgColumn (int idx) {
+     /** \brief Returns the average of a given row 
+      * @param idx number of column in which must be calculated the average 
+      * @return the average of a given column
+      *  
+     * @see DataGenerator.RateMatrixI#avgColumn(int)
+     */
+    public double  avgColumn (int idx) {
     	 
     	 if (!this.isValidColumn(idx)){
     		 return (Double.NaN);
@@ -619,19 +682,39 @@ public class CountMatrix implements RateMatrixI{
     	 return ((double)sum/this.numberOfRows);
      }
      
-     private boolean isValidRow(int idx) {
+    
+     /** \brief Tells if a given row is valid 
+      * 
+      * 
+     * @param idx row number that must be validated.
+     * @return \c true if the row is valid, or \c false otherwise.
+     */
+    private boolean isValidRow(int idx) {
     	 if( (idx>=0) && (idx<this.numberOfRows) ) {
     		 return true;
     	 }
     	 return false;
      }
      
+    /** \brief Tells if a given column is valid 
+     * 
+     * 
+    * @param idx column number that must be validated.
+    * @return \c true if the column is valid, or \c false otherwise.
+    */
      private boolean isValidColumn(int idx) {
     	 if( (idx>=0) && (idx<this.numberOfCols) ) {
     		 return true;
     	 }
     	 return false;
      }
+     
+     /** \brief Tells if a given cursor position is valid 
+      * 
+      * 
+     * @param value cursor position that must be validated.
+     * @return \c true if the column is valid, or \c false otherwise.
+     */
      private boolean isValidCursor(int value) {
     	 if ( (value>=0) &&  ((value+this.windowWidth)<=this.numberOfCols) ){
     		 return (true);
