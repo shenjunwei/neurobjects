@@ -45,6 +45,7 @@ import weka.classifiers.Evaluation;
 import weka.core.Instances;
 import errors.InvalidArgumentException;
 
+/** \brief Models a dataset evaluater */
 public class Evaluater {
 	static final int 					KB = 1024;
 	static final int 					MB = 1024*KB;

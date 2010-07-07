@@ -18,7 +18,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * */
 
 
-/** \brief   Handle animal behavior informations 
+/** \brief   Handles animal behavior informations 
  * 
  * This component should be provide the interface between the animal behavior data and the application.
  *  The animal behavior data contains information about important aspects of the animal behavior models
