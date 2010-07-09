@@ -108,6 +108,14 @@ public class DataSetBuilder {
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	
+	/**
+	 * @param buffer
+	 * @param table_name
+	 * @param jobName
+	 * @param numOfSamples
+	 * @return
+	 * @throws Exception
+	 */
 	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, String jobName, int numOfSamples) throws Exception {
 		
 		String filter = "";
