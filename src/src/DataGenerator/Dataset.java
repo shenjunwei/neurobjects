@@ -36,7 +36,7 @@ public class Dataset {
 	 * up, label, and area. Uses as class index the last attribute.
 	 * @param trainData training dataset 
 	 * @param testData testing dataset 
-	 * @param animal nformation about the animal setup
+	 * @param animal Information about the animal setup
 	 * @param label label to be used by the dataset
 	 * @param area area related to dataset 
 	 */
@@ -152,12 +152,12 @@ public class Dataset {
 	/**
 	 * \brief Saves the dataset into a zip file
 	 * 
-	 * Given a filename, saves the dataset in a zip file with that filename, one
+	 * Given a filename (including the path to file, e.g.: "/tmp/file.zip"), saves the dataset in a zip file with that filename, one
 	 * file for training, and one file for testing dataset. The training file
 	 * uses the sufix filename ".trn.arff", and the testing file uses the sufix
 	 * filename ".tst.arff"
 	 * 
-	 * @param zipfilename String with the zipfile filename
+	 * @param zipfilename String with the zipfile filename and path to file. (e.g.: '/tmp/someFile.zip')
 	 * @throws IOException
 	 */
 	public void saveZip (String zipfilename) throws IOException {
@@ -218,6 +218,8 @@ public class Dataset {
 	 * @parm data String data that should be saved in zip out stream.
 	 *            zip output stream in which should be saved the dataset files
 	 * @throws IOException
+	 * 
+	 * \todo Este método deveria ser privado.
 	 */
 	public void saveSingleDatasetZip (String filename, String data, ZipOutputStream out) throws IOException {
 		
