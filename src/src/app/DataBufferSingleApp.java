@@ -25,7 +25,15 @@ import DataGenerator.DatasetBufferSingle;
 
 public class DataBufferSingleApp {
 	
-
+/* 
+ pathToJDF=/tmp
+ tableName=ioc_results_basic3
+ pathToXMLCfg=/home/nivaldo/projects/s1paper/grid/jobs/basic_window_05
+ pathToApp=/tmp/nda_basic201007011214.jar
+ jobName=basicNDA
+ 
+  
+ * */
 	/**
 	 * @param args
 	 */
@@ -36,6 +44,7 @@ public class DataBufferSingleApp {
 		String str="";
 		String info = "";
 		
+		/** \todo Implements more tests about the cfgFilename: existence, permission, etc */
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(cfgFilename));
 
@@ -50,6 +59,7 @@ public class DataBufferSingleApp {
 		String tableName = prop.getValue("tableName");
 		String pathToXMLCfg = prop.getValue("pathToXMLCfg");
 		String pathToApp = prop.getValue("pathToApp");
+		String dirLib = prop.getValue("dirLib");
 		String jobName = prop.getValue("jobName");
 		int numOfSamples = Integer.parseInt(prop.getValue("numOfSamples"));
 		
@@ -82,7 +92,7 @@ public class DataBufferSingleApp {
 						ArrayList<String> zipfiles = D.run(buffer, tableName, jobName, numOfSamples);
 						System.out.println (zipfiles);
 
-						D.saveFile(D.buildJDF(zipfiles, pathToApp),pathToJDF+File.separatorChar+animal.getName()+".jdf");
+						D.saveFile(D.buildJDF(zipfiles, pathToApp, dirLib),pathToJDF+File.separatorChar+animal.getName()+".jdf");
 
 												
 						return;

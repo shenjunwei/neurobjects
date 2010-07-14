@@ -85,7 +85,7 @@ public class DataSetBuilder {
 	 *            path to application
 	 * @return
 	 */
-	public String buildJDF (ArrayList<String> zipfiles, String pathToApp) {
+	public String buildJDF (ArrayList<String> zipfiles, String pathToApp, String dirLib) {
 		
 		Enumeration<String> f = Collections.enumeration(zipfiles);
 		String filename="";
@@ -98,6 +98,8 @@ public class DataSetBuilder {
 			jdfContent += "task :\n";
 			filename = f.nextElement();
 			jdfContent +="init : store "+filename+" "+filename+"\n";
+		//	jdfContent +="\tstore "+dirLib+File.separatorChar+"colt.jar colt.jar\n";
+			jdfContent +="\tstore "+dirLib+File.separatorChar+"weka.jar weka.jar\n";
 			jdfContent +="\tstore "+pathToApp+" "+appName+"\n";
 			jdfContent +="remote : java -jar $STORAGE/"+appName+" $STORAGE/"+filename+" > output-$JOB.$TASK.log\n";
 			jdfContent +="final: get output-$JOB.$TASK.log output-$JOB.$TASK.log\n\n\n";
@@ -108,12 +110,16 @@ public class DataSetBuilder {
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	
-	/**
-	 * @param buffer
-	 * @param table_name
-	 * @param jobName
-	 * @param numOfSamples
-	 * @return
+	/** \brief Sweeps parameters to generates Dataset's and put them in a buffer
+	 * 
+	 * This is the main method in DataSetBuilder class. 
+	 * 
+	 * 
+	 * @param buffer DatasetBufferSingle in which should be stored the dataset's.
+	 * @param table_name name of table in which will be stored the results
+	 * @param jobName job name 
+	 * @param numOfSamples number of instances for each point
+	 * @return A list of filename in whose has been stored the Dataset's
 	 * @throws Exception
 	 */
 	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, String jobName, int numOfSamples) throws Exception {
@@ -208,6 +214,10 @@ public class DataSetBuilder {
 		return(this.buildInstances(positiveLabel));
 	} 
 	
+	/** \brief Given a filter and a positive labe, returns a Dataset 
+	 * 
+	 * @param positiveLabel positive label to be used in the Dataset building
+	 * @param filter name of filter to be used in the Dataset building */ 
 	public Dataset get (String filter, String positiveLabel) throws Exception {
 		
 		Instances[] dataVector = this.getInstances(filter, positiveLabel);
