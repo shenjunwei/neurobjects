@@ -187,6 +187,8 @@ public class Evaluater {
 				duration = end_time-begin_time;
 				data.getProperties().setProperty("duration", duration+"");
 				data.getProperties().setProperty("status", "OK");
+				data.getProperties().setProperty("jobid", jobId);
+				data.getProperties().setProperty("taskid", taskId);
 				this.recordEval(data, e);
 				SQLQuery=data.getProperties().toSQLString(); 
 				if (SQLQuery.isEmpty()) {

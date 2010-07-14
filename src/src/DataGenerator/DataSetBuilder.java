@@ -100,8 +100,8 @@ public class DataSetBuilder {
 			jdfContent +="init : store "+filename+" "+filename+"\n";
 		//	jdfContent +="\tstore "+dirLib+File.separatorChar+"colt.jar colt.jar\n";
 			jdfContent +="\tstore "+dirLib+File.separatorChar+"weka.jar weka.jar\n";
-			jdfContent +="\tstore "+pathToApp+" "+appName+"\n";
-			jdfContent +="remote : java -jar $STORAGE/"+appName+" $STORAGE/"+filename+" $JOB $TASK > output-$JOB.$TASK.log\n";
+			jdfContent +="\tput "+pathToApp+" "+appName+"\n";
+			jdfContent +="remote : java -cp $STORAGE/weka.jar:$PLAYPEN/"+appName+" app.EvaluaterApp $STORAGE/"+filename+" $JOB $TASK > output-$JOB.$TASK.log\n";
 			jdfContent +="final: get output-$JOB.$TASK.log output-$JOB.$TASK.log\n\n\n";
 			
 		}
