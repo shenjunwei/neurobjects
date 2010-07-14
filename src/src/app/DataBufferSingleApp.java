@@ -44,6 +44,7 @@ public class DataBufferSingleApp {
 		String str="";
 		String info = "";
 		
+		
 		/** \todo Implements more tests about the cfgFilename: existence, permission, etc */
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(cfgFilename));

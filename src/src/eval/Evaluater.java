@@ -163,7 +163,7 @@ public class Evaluater {
 	
 	
 	
-	public synchronized void  runAll () throws FileNotFoundException, IOException {
+	public synchronized void  runAll (String jobId, String taskId) throws FileNotFoundException, IOException {
 		
 		
 		Evaluation e = null;

@@ -13,10 +13,13 @@ public class EvaluaterApp {
 		// TODO Auto-generated method stub
 
 		// ge5.hp.431546457.0.zip
-		String filename=args[0];
+		String filename=args[0].trim();
+		String jobId=args[1].trim();
+		String taskId=args[2].trim();
+		
 		//String filename="/tmp/tmp/ge5.hp.1551156138.0.zip";
 		Evaluater eval = new Evaluater (filename);
-		eval.runAll();
+		eval.runAll(jobId,taskId);
 		
 		
 	}
