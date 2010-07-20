@@ -12,7 +12,17 @@ import java.util.Hashtable;
 import java.util.Random;
 
 import cern.colt.matrix.DoubleMatrix1D;
+import data.BehavHandlerFile;
+import data.BehavHandlerI;
+import data.CountMatrix;
+import data.Dataset;
+import data.Pattern;
+import data.Patterns;
+import data.RateMatrixI;
+import data.SpkHandlerI;
+import data.TxtSpkHandler;
 import errors.InvalidArgumentException;
+import utils.BuildMode;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -35,7 +45,16 @@ public class DataSetBuilder {
 	BehavHandlerI behave = null;
 	Patterns 	  patterns = null;
 	AnimalSetup   setup = null;	
+	BuildMode	  mode=BuildMode.EQUALS;
 	
+	public BuildMode getMode() {
+		return mode;
+	}
+
+	public void setMode(BuildMode mode) {
+		this.mode = mode;
+	}
+
 	String 			currentFilter = "";
 		
 	/**
@@ -49,6 +68,21 @@ public class DataSetBuilder {
 		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
 		this.numNegativeSamplesToTrain = (int) Math.floor(this.numPositiveSamplesToTrain*this.setup.getBeta());
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
+	}
+	
+	/**
+	 * \brief Sets the configuration parameters from XML file to internal class parameters.
+	 * 
+	 * Also is defined the Build mode. Please refer to BuildMode for more details.
+	 * Defines the positive and negative set sizes to train and test steps
+	 */
+	public DataSetBuilder (AnimalSetup s, BuildMode mode) {
+		this.setup = s;
+		this.numPositiveSamplesToTrain = (int) Math.floor(this.setup.getTotalSamples()*this.setup.getAlfa());
+		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
+		this.numNegativeSamplesToTrain = (int) Math.floor(this.numPositiveSamplesToTrain*this.setup.getBeta());
+		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
+		this.mode = mode;
 	}
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -85,11 +119,11 @@ public class DataSetBuilder {
 	 *            path to application
 	 * @return
 	 */
-	public String buildJDF (ArrayList<String> zipfiles, String pathToApp, String dirLib) {
+	public String buildJDF (ArrayList<String> zipfiles, String pathToApp, String dirLib, String NTPHost) {
 		
 		Enumeration<String> f = Collections.enumeration(zipfiles);
 		String filename="";
-		String jdfContent="job : \nlabel  : NDA."+this.hashCode()+"\n\n";
+		String jdfContent="job : \nlabel  : "+this.setup.getName()+"."+this.hashCode()+"\n\n";
 		String tmp[] = pathToApp.split(File.separatorChar+"");
 		String appName = tmp[tmp.length-1];
 		
@@ -97,11 +131,11 @@ public class DataSetBuilder {
 		while (f.hasMoreElements()) {
 			jdfContent += "task :\n";
 			filename = f.nextElement();
-			jdfContent +="init : store "+filename+" "+filename+"\n";
-		//	jdfContent +="\tstore "+dirLib+File.separatorChar+"colt.jar colt.jar\n";
+			jdfContent +="init : put "+filename+" "+filename+"\n";
 			jdfContent +="\tstore "+dirLib+File.separatorChar+"weka.jar weka.jar\n";
+			jdfContent +="\tstore "+dirLib+File.separatorChar+"commons-net-2.0.jar commons-net-2.0.jar \n";
 			jdfContent +="\tput "+pathToApp+" "+appName+"\n";
-			jdfContent +="remote : java -cp $STORAGE/weka.jar:$PLAYPEN/"+appName+" app.EvaluaterApp $STORAGE/"+filename+" $JOB $TASK > output-$JOB.$TASK.log\n";
+			jdfContent +="remote : java -cp $STORAGE/weka.jar:$STORAGE/commons-net-2.0.jar:$PLAYPEN/"+appName+" app.EvaluaterApp $PLAYPEN/"+filename+" "+NTPHost+" $JOB $TASK > output-$JOB.$TASK.log\n";
 			jdfContent +="final: get output-$JOB.$TASK.log output-$JOB.$TASK.log\n\n\n";
 			
 		}
@@ -122,7 +156,7 @@ public class DataSetBuilder {
 	 * @return A list of filename in whose has been stored the Dataset's
 	 * @throws Exception
 	 */
-	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, String jobName, int numOfSamples) throws Exception {
+	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, String jobName, int numOfSamples, String bMode) throws Exception {
 		
 		String filter = "";
 		String label = "";
@@ -141,13 +175,14 @@ public class DataSetBuilder {
 			return null;
 		}
 		if (numOfSamples<=0) {
-			new InvalidArgumentException("Invalid number of samples !"
+			new InvalidArgumentException("Invalid number of samples !" 
 					+ numOfSamples);
 			return null;
 		}
 		
 		String zipfilename = "";
 		int zipCount = 0;
+		
 		Enumeration <String> f = Collections.enumeration(this.setup.getFilters());
 		while (f.hasMoreElements()) {
 			filter = f.nextElement();
@@ -161,6 +196,7 @@ public class DataSetBuilder {
 					data = this.get(filter, label);
 					data.properties.setProperty("table_name", table_name);
 					data.properties.setProperty("job", jobName);
+					data.properties.setProperty("bmode", bMode);
 					} catch (Exception e) {};
 				
 					if (!buffer.add(data)) {
@@ -274,9 +310,9 @@ public class DataSetBuilder {
 		}
 		return (buildDataSets(positiveLabel, atts));
 	}
-		
-	private Instances[] buildDataSets(String positiveLabel, FastVector atts) {
-		
+	
+	private Instances[] buildDataSetsEquals(String positiveLabel, FastVector atts) {
+	
 		ArrayList<String> labels = this.setup.getLabels(); 
 		Hashtable<String, ArrayList<Integer>> patIdxs = buildPatsIdx(labels);
 		
@@ -308,8 +344,8 @@ public class DataSetBuilder {
 			
 		while(e.hasMoreElements()) {
 			label = e.nextElement();
-			list = patIdxs.get(label);
-			patternList = this.patterns.getPatterns(label);
+			list = patIdxs.get(label);  //fusion
+			patternList = this.patterns.getPatterns(label); //fusion
 			if (label.equals(positiveLabel)) {
 				// Positive samples to train
 				for (i=0; i<this.numPositiveSamplesToTrain; i++) {
@@ -336,7 +372,7 @@ public class DataSetBuilder {
 					data.add(new Instance(1.0, vals.clone()));
 					list.remove(idx);
 				}
-				// Negative sample to train
+				// Negative sample to test
 				for (i=0; i<numOtherToTest ; i++) {
 					idx = R.nextInt(list.size()-1);
 					vals = patternList.get(list.get (idx)).toWeka(attClass.indexOf("no"));
@@ -345,6 +381,118 @@ public class DataSetBuilder {
 				}
 			}
 	    }
+		return (dataset);
+	
+	}
+	
+	// Adds to Intances vector the set of negative samples, randomly selected 
+	private Instances[] getNegativeSamplesRandom(String positiveLabel, Hashtable<String, ArrayList<Integer>> patIdxs, Instances dataset[]) {
+		
+		ArrayList<String> labels = this.setup.getLabels(); 
+		int numOtherToTrain = (int) Math.floor(this.numNegativeSamplesToTrain/labels.size()-1);
+		int numOtherToTest = (int) Math.floor(this.numNegativeSamplesToTest/labels.size()-1);
+		
+		
+		int idx,i;
+		Instances 	data=dataset[0],dataTest=dataset[1];
+		Random R = new Random ();
+		double vals[] = null;
+		FastVector attClass = new FastVector();
+		attClass.addElement ("yes");
+		attClass.addElement ("no");
+		
+		NegativeList negativeList = new NegativeList(patIdxs, positiveLabel);	
+		int index=0;
+		String label="";
+		for (i=0; i<numOtherToTrain ; i++) {
+			idx = R.nextInt(negativeList.size()-1); // gets the next int within in the list size range 
+			label = negativeList.getLabel(idx); // gets the label in that position
+			index = negativeList.getIdx(idx);  // gets the position in hash table
+			vals = this.patterns.getPattern(label,index).toWeka(attClass.indexOf("no")); //gets the patterns giving label and position
+			data.add(new Instance(1.0, vals.clone())); // adds the new instance in the dataset
+			negativeList.remove(idx);  // removes the selected idx from the valid negative list indexes
+		}
+		// Negative sample to test
+		for (i=0; i<numOtherToTest ; i++) {
+			idx = R.nextInt(negativeList.size()-1);
+			label = negativeList.getLabel(idx);
+			index = negativeList.getIdx(idx);
+			vals = this.patterns.getPattern(label,index).toWeka(attClass.indexOf("no"));
+			dataTest.add(new Instance(1.0, vals.clone()));
+			negativeList.remove(idx);
+		
+		}
+		return dataset;
+	
+	}
+
+	// Adds to dataset vector the set of positive samples
+	private Instances[] getPositiveSamplesRandom(String positiveLabel, Hashtable<String, ArrayList<Integer>> patIdxs, Instances dataset[]) {
+		
+		int idx,i;
+		Instances 	data=dataset[0],dataTest=dataset[1];
+		Random R = new Random ();
+		double vals[] = null;
+		FastVector attClass = new FastVector();
+		attClass.addElement ("yes");
+		attClass.addElement ("no");
+		//------------- Builds the positive sample space. --------------------
+		ArrayList<Integer> positiveList = new ArrayList<Integer> ();
+		positiveList.addAll(patIdxs.get(positiveLabel));
+		
+		// Gets the patterns list to the positive label 
+		//ArrayList<Pattern> positivePatternList = this.patterns.getPatterns(positiveLabel);
+		
+		// Select, randomly, positive sammples to training
+		for (i=0;i<this.numPositiveSamplesToTrain; i++) {
+			idx = R.nextInt(positiveList.size()-1);
+			vals = this.patterns.getPattern(positiveLabel, idx).toWeka(attClass.indexOf("yes"));
+			data.add(new Instance(1.0, vals.clone()));
+			positiveList.remove(idx);
+		}
+		
+		// Select, randomly, positive sammples to training
+		for (i=0; i<this.numPositiveSamplesToTest; i++) {
+			idx = R.nextInt(positiveList.size()-1);
+			vals = this.patterns.getPattern(positiveLabel, idx).toWeka(attClass.indexOf("yes"));
+			dataTest.add(new Instance(1.0, vals.clone()));
+			positiveList.remove(idx);
+		}
+		return (dataset);
+		
+	}
+	
+	private Instances[] buildDataSetsRandom(String positiveLabel, FastVector atts) {
+		
+		//ArrayList<String> labels = this.setup.getLabels(); 
+		Hashtable<String, ArrayList<Integer>> patIdxs = buildPatsIdx(this.setup.getLabels());
+		
+		
+		FastVector attClass = new FastVector();
+		attClass.addElement ("yes");
+		attClass.addElement ("no");
+		
+		// Creates the datasets
+		Instances 	data = new Instances("objectId", atts, 0);
+		Instances 	dataTest = new Instances("objectId", atts, 0);
+		Instances 	dataset[] = {data,dataTest};
+		
+		dataset[0] = data;
+		dataset[1] = dataTest;
+		
+		dataset = this.getPositiveSamplesRandom(positiveLabel, patIdxs, dataset); 
+		dataset = this.getNegativeSamplesRandom(positiveLabel, patIdxs, dataset);
+		return (dataset);
+	
+	}
+		
+	private Instances[] buildDataSets(String positiveLabel, FastVector atts) {
+		
+		Instances[] dataset = null;
+		switch (this.mode) {
+		case EQUALS: dataset = this.buildDataSetsEquals(positiveLabel, atts);
+		case RANDOM: dataset = this.buildDataSetsRandom(positiveLabel, atts);
+		}
 		return (dataset);
 		
 	}
@@ -576,7 +724,7 @@ public class DataSetBuilder {
 		FastVector attClass=null;
 		ArrayList <String> neuronNames = spikes.getNeuronNames();
 		int numOfBinsPerNeuron = this.setup.getWindowWidth();
-		int numOfNeurons = neuronNames.size();
+	//	int numOfNeurons = neuronNames.size();
 		
 		Enumeration<String> e = Collections.enumeration(neuronNames);
 		

@@ -11,6 +11,8 @@ import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipOutputStream;
 
+import data.Dataset;
+
 import errors.InvalidArgumentException;
 
 /**

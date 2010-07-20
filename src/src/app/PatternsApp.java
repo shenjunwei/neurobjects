@@ -3,10 +3,10 @@ package app;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import DataGenerator.Pattern;
-import DataGenerator.Patterns;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import data.Pattern;
+import data.Patterns;
 
 public class PatternsApp {
 

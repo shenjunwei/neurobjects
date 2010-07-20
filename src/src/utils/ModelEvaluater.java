@@ -3,7 +3,8 @@ package utils;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import DataGenerator.Dataset;
+import data.Dataset;
+
 import DataGenerator.DatasetBuffer;
 
 import errors.EmptySourceException;

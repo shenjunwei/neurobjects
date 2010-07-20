@@ -1,4 +1,4 @@
-package DataGenerator;
+package utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,24 +13,24 @@ import errors.InvalidArgumentException;
 public class Properties {
 	
 	
-	protected Hashtable<String, String> values = null;
+	private Hashtable<String, String> values = null;
 
 	public Properties () {
 	
-		values = new Hashtable<String, String> ();
+		setValues(new Hashtable<String, String> ());
 		
 	}
 	
 	public Properties (Properties info) {
 		
-		values = info.cloneTable();
+		setValues(info.cloneTable());
 		
 	}
 	
 	public Hashtable<String, String> cloneTable () {
 		Hashtable<String, String> tmp = new Hashtable<String, String> ();
 		
-		Enumeration <String> k = this.values.keys();
+		Enumeration <String> k = this.getValues().keys();
 		
 		while (k.hasMoreElements()) {
 			String key = k.nextElement();
@@ -44,7 +44,7 @@ public class Properties {
 		
 		String str;
 	
-		values = new Hashtable<String, String> ();
+		setValues(new Hashtable<String, String> ());
 		
 		BufferedReader reader = new BufferedReader(
 				  new StringReader(content));
@@ -66,23 +66,23 @@ public class Properties {
 	
 	
 	public void unsetValues() {
-		Enumeration <String> k = this.values.keys();
+		Enumeration <String> k = this.getValues().keys();
 		
 		while (k.hasMoreElements()) {
-			this.values.put(k.nextElement(), null);
+			this.getValues().put(k.nextElement(), null);
 		}
 	}
 	
 	public String toString ()
 	{
-		return (this.values.toString());
+		return (this.getValues().toString());
 		
 	}
 	
 	public String toComment (String tagComment) {
 		String result="";
 		String key="";
-		Enumeration <String> k = this.values.keys();
+		Enumeration <String> k = this.getValues().keys();
 		while (k.hasMoreElements()) {
 			key = k.nextElement();
 			result+=tagComment+key+"="+this.getValue(key)+"\n";
@@ -152,8 +152,8 @@ public class Properties {
 
 
         InetAddress iAddr = InetAddress.getLocalHost () ;
-        this.values.put("hostname",iAddr.getHostName());
-        this.values.put("ip",iAddr.getHostAddress());
+        this.getValues().put("hostname",iAddr.getHostName());
+        this.getValues().put("ip",iAddr.getHostAddress());
         
 
 }
@@ -163,7 +163,7 @@ public class Properties {
 		String result="(";
 		 
 		
-		Enumeration <String> k = this.values.keys();
+		Enumeration <String> k = this.getValues().keys();
 		while (k.hasMoreElements()) {
 			result+=k.nextElement();
 			if (k.hasMoreElements()) {
@@ -178,9 +178,9 @@ public class Properties {
 	public String values() {
 		
 		String result="(";
-		Enumeration <String> k = this.values.keys();
+		Enumeration <String> k = this.getValues().keys();
 		while (k.hasMoreElements()) {
-			result+="'"+this.values.get(k.nextElement())+"'";
+			result+="'"+this.getValues().get(k.nextElement())+"'";
 			if (k.hasMoreElements()) {
 				result+=",";
 			}
@@ -191,23 +191,31 @@ public class Properties {
 	}
 	
 	public void setProperty (String key, String value) {
-		values.put(key, value);	
+		getValues().put(key, value);	
 	}
 	
 	public void delProperty (String key) {
 		
-		if (!this.values.containsKey(key)) {
+		if (!this.getValues().containsKey(key)) {
 			new InvalidArgumentException("Undefined property !!");
 			return;
 		}
-		this.values.remove(key);
+		this.getValues().remove(key);
 	}
 	
 	
 	public String getValue (String key) {
-		if (!values.containsKey(key)) {
+		if (!getValues().containsKey(key)) {
 			return null;
 		}
-		return (values.get(key));
+		return (getValues().get(key));
+	}
+
+	public void setValues(Hashtable<String, String> values) {
+		this.values = values;
+	}
+
+	public Hashtable<String, String> getValues() {
+		return values;
 	}
 }

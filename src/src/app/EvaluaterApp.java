@@ -15,17 +15,25 @@ public class EvaluaterApp {
 		String filename = "";
 		String jobId = "";
 		String taskId = "";
-		for (int i = 0; i < args.length; i++) {
+		String ntpHost = "";
+		int i=0;
+		for (i = 0; i < args.length; i++) {
 			System.out.println(i+" :"+args[i]);
 		}
-		if (args.length >= 3) {
 		
-			filename = args[0].trim();
-			jobId = args[1].trim();
-			taskId = args[2].trim();
+		if (args.length == 4) {
+			i = 0;
+			filename = args[i++].trim();
+			ntpHost = args[i++].trim();
+			jobId = args[i++].trim();
+			taskId = args[i++].trim();			
+		}
+		else {
+			System.err.println ("Syntax error: EvaluaterApp <filename> <ntpHost> <job> <task> ");
+			return;
 		}
 		// String filename="/tmp/tmp/ge5.hp.1551156138.0.zip";
-		Evaluater eval = new Evaluater (filename);
+		Evaluater eval = new Evaluater (filename,ntpHost);
 		eval.runAll(jobId,taskId);
 
 	}

@@ -8,6 +8,8 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import data.Dataset;
+
 import errors.EmptySourceException;
 import errors.InvalidArgumentException;
 

@@ -2,9 +2,9 @@ package app;
 
 import java.util.Arrays;
 
-import DataGenerator.Pattern;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import data.Pattern;
 
 public class PatternApp {
 	

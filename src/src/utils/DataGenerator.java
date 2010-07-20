@@ -4,7 +4,10 @@ import DataGenerator.AnimalSetup;
 import DataGenerator.DataSetBuilder;
 import DataGenerator.DatasetBuffer;
 
-/** \brief Thread to generate data */
+/** \brief Thread to generate data
+ * 
+ *  
+ *  No WORKING*/
 public class DataGenerator  extends Thread{
 	
 	DataSetBuilder 		data = null;
@@ -25,7 +28,7 @@ public class DataGenerator  extends Thread{
 	
 	public void run () {
 		try {
-			this.data.run(this.buffer, this.numberOfSamples);
+		//	this.data.run(this.buffer, this.numberOfSamples);
 			this.done = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

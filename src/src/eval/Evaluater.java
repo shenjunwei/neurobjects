@@ -26,6 +26,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,10 +39,15 @@ import java.util.zip.CheckedInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import DataGenerator.Dataset;
-import DataGenerator.DatasetBuffer;
-import DataGenerator.Properties;
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
 
+import data.Dataset;
+
+import DataGenerator.DatasetBuffer;
+
+import utils.Properties;
+import utils.SmallNTPClient;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
 import errors.InvalidArgumentException;
@@ -54,7 +61,10 @@ public class Evaluater {
 	String 								models[] = {"NBayes","MLP","J48","RBF","SVM"};
 	ArrayList<String> 					supportedModels=null;
 	protected Hashtable<String, Dataset> data = null;
-	
+	protected SmallNTPClient 			timeClient= null;
+	protected String 					ntpHost="";
+	protected NTPUDPClient 				NTPclient=null;
+
 	
 	
 	
@@ -66,9 +76,17 @@ public class Evaluater {
 		
 	}
 	
-	public Evaluater (String zipFilename) throws IOException {
+	public Evaluater (String zipFilename, String ntpHost) throws IOException {
 		this.buildModelList();
 		this.data = new Hashtable<String, Dataset> ();
+		this.timeClient = new SmallNTPClient();
+		this.ntpHost = ntpHost;
+		this.NTPclient = new NTPUDPClient();
+		// We want to timeout if a response takes longer than 10 seconds
+		NTPclient.setDefaultTimeout(10000);
+       
+        
+       
 		
 		
         FileInputStream fis = new FileInputStream(zipFilename);
@@ -160,8 +178,28 @@ public class Evaluater {
 		
 	}
 	
-	
-	
+	public synchronized long getTime () {
+        java.util.Date time = null;
+        
+        try {
+            this.NTPclient.open();
+           
+                try {
+                    InetAddress hostAddr = InetAddress.getByName(this.ntpHost);
+                    TimeInfo info = this.NTPclient.getTime(hostAddr);
+                    time = this.timeClient.getTime(info);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        this.NTPclient.close();
+        return (time.getTime());
+		
+	}
 	
 	public synchronized void  runAll (String jobId, String taskId) throws FileNotFoundException, IOException {
 		
@@ -170,16 +208,17 @@ public class Evaluater {
 		String SQLQuery="";
 		Enumeration<String> d = this.data.keys();
 		Dataset data=null;
-		Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//Calendar cal = Calendar.getInstance();
+ //       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         long begin_time,end_time,duration;
         
 		while (d.hasMoreElements()) {
 			data = this.data.get(d.nextElement()); 
 			for (int j = 0; j < this.models.length; j++) {
 				this.setModel(this.models[j]);
-				cal = Calendar.getInstance();
-				data.getProperties().setProperty("time", sdf.format(cal.getTime()));
+			//	cal = Calendar.getInstance();
+				//data.getProperties().setProperty("time", sdf.format(cal.getTime()));
+				data.getProperties().setProperty("time", this.getTime()+"");
 				begin_time =  System.currentTimeMillis();
 				e = this.eval(data);
 				end_time =  System.currentTimeMillis();

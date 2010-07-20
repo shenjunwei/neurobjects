@@ -16,9 +16,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import data.Dataset;
+
+import errors.InvalidArgumentException;
+
+import utils.BuildMode;
+
 import DataGenerator.AnimalSetup;
 import DataGenerator.DataSetBuilder;
-import DataGenerator.Dataset;
 import DataGenerator.DatasetBuffer;
 import DataGenerator.DatasetBufferSingle;
 
@@ -55,14 +60,29 @@ public class DataBufferSingleApp {
 			in.close();
 		} catch (IOException e) {
 		}
-		DataGenerator.Properties prop = new DataGenerator.Properties(info);
+		utils.Properties prop = new utils.Properties(info);
 		String pathToJDF = prop.getValue("pathToJDF");
 		String tableName = prop.getValue("tableName");
 		String pathToXMLCfg = prop.getValue("pathToXMLCfg");
 		String pathToApp = prop.getValue("pathToApp");
 		String dirLib = prop.getValue("dirLib");
 		String jobName = prop.getValue("jobName");
+		String NTPHost = prop.getValue("NTPHost");
 		int numOfSamples = Integer.parseInt(prop.getValue("numOfSamples"));
+		String bMode = prop.getValue("bMode");
+		bMode = bMode.toLowerCase();
+		BuildMode bmode=BuildMode.RANDOM;
+		
+		// Processing Build Mode
+		if (bMode.equals("random")) {
+			bmode = BuildMode.RANDOM;
+		} else {
+			if (bMode.equals("equals")) {
+				bmode = BuildMode.EQUALS;
+			} else {
+				new InvalidArgumentException("Invalid value to bMode: " + bMode);
+			}
+		}
 		
 		ArrayList<AnimalSetup> animalList = new ArrayList<AnimalSetup>(); 
 		
@@ -88,12 +108,12 @@ public class DataBufferSingleApp {
 
 					if (animal != null) {
 						animalList.add(animal);
-						DataSetBuilder D = new DataSetBuilder(animal);
+						DataSetBuilder D = new DataSetBuilder(animal,bmode);
 
-						ArrayList<String> zipfiles = D.run(buffer, tableName, jobName, numOfSamples);
+						ArrayList<String> zipfiles = D.run(buffer, tableName, jobName, numOfSamples,bMode.toLowerCase());
 						System.out.println (zipfiles);
 
-						D.saveFile(D.buildJDF(zipfiles, pathToApp, dirLib),pathToJDF+File.separatorChar+animal.getName()+".jdf");
+						D.saveFile(D.buildJDF(zipfiles, pathToApp, dirLib, NTPHost),pathToJDF+File.separatorChar+animal.getName()+".jdf");
 
 												
 						return;

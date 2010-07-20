@@ -1,6 +1,6 @@
 package app;
 
-import DataGenerator.Properties;
+import utils.Properties;
 
 public class PropertiesApp {
 

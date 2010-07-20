@@ -3,10 +3,10 @@ package app;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import DataGenerator.CountMatrix;
-import DataGenerator.TxtSpkHandler;
 
 import cern.colt.matrix.DoubleMatrix1D;
+import data.CountMatrix;
+import data.TxtSpkHandler;
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 

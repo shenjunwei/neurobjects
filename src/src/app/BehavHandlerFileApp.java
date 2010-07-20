@@ -3,9 +3,10 @@ package app;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-import DataGenerator.BehavHandlerFile;
-import DataGenerator.CountMatrix;
-import DataGenerator.TxtSpkHandler;
+import data.BehavHandlerFile;
+import data.CountMatrix;
+import data.TxtSpkHandler;
+
 
 public class BehavHandlerFileApp {
 
