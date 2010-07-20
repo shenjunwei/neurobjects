@@ -2,8 +2,9 @@ package tests;
 
 import java.io.IOException;
 
-import DataGenerator.CountMatrix;
-import DataGenerator.TxtSpkHandler;
+import data.CountMatrix;
+import data.TxtSpkHandler;
+
 
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;

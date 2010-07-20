@@ -3,10 +3,10 @@ package tests;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import DataGenerator.TxtSpikeTrain;
-import DataGenerator.TxtSpkHandler;
 
 import cern.colt.matrix.DoubleMatrix1D;
+import data.TxtSpikeTrain;
+import data.TxtSpkHandler;
 
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
