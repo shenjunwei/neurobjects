@@ -52,7 +52,7 @@ public class DataGenerator_DataSet extends TestCase implements Test {
 	 */
 	@Before
 	protected void setUp() {
-		String configFile = "/tmp/animal_file_setup_ge5.xml";
+		String configFile = "/home/ambar/tmp/animal_file_setup_ge5.xml";
 
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder;
@@ -156,12 +156,17 @@ public class DataGenerator_DataSet extends TestCase implements Test {
 	
 	public void testSaveZipOutputStream() throws IOException {
 		for (Dataset dataSet : this.dataSetList) {
-			String zipFileName = "/tmp/OutputStream_"+dataSet.getAnimal()+"_"+dataSet.getArea()+"_"+dataSet.getLabel()+"_"+dataSet.getBinSize()+"_"+dataSet.getWindowWidth()+".zip";
-	        FileOutputStream dest = new FileOutputStream(zipFileName);
+			//String zipFileName = "/tmp/OutputStream_"+dataSet.getAnimal()+"_"+dataSet.getArea()+"_"+dataSet.getLabel()+"_"+dataSet.getBinSize()+"_"+dataSet.getWindowWidth()+".zip";
+			
+			String zipFileName = "/tmp/OutputStream_ANIBAL.zip";
+					
+			FileOutputStream dest = new FileOutputStream(zipFileName);
 			CheckedOutputStream checksum = new CheckedOutputStream(dest, new Adler32());
-	        ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(checksum));
-	        
+			ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(
+					checksum));
+
 	        dataSet.saveZip(out);
+	        out.close();
 	        
 	        ZipFile zip = new ZipFile(zipFileName);
 	        
