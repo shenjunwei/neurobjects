@@ -86,7 +86,7 @@ public interface RateMatrixI {
 	 * @return a \code double vector with the pattern \b or a \code null value
 	 *         if the matrix content is not valid.
 	 */
-	public DoubleMatrix1D getPattern();
+	/*public DoubleMatrix1D getPattern(); */
 
 	
 	/**

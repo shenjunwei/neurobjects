@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import javax.activity.InvalidActivityException;
 
 import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import errors.InvalidArgumentException;
 
 //import errors.InvalidArgumentException;
 
@@ -191,19 +191,6 @@ public class CountMatrix implements RateMatrixI {
 	/* ------------------------------------------------------------------------------------------ */
 	
 	
-	/* ------------------------------------------------------------------------------------------ */
-	/** \brief Returns the length of a time in columns in the Count Matrix 
-	 * 
-	 * Given a time, since zero, this method returns the number of columns in Count Matrix corresponding
-	 * to this time.  
-	 * 
-	 * @param time value to be converted in number of columns in Count Matrix.
-	 * @return number of columns in Count Matrix corresponding
-	 * to given time.  */
-	public int getLen (double time) {
-		return (this.getIdx(this.first+time));
-	}
-	/* ------------------------------------------------------------------------------------------ */
 	
 	/* ------------------------------------------------------------------------------------------ */
 	/** \brief Returns the log messages
@@ -227,25 +214,35 @@ public class CountMatrix implements RateMatrixI {
 	}
 	/* ------------------------------------------------------------------------------------------ */
 	
-	// TODO Doc
-	/** 
-	 * \brief Returns a set of pattern give a time interval 
+	
+	/**
+	 * \brief Returns a list of patterns within a given time interval.
 	 * 
-	 * \todo This method should describe better the structure of Pattern (what each line and column means, how the pattern is assembled)
+	 * Please refer to getPattern() method for more details on the pattern format.
+	 * The patterns corresponding to sliding windows from \c t1 until \c t2. To build the list is used a
+	 * 1-column step.
+	 * 
+	 * @param t1
+	 *            beginning of the time interval
+	 * @param t2
+	 *            end of the time interval
+	 * @return a list of patterns
+	 * 
+	 * @see getPattern()
 	 * */
 	
 	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) {
 	
 		ArrayList<DoubleMatrix1D> patterns = null;
 		if (t1>t2) {
-			this.log += "CountMatrix:getPatterns: invalid arguments";
+			new InvalidArgumentException("CountMatrix:getPatterns: invalid arguments");
 			return (patterns);
 		}
 		
 		//if ( (!this.windowPossible(t1,this.windowWidth)) || (!this.windowPossible(t2,this.windowWidth)))  {
 		if (!this.possibleInterval(t1, t2))  {
 			
-			this.log += "CountMatrix:getPatterns: invalid input arguments can not possible windows";
+			new InvalidArgumentException("CountMatrix:getPatterns: invalid input arguments can not possible windows");
 			return (patterns);
 		}
 		 
@@ -263,7 +260,7 @@ public class CountMatrix implements RateMatrixI {
 		return (patterns);
 	}
 	
-	/** \brief Given the column position and window width, returns an array of spikes of Count Matrix.
+	/** \brief Returns a pattern since a given column and a width.
 	  *  
 	 * @param firstCol : first column from which the pattern will be formed.
 	 * @param windowWidth : window width to form the pattern.
@@ -303,14 +300,30 @@ public class CountMatrix implements RateMatrixI {
 		return (pattern);
 	}
 	
-	
+	/* ------------------------------------------------------------------------------------------ */
 	/**
-	 * \todo This method should describe better the structure of Pattern (what each line and column means, how the pattern is assembled)
+	 * \brief Returns the pattern in current cursor.
+	 * 
+	 * Returns a double vector which is the activity population pattern using
+	 * the current cursor position as begin and the current window width.
+	 * 
+	 * Ex: In following matrix the cursor is 2 and window width is 3.
+	 * 
+	 * M = [ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3
+	 * 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
+	 * 
+	 * The result will be: p = [1 1 1 2 2 2 3 3 3 4 4 4];
+	 * 
+	 * Every time that that this method is the cursor position is incremeted by
+	 * unity.
+	 * 
+	 * @return a \code double vector with the pattern \b or a \code null value
+	 *         if the matrix content is not valid.
+	 * @see getCursor(), getWindowWidth()
 	 */
-	public DoubleMatrix1D getPattern() {
+	/*public DoubleMatrix1D getPattern() {
 		
-		
-		
+	
 		String errorMsg = "";
 		int firstCol = this.cursor;
 		 
@@ -342,7 +355,8 @@ public class CountMatrix implements RateMatrixI {
 		this.cursor++;
 		return (pattern);	
 		
-	}
+	} */
+	/* ------------------------------------------------------------------------------------------ */
 	
 	
 	/* ------------------------------------------------------------------------------------------ */
@@ -600,7 +614,7 @@ public class CountMatrix implements RateMatrixI {
      public int                        numPatterns(int width, double beginTime) {return (-1);}
      
      
-     /** \brief Increments the reading cursor 
+     /** \brief Increments the reading cursor with a given value
       * 
       * @return \c true If the operation was successful, or \c false otherwise. */
      public boolean  incCursor(int inc) {
@@ -611,6 +625,16 @@ public class CountMatrix implements RateMatrixI {
        }
        return (false);
     	 
+     }
+     
+     public boolean incCursor () {
+    	 int newCursor = this.cursor;
+    	 newCursor++;
+         if(isValidCursor(newCursor)) {
+      	   this.cursor = newCursor;
+      	   return (true);
+         }
+         return (false);
      }
      
      
