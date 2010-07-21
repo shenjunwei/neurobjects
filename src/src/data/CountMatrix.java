@@ -5,6 +5,8 @@ import hep.aida.ref.Histogram1D;
 
 import java.util.ArrayList;
 
+import javax.activity.InvalidActivityException;
+
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
@@ -627,7 +629,20 @@ public class CountMatrix implements RateMatrixI {
       * @return \c true If there is more patterns to be read from Counting Matrix, or \c false otherwise. 
       *  
       */
-     public boolean            hasNext() {return (false);}
+     public boolean  hasNext() {
+    	 
+    	 if (this.windowWidth<=0) {
+    		 new InvalidActivityException("Invalid value to window width: "+this.windowWidth);
+    	 }
+    	 
+    	 if (this.cursor<=(this.numberOfCols-this.windowWidth)) {
+    		 return true;
+    		 
+    	 }
+    	 return false;
+     }
+    		 
+     
 
 
 	
@@ -681,6 +696,12 @@ public class CountMatrix implements RateMatrixI {
     	 }
     	 return ((double)sum/this.numberOfRows);
      }
+    
+    /** Resets the cursor position */
+    public void resetCursor () {
+    	
+    	this.cursor = 0;
+    }
      
     
      /** \brief Tells if a given row is valid 

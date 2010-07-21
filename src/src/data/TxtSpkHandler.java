@@ -279,9 +279,10 @@ public class TxtSpkHandler implements SpkHandlerI {
 		this.neurons = new ArrayList<SpikeTrain>();
 		
 		//Applying the filter
+		String fileName = "";
 		if (!filter.isEmpty()) {
 			for (int i = 0; i < numberOfFiles; i++) {
-				String fileName = name[i].toLowerCase();
+				fileName = name[i].toLowerCase();
 				if (fileName.startsWith(filterLowerCase) && fileName.endsWith(this.spkFileExtension)) {
 					spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
 					if (spikes.isValid()) {
@@ -293,7 +294,7 @@ public class TxtSpkHandler implements SpkHandlerI {
 		}
 		else { //When no filter is passed as argument this method try to read all files that have the extension this.spkFileExtension (in directory) 
 			for (int i = 0; i < numberOfFiles; i++) {
-				String fileName = name[i].toLowerCase();
+				fileName = name[i].toLowerCase();
 				if (fileName.endsWith(this.spkFileExtension))
 				{
 					spikes = new TxtSpikeTrain(path + "/"+name[i],a,b);
