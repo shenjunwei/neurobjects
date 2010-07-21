@@ -218,9 +218,26 @@ public class CountMatrix implements RateMatrixI {
 	/**
 	 * \brief Returns a list of patterns within a given time interval.
 	 * 
-	 * Please refer to getPattern() method for more details on the pattern format.
 	 * The patterns corresponding to sliding windows from \c t1 until \c t2. To build the list is used a
 	 * 1-column step.
+	 * 
+	 * This method returns a double vector which is the activity population pattern using
+	 * the current cursor position as begin and the current window width.
+	 * 
+	 * Ex: In following matrix the cursor is 2 and window width is 3.
+	 * 
+	 * M = [ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3
+	 * 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
+	 * 
+	 * The result will be: p = [1 1 1 2 2 2 3 3 3 4 4 4];
+	 * 
+	 * Every time that that this method is the cursor position is incremeted by
+	 * unity.
+	 * 
+	 * @return a \code double vector with the pattern \b or a \code null value
+	 *         if the matrix content is not valid.
+	 * @see getCursor(), getWindowWidth()
+
 	 * 
 	 * @param t1
 	 *            beginning of the time interval
