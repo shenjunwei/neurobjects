@@ -231,7 +231,7 @@ public class CountMatrix implements RateMatrixI {
 	 * 
 	 * The result will be: p = [1 1 1 2 2 2 3 3 3 4 4 4];
 	 * 
-	 * Every time that that this method is the cursor position is incremeted by
+	 * Every time that this method is call the cursor position is incremeted by one
 	 * unity.
 	 * 
 	 * @return a \code double vector with the pattern \b or a \code null value
