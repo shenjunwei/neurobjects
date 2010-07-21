@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 import weka.core.Instances;
 import DataGenerator.AnimalSetup;
 import DataGenerator.DataSetBuilder;
-import DataGenerator.Dataset;
+import data.Dataset;
 
 public class DataGenerator_DataSet extends TestCase implements Test {
 	
