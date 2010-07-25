@@ -650,7 +650,7 @@ public class DataSetBuilder {
 		this.currentFilter = filter;
 	}
 	
-	private boolean fillPatterns() {
+	private boolean fillPatterns() throws InvalidArgumentException {
 		
 		ArrayList<String> labels = setup.getLabels();
 		
@@ -682,8 +682,9 @@ public class DataSetBuilder {
 	 *  @param label label to be used for all patterns inserted;
 	 *  
 	 *  @return \c true if the operation was sucessful, \b or \c false otherwise;
+	 * @throws InvalidArgumentException 
 	 * */
-	private boolean fillPatterns (ArrayList<double[]> intervals, String label ) {
+	private boolean fillPatterns (ArrayList<double[]> intervals, String label ) throws InvalidArgumentException {
 		
 		Enumeration<double[]> e = Collections.enumeration(intervals);
 		
