@@ -1,11 +1,12 @@
 package data;
 
 import hep.aida.IHistogram1D;
-import hep.aida.ref.Histogram1D;
 
 import java.util.ArrayList;
 
 import javax.activity.InvalidActivityException;
+
+import utils.Histogram;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
@@ -92,32 +93,37 @@ public class CountMatrix implements RateMatrixI {
 	 * 
 	 * @param spikes set of spikes in whose must be done the spike couting.
 	 * @param binSize size of bins, in milliseconds, to be used in spike counting process. 
+	 * @throws InvalidArgumentException 
+	 * @throws InvalidActivityException 
 	 * */
-	public CountMatrix (SpkHandlerI spikes, double binSize) {
+	public CountMatrix (SpkHandlerI spikes, double binSize) throws InvalidArgumentException, InvalidActivityException {
 		
 		
 		
 		if (!this.setupInterval(binSize, spikes.beginInterval(), spikes.endInterval())) {
-			this.log = "Error: Invalid time interval\n";
-			return;
+			throw new InvalidActivityException("Error: Invalid time interval\n");
+			
 		}
 		
+		//IHistogram1D  h1 = new Histogram1D("H",this.histSize,this.first,this.last);
+		Histogram  h1 = new Histogram(this.first,this.last,this.binSize);
+		this.histSize = h1.getHistSize();
 		this.numberOfRows = spikes.getNumberOfNeurons();
-		this.numberOfCols = (int) Math.floor((this.last-this.first)/binSize);
+		this.numberOfCols = this.histSize;
 		this.neuronNames = spikes.getNeuronNames();
+		
 		
 		 
 		if (!this.createMatrix2D()) {
 			this.valid = false;
-			this.log = this.log + "Problems creating Count Matrix !!\n";
+			throw new InvalidActivityException ("Problems creating Count Matrix !!\n");
 		}
-		IHistogram1D  h1 = new Histogram1D("H",this.histSize,this.first,this.last);
 		
-		int numberOfNeurons = spikes.getNumberOfNeurons();
+		int numberOfNeurons = this.numberOfRows;
 		for (int i=0; i<numberOfNeurons; i++) {
-			h1.reset();
 			if (this.insertNeuronSpikes(h1,spikes.getSpikeTrain(i))) {
 				if (!this.fillMatrixRow2D(h1, i)) {
+					new InvalidActivityException("Was not possible to insert neuron spikes in Counting Matrix !!");
 					return;
 				}
 				
@@ -176,6 +182,36 @@ public class CountMatrix implements RateMatrixI {
 		
 	}
 	/* ------------------------------------------------------------------------------------------ */
+	
+	
+	/* ------------------------------------------------------------------------------------------ */
+	/** \brief Fills a Count Matrix row with values from a histogram.
+	 * 
+	 * The Count Matrix row and the histogram matrix must have compatible. In other words,
+	 * the number of entries in the histogram shall be not smaller than number of columns in the count
+	 * matrix row.
+	 * 
+	 * @param h1 histogram to be inserted in the Count Matrix.
+	 * @param row the Count Matrix row where the count should be inserted.
+	 * 
+	 * @return TRUE operation was successful, or FALSE otherwise.
+	 * @see IHistogram1D
+	 */
+	private boolean fillMatrixRow2D (Histogram h1, int row) {
+		
+		/*if (h1.entries()<this.numberOfCols) {
+			this.valid = false;
+			this.log = this.log + "fillMatrixRow2D: Histogram not smaller than number of columns\n";
+			return (false);
+		} */
+		for (int column = 0; column < this.numberOfCols; column++) {
+			this.matrix[row][column]=h1.binEntries(column);
+		}
+		return (true);
+		
+	}
+	/* ------------------------------------------------------------------------------------------ */
+	
 	
 	/* ------------------------------------------------------------------------------------------ */
 	/** \brief Returns a index in the Count Matrix of a given time 
@@ -244,23 +280,21 @@ public class CountMatrix implements RateMatrixI {
 	 * @param t2
 	 *            end of the time interval
 	 * @return a list of patterns
+	 * @throws InvalidArgumentException 
 	 * 
 	 * @see getPattern()
 	 * */
 	
-	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) {
+	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) throws InvalidArgumentException {
 	
 		ArrayList<DoubleMatrix1D> patterns = null;
 		if (t1>t2) {
-			new InvalidArgumentException("CountMatrix:getPatterns: invalid arguments");
-			return (patterns);
+			throw new InvalidArgumentException("CountMatrix:getPatterns: invalid arguments");	
 		}
 		
 		//if ( (!this.windowPossible(t1,this.windowWidth)) || (!this.windowPossible(t2,this.windowWidth)))  {
-		if (!this.possibleInterval(t1, t2))  {
-			
-			new InvalidArgumentException("CountMatrix:getPatterns: invalid input arguments can not possible windows");
-			return (patterns);
+		if (!this.possibleInterval(t1, t2))  {			
+			throw new InvalidArgumentException("CountMatrix:getPatterns: invalid input arguments can not possible windows");			
 		}
 		 
 		
@@ -399,7 +433,8 @@ public class CountMatrix implements RateMatrixI {
 		int i=0;
 		spikeTime = spike.get(i++);
 		int spikeTrainSize = spike.size();
-		while ((spikeTime < this.last) && (i<spikeTrainSize) ) {
+		h1.reset();
+		while ((spikeTime <= this.last) && (i<spikeTrainSize) ) {
 			if ((spikeTime >= this.first) && (spikeTime <= this.last)) {
 				numOfSpikes++;
 				h1.fill(spikeTime);
@@ -407,6 +442,49 @@ public class CountMatrix implements RateMatrixI {
 			spikeTime = spike.get(i++);
 		}
 		
+		if (numOfSpikes==0) {
+			this.valid = false;
+			this.log = this.log + "Problems reading spikes from " +  spikes.getName()+"\n";
+		
+		}
+		else {
+			this.valid = true;
+		}
+		return (this.valid);
+	}
+	/* ------------------------------------------------------------------------------------------ */
+	
+	
+	/* ------------------------------------------------------------------------------------------ */
+	/** \brief Inserts spike trains for a given neuron in the Count Matrix.
+	 * 
+	 *  Given a histogram and a spike train this method:
+	 *   (1) Reads the corresponding data file where the spikes train is stored;
+	 *   (2) Build the count of that spikes train in the given histogram;    
+	 *   
+	 *  The data file should be in the directory dataset defined when the object CountMatrix was created.
+	 *  This method reads from that file and stores the count in the histogram. To prevent read from files
+	 *  where there is no minimum spike number is recommended use before this method CheckNeuros, which removes
+	 *  from internal list all invalid neurons in that directory.
+	 *  
+	 * @param h1 histogram used 
+	 * @return TRUE operation was successful, or FALSE otherwise.
+	 * @see IHistogram1D */
+	private boolean insertNeuronSpikes(Histogram h1, SpikeTrain spikes) {
+		
+		double spikeTime = 0;
+		int numOfSpikes = 0;
+		DoubleMatrix1D spike = spikes.getTimes();
+		int i=0;
+		int spikeTrainSize = spike.size();
+		h1.reset();
+		for (i=0; i<spikeTrainSize; i++) {
+			spikeTime = spike.get(i);
+			if ((spikeTime >= this.first) && (spikeTime <= this.last)) {
+				numOfSpikes++;
+				h1.fill(spikeTime);
+			}
+		}
 		if (numOfSpikes==0) {
 			this.valid = false;
 			this.log = this.log + "Problems reading spikes from " +  spikes.getName()+"\n";
@@ -460,9 +538,10 @@ public class CountMatrix implements RateMatrixI {
 			a = b;
 			b = tmp;
 		}
-		this.first = (Math.floor(a/binSize)*binSize); //defines the biggest bin limit smaller than a;
-		this.last = (Math.ceil(b/binSize)*binSize);   //defines the smallest bin limit bigger than b;
-		this.histSize = (int)((last-first)/binSize);
+		this.first = a; //defines the biggest bin limit smaller than a;
+		this.last = b;   //defines the smallest bin limit bigger than b;
+	//	this.first = (Math.floor(a/binSize)*binSize); //defines the biggest bin limit smaller than a;
+	//	this.last = (Math.ceil(b/binSize)*binSize);   //defines the smallest bin limit bigger than b;
 		this.binSize = binSize;
 		
 		return true;
@@ -668,12 +747,13 @@ public class CountMatrix implements RateMatrixI {
       * 
       * 
       * @return \c true If there is more patterns to be read from Counting Matrix, or \c false otherwise. 
+     * @throws InvalidActivityException 
       *  
       */
-     public boolean  hasNext() {
+     public boolean  hasNext() throws InvalidActivityException {
     	 
     	 if (this.windowWidth<=0) {
-    		 new InvalidActivityException("Invalid value to window width: "+this.windowWidth);
+    		 throw new InvalidActivityException("Invalid value to window width: "+this.windowWidth);
     	 }
     	 
     	 if (this.cursor<=(this.numberOfCols-this.windowWidth)) {
@@ -708,10 +788,10 @@ public class CountMatrix implements RateMatrixI {
       * @return the average of a given row 
      * @see data.RateMatrixI#avgRow(int)
      */
-    public double  avgRow (int idx) {
+    public double  avgRow (int idx) throws InvalidArgumentException {
     	 
     	 if (!this.isValidRow(idx)){
-    		 return (Double.NaN);
+    		 throw new InvalidArgumentException("Invalid value to column: "+idx);
     	 }
     	 int sum = 0;
     	 for (int i=0; i<this.numberOfCols; i++) {
@@ -723,13 +803,14 @@ public class CountMatrix implements RateMatrixI {
      /** \brief Returns the average of a given row 
       * @param idx number of column in which must be calculated the average 
       * @return the average of a given column
+     * @throws InvalidArgumentException 
       *  
      * @see data.RateMatrixI#avgColumn(int)
      */
-    public double  avgColumn (int idx) {
+    public double  avgColumn (int idx) throws InvalidArgumentException {
     	 
     	 if (!this.isValidColumn(idx)){
-    		 return (Double.NaN);
+    		 throw new InvalidArgumentException("Invalid value to column: "+idx);
     	 }
     	 int sum = 0;
     	 for (int i=0; i<this.numberOfRows; i++) {
@@ -742,6 +823,15 @@ public class CountMatrix implements RateMatrixI {
     public void resetCursor () {
     	
     	this.cursor = 0;
+    }
+    
+    /** Returns a value of a given position into counting matrix */
+    public int get (int row, int col) throws InvalidArgumentException {
+    	
+    	if ( (!this.isValidColumn(col)) || (!this.isValidRow(row)) ) {
+    		throw new InvalidArgumentException("Invalid position in counting matrix: ("+row+","+col+")");
+    	}
+    	return (this.matrix[row][col]);
     }
      
     
@@ -783,9 +873,5 @@ public class CountMatrix implements RateMatrixI {
     	 }
     	 return (false);
      }
-
-	
-	
-	
 
 }
