@@ -2,7 +2,10 @@ package data;
 
 import java.util.ArrayList;
 
+import javax.activity.InvalidActivityException;
+
 import cern.colt.matrix.DoubleMatrix1D;
+import errors.InvalidArgumentException;
 
 /** \page RateMatrixCursor Rate Matrix Cursor 
  * 
@@ -62,9 +65,10 @@ public interface RateMatrixI {
 	 * 
 	 * @return \code true if there is a pattern available for reading from the
 	 *         Rate Matrix, \b or \code false otherwise;
+	 * @throws InvalidActivityException 
 	 * 
 	 */
-	public boolean	  hasNext();
+	public boolean	  hasNext() throws InvalidActivityException;
 	
 	
 	/**
@@ -207,18 +211,21 @@ public interface RateMatrixI {
 	/** \brief Return the average of a row 
 	 * 
 	 * @param row index of the row; 
-	 * @return the value of average of given row \b or NaN if the matrix content is not valid */
-	public double   avgRow (int idx);
+	 * @return the value of average of given row \b or NaN if the matrix content is not valid 
+	 * @throws InvalidArgumentException */
+	public double   avgRow (int idx) throws InvalidArgumentException;
 	
 	/** \brief Return the average of a column 
 	 * 
 	 * @param neuron index of the column; 
-	 * @return the value of average of given column \b or NaN if the matrix content is not valid; */
-	public double   avgColumn (int idx);
+	 * @return the value of average of given column \b or NaN if the matrix content is not valid; 
+	 * @throws InvalidArgumentException */
+	public double   avgColumn (int idx) throws InvalidArgumentException;
 	
 	//TODO Doc
-	/** Returns a set of pattern give a time interval */
-	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2);
+	/** Returns a set of pattern give a time interval 
+	 * @throws InvalidArgumentException */
+	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) throws InvalidArgumentException;
 	
 	/** Informs if a given window is possible in the Count Matrix 
 	 * Given time instant and a temporal width, informs if the respective window is possible in 
@@ -233,7 +240,9 @@ public interface RateMatrixI {
 	 * */ 
 	public boolean windowPossible(double time,double width);
 	
-	
+	/** \brief Tells if a given interval is possible within the matrix
+	 * 
+	 * */
 	public boolean possibleInterval (double t1, double t2);
 	
 
