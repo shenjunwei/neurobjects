@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import javax.activity.InvalidActivityException;
+
 import cern.colt.matrix.DoubleMatrix1D;
 
 /** \brief Defines a set of neuronal responses patterns */
@@ -51,8 +53,9 @@ public class Patterns {
 	 *            first inserted pattern will be as begin time the give \c time,
 	 *            the second inserted pattern will be as begin time the give \c
 	 *            time + timeStep, and so an.
+	 * @throws InvalidActivityException 
 	 * */
-	public Patterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) {
+	public Patterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException {
 		this.basicSetup();
 		this.addPatterns(ps, labels, time, timeStep);
 		
@@ -79,12 +82,13 @@ public class Patterns {
 	 * 
 	 * @param pat
 	 *            given pattern to be added in the current set of patterns;
+	 * @throws InvalidActivityException 
 	 * */
-	public void addPattern (Pattern pat) {
+	public void addPattern (Pattern pat) throws InvalidActivityException {
 		//String currentLabel = ; 
 		ArrayList<Pattern> list = pats.get(pat.getLabel()); 
 		if (pat==null) {
-			return;
+			throw new InvalidActivityException("Null pointer given as input");
 			// \todo Patterns:addPattern ---> exception 
 		}
 		if (list==null) {
@@ -119,8 +123,9 @@ public class Patterns {
 	 * @param labels label to be used in the inserted patterns;
 	 * @param time initial time to be used in the inserted patterns;
 	 * @param timeStep time step to be used in the inserted patterns from first time.
+	 * @throws InvalidActivityException 
 	 *  */
-	public void addPatterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) {
+	public void addPatterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException {
 		Pattern p = null;
 		
 		

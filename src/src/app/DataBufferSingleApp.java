@@ -110,7 +110,7 @@ public class DataBufferSingleApp {
 						animalList.add(animal);
 						DataSetBuilder D = new DataSetBuilder(animal,bmode);
 
-						ArrayList<String> zipfiles = D.run(buffer, tableName, jobName, numOfSamples,bMode.toLowerCase());
+						ArrayList<String> zipfiles = D.run(buffer, tableName, jobName, numOfSamples,bmode);
 						System.out.println (zipfiles);
 
 						D.saveFile(D.buildJDF(zipfiles, pathToApp, dirLib, NTPHost),pathToJDF+File.separatorChar+animal.getName()+".jdf");

@@ -4,7 +4,7 @@
     <name> ge4 </name>
     <dataset>
       <type> file </type>
-      <pathToSpikes path="/home/nivaldo/projects/crnets/data/spikes/ge4/01"> </pathToSpikes>
+      <pathToSpikes path="setup/spikes"> </pathToSpikes>
       <pathToBehavior path="setup/ge4_contacts.txt"> </pathToBehavior>
     </dataset>
     <params date="June 03, 2010">
@@ -16,8 +16,8 @@
       <label> food </label>
       <label> urchin </label>
       <binSize> .250 </binSize>
-      <windowWidth> 10 </windowWidth>
-      <totalSamples> 70</totalSamples>
+      <windowWidth> 2 </windowWidth>
+      <totalSamples> 3</totalSamples>
       <alfa> .80 </alfa>
       <beta> 2 </beta>
     </params>

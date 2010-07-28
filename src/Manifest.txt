@@ -1,0 +1,2 @@
+Class-Path: ./weka.jar 
+Main-Class: app.EvaluaterApp

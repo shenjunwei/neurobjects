@@ -39,7 +39,7 @@ public class Pattern {
 		this.dim = this.pattern.size();
 	}
 	public String toString () {
-		return ("Time(s): "+time+"\tLabel: "+label+"\n"+this.pattern.toString() );
+		return ("\nTime(s): "+time+"\tLabel: "+label+"\n"+this.pattern.toString() );
 	}
 	
 	public double[] toWeka (double classValue) {

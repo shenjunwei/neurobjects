@@ -11,6 +11,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Random;
 
+import javax.activity.InvalidActivityException;
+
 import cern.colt.matrix.DoubleMatrix1D;
 import data.BehavHandlerFile;
 import data.BehavHandlerI;
@@ -61,8 +63,11 @@ public class DataSetBuilder {
 	 * \brief Sets the configuration parameters from XML file to internal class parameters.
 	 * 
 	 * Defines the positive and negative set sizes to train and test steps
+	 * @throws InvalidArgumentException 
 	 */
-	public DataSetBuilder (AnimalSetup s) {
+	public DataSetBuilder (AnimalSetup s) throws InvalidArgumentException {
+		
+		validateSetup(s);
 		this.setup = s;
 		this.numPositiveSamplesToTrain = (int) Math.floor(this.setup.getTotalSamples()*this.setup.getAlfa());
 		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
@@ -70,20 +75,23 @@ public class DataSetBuilder {
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
 	}
 	
+		
 	/**
 	 * \brief Sets the configuration parameters from XML file to internal class parameters.
 	 * 
 	 * Also is defined the Build mode. Please refer to BuildMode for more details.
 	 * Defines the positive and negative set sizes to train and test steps
+	 * @throws InvalidArgumentException 
 	 */
-	public DataSetBuilder (AnimalSetup s, BuildMode mode) {
+	 public DataSetBuilder (AnimalSetup s, BuildMode mode) throws InvalidArgumentException {
 		this.setup = s;
+		this.validateSetup(s);
 		this.numPositiveSamplesToTrain = (int) Math.floor(this.setup.getTotalSamples()*this.setup.getAlfa());
 		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
 		this.numNegativeSamplesToTrain = (int) Math.floor(this.numPositiveSamplesToTrain*this.setup.getBeta());
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
 		this.mode = mode;
-	}
+	} 
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/**
@@ -94,16 +102,30 @@ public class DataSetBuilder {
 	 * 
 	 * @throws Exception
 	 */
-	public DataSetBuilder (AnimalSetup s, String path, String currentFilter) throws Exception {
+	/*public DataSetBuilder (AnimalSetup s, String path, String currentFilter) throws Exception {
 		this.setup = s;
+		this.validateSetup(s);
 		this.numPositiveSamplesToTrain = (int) Math.floor(this.setup.getTotalSamples()*this.setup.getAlfa());
 		this.numPositiveSamplesToTest = this.setup.getTotalSamples()-this.numPositiveSamplesToTrain;
 		this.numNegativeSamplesToTrain = (int) Math.floor(this.numPositiveSamplesToTrain*this.setup.getBeta());
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
 	
-	}
+	} */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
+	private void validateSetup (AnimalSetup animal) throws InvalidArgumentException {
+		if (animal==null) {
+			throw new InvalidArgumentException("null pointer in animal information !!");
+			
+		}
+		
+		// Validates animal information
+		if ( (animal.getName().isEmpty()) || (animal.getBinSize()<=0) || (animal.getWindowWidth()<=0) ) {
+			throw new InvalidArgumentException("Empty values in animal information !!");
+		}
+
+	}
+
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/**
@@ -156,7 +178,7 @@ public class DataSetBuilder {
 	 * @return A list of filename in whose has been stored the Dataset's
 	 * @throws Exception
 	 */
-	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, String jobName, int numOfSamples, String bMode) throws Exception {
+	public ArrayList<String> run (DatasetBufferSingle buffer, String table_name, String jobName, int numOfSamples, BuildMode bMode) throws Exception {
 		
 		String filter = "";
 		String label = "";
@@ -196,7 +218,7 @@ public class DataSetBuilder {
 					data = this.get(filter, label);
 					data.properties.setProperty("table_name", table_name);
 					data.properties.setProperty("job", jobName);
-					data.properties.setProperty("bmode", bMode);
+					data.properties.setProperty("bmode", bMode.toString());
 					} catch (Exception e) {};
 				
 					if (!buffer.add(data)) {
@@ -211,7 +233,7 @@ public class DataSetBuilder {
 							buffer.saveZip(zipfilename); // empty buffer
 							zipCount++;
 						}
-						buffer.add(data); // Stay here !!
+						buffer.add(data); // data which was not possible add before empty the buffer
 					}
 					 
 					
@@ -225,6 +247,7 @@ public class DataSetBuilder {
 			buffer.saveZip(zipfilename);		            
 			zipCount++;
 		}
+		
 		return (zipfiles);
 		
 		
@@ -389,8 +412,12 @@ public class DataSetBuilder {
 	private Instances[] getNegativeSamplesRandom(String positiveLabel, Hashtable<String, ArrayList<Integer>> patIdxs, Instances dataset[]) {
 		
 		ArrayList<String> labels = this.setup.getLabels(); 
-		int numOtherToTrain = (int) Math.floor(this.numNegativeSamplesToTrain/labels.size()-1);
-		int numOtherToTest = (int) Math.floor(this.numNegativeSamplesToTest/labels.size()-1);
+		int numOtherToTrain = this.numNegativeSamplesToTrain;
+		int numOtherToTest = this.numNegativeSamplesToTest;
+		
+		// May be wrong
+		//int numOtherToTrain = (int) Math.floor(this.numNegativeSamplesToTrain/labels.size()-1);
+		//int numOtherToTest = (int) Math.floor(this.numNegativeSamplesToTest/labels.size()-1);
 		
 		
 		int idx,i;
@@ -643,14 +670,17 @@ public class DataSetBuilder {
 		this.patterns.setNeuronNames(this.spikes.getNeuronNames());
 		this.patterns.setSingleDimension(true);
 		if (!this.fillPatterns()) {
-			//TODO
-			System.out.println ("Was not possible create set of patterns");
-			return ;
+			throw new InvalidActivityException("Was not possible create set of patterns");		
 		}
+		//System.out.println (this.patterns);
 		this.currentFilter = filter;
 	}
 	
-	private boolean fillPatterns() throws InvalidArgumentException {
+	public void showPatterns () {
+		System.out.println (this.patterns);
+	}
+	
+	private boolean fillPatterns() throws InvalidArgumentException, InvalidActivityException {
 		
 		ArrayList<String> labels = setup.getLabels();
 		
@@ -683,8 +713,9 @@ public class DataSetBuilder {
 	 *  
 	 *  @return \c true if the operation was sucessful, \b or \c false otherwise;
 	 * @throws InvalidArgumentException 
+	 * @throws InvalidActivityException 
 	 * */
-	private boolean fillPatterns (ArrayList<double[]> intervals, String label ) throws InvalidArgumentException {
+	private boolean fillPatterns (ArrayList<double[]> intervals, String label ) throws InvalidArgumentException, InvalidActivityException {
 		
 		Enumeration<double[]> e = Collections.enumeration(intervals);
 		
@@ -718,6 +749,17 @@ public class DataSetBuilder {
 		FileWriter fw = new FileWriter(f);
 		fw.write(str);
 		fw.close();
+	}
+	
+	/** Returns a String with information about the DataSetBuilder object */
+	public String toString() {
+		String result = "Total samples: "+this.setup.getTotalSamples()+
+						"\tPositive: [Train: "+this.numPositiveSamplesToTrain+"]+[Test: "+this.numPositiveSamplesToTest+"]"+
+						"= ["+ (this.numPositiveSamplesToTrain+this.numPositiveSamplesToTest)+"]"+
+						"\tNegative: [Train: "+this.numNegativeSamplesToTrain+"]+[Test: "+this.numNegativeSamplesToTest+"]"+
+						"= ["+ (this.numNegativeSamplesToTrain+this.numNegativeSamplesToTest)+"]"+
+						"\nAnimal: "+this.setup.getName()+"\tMode: "+this.mode;
+		return (result);
 	}
 	
 	private FastVector buildAtts() {
