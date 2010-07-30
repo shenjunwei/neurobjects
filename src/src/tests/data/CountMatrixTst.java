@@ -1,4 +1,4 @@
-package tests;
+package tests.data;
 
 
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import cern.colt.matrix.DoubleMatrix1D;
 
@@ -35,6 +36,15 @@ public class CountMatrixTst extends TestCase {
 		spikes = new TxtSpkHandler(dataSourcePath, filter, a, b);
 		
 		//System.out.println(this.matrix);
+	}
+	
+	
+	@Test (expected=InvalidArgumentException.class) 
+	public void testSpikesNull () throws InvalidActivityException, InvalidArgumentException {
+		spikes = null;
+		double 			binSize=0.050;
+		CountMatrix     matrix = new CountMatrix(spikes, binSize);
+		matrix.setWindowWidth(2);
 	}
 	
 	public void test50ms() throws InvalidArgumentException, InvalidActivityException {
@@ -161,9 +171,6 @@ public class CountMatrixTst extends TestCase {
 				assertEquals(matrixRef[i][j], matrix.get (i,j));
 			}
 		}
-		//ArrayList<DoubleMatrix1D> data=	this.matrix.getPatterns(a, b);
-		
-		
 			
 	}
 	

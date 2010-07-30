@@ -99,6 +99,9 @@ public class CountMatrix implements RateMatrixI {
 	public CountMatrix (SpkHandlerI spikes, double binSize) throws InvalidArgumentException, InvalidActivityException {
 		
 		
+		if (spikes==null) {
+			throw new InvalidArgumentException("Null pointer given as spikes input !!"); 
+		}
 		
 		if (!this.setupInterval(binSize, spikes.beginInterval(), spikes.endInterval())) {
 			throw new InvalidActivityException("Error: Invalid time interval\n");

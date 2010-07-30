@@ -542,7 +542,7 @@ public class DataSetBuilder {
 		ArrayList<Integer> list = null;
 		while(e.hasMoreElements()) {
 			label = e.nextElement();
-			numOfPatterns = this.patterns.numPatterns(label);
+			numOfPatterns = this.patterns.size(label);
 			list = new ArrayList<Integer>(); 
 			patIdx.put (label,list);
 			for (i=0; i<numOfPatterns; i++) {
@@ -564,7 +564,7 @@ public class DataSetBuilder {
 		String label = "";
 		while(e.hasMoreElements()) {
 			label = e.nextElement();
-			if ( (label!=positiveLabel) && (this.patterns.numPatterns(label)<(3*numOther)) ) {
+			if ( (label!=positiveLabel) && (this.patterns.size(label)<(3*numOther)) ) {
 				return (false);
 			}
 	    }

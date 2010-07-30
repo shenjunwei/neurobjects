@@ -9,6 +9,7 @@ import java.util.Hashtable;
 import javax.activity.InvalidActivityException;
 
 import cern.colt.matrix.DoubleMatrix1D;
+import errors.InvalidArgumentException;
 
 /** \brief Defines a set of neuronal responses patterns */
 public class Patterns {
@@ -55,11 +56,11 @@ public class Patterns {
 	 *            time + timeStep, and so an.
 	 * @throws InvalidActivityException 
 	 * */
-	public Patterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException {
+	/* public Patterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException {
 		this.basicSetup();
 		this.addPatterns(ps, labels, time, timeStep);
 		
-	}
+	} */
 	
 	/**
 	 * Creates a empty set of patterns object using a given title.
@@ -72,10 +73,10 @@ public class Patterns {
 	 *            name to identify the object.
 	 * 
 	 * */
-	public Patterns (String title) {
+	/* public Patterns (String title) {
 		this.label = title;
 		this.basicSetup();
-	}
+	} */
 	
 	/**
 	 * Adds the given pattern in the current set of patterns.
@@ -83,13 +84,13 @@ public class Patterns {
 	 * @param pat
 	 *            given pattern to be added in the current set of patterns;
 	 * @throws InvalidActivityException 
+	 * @throws InvalidArgumentException 
 	 * */
-	public void addPattern (Pattern pat) throws InvalidActivityException {
+	public void addPattern (Pattern pat) throws InvalidArgumentException {
 		//String currentLabel = ; 
 		ArrayList<Pattern> list = pats.get(pat.getLabel()); 
 		if (pat==null) {
-			throw new InvalidActivityException("Null pointer given as input");
-			// \todo Patterns:addPattern ---> exception 
+			throw new InvalidArgumentException("Null pointer given as input"); 
 		}
 		if (list==null) {
 			list = new ArrayList<Pattern>();
@@ -103,7 +104,7 @@ public class Patterns {
 				list.add(pat);
 				pats.put(pat.getLabel(), list);
 			} else {
-				// Gerar um exception de formato inválido.
+				throw new InvalidArgumentException("Invalid pattern format. Its size should be: "+this.dimension);
 			}
 		}
 		
@@ -124,8 +125,9 @@ public class Patterns {
 	 * @param time initial time to be used in the inserted patterns;
 	 * @param timeStep time step to be used in the inserted patterns from first time.
 	 * @throws InvalidActivityException 
+	 * @throws InvalidArgumentException 
 	 *  */
-	public void addPatterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException {
+	public void addPatterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException, InvalidArgumentException {
 		Pattern p = null;
 		
 		
@@ -255,6 +257,7 @@ public class Patterns {
 	}
 	
 	
+	
 	/** Given a label and an index returns the correspondent pattern stored
 	 * 
 	 * If there is no patterns associated with that label returns \c null.
@@ -351,11 +354,33 @@ public class Patterns {
 		return (rndIndexes);
 	}
 	
+	
+	
 	public String getLabels () {	
+		
 		return (this.pats.keys().toString());
 	}
 	
-	public int numPatterns (String label) {
+	/** Returns the total number of stored patterns 
+	 * 
+	 * This value is result of the summation of all pattern for each label.
+	 * 
+	 * @return total number of stored patterns */
+	public int size() {
+		int total = 0;
+		Enumeration <String> labels = this.pats.keys();
+		while (labels.hasMoreElements()) {
+			total+=this.size(labels.nextElement());
+		}	
+		return (total); 
+	}
+	
+	/** Returns the number of patterns related to a given label.
+	 * 
+	 * If has no patterns related returns zero.  
+	 * 
+	 * @return total number of stored patterns related to a given label .*/
+	public int size (String label) {
 		ArrayList<Pattern> list = this.pats.get(label);
 		if (list==null) {
 			return (0);
@@ -363,7 +388,5 @@ public class Patterns {
 		return (list.size());
 		
 	}
-		
-	
 
 }

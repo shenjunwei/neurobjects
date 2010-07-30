@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import data.CountMatrix;
 import data.TxtSpkHandler;
+import errors.InvalidArgumentException;
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
@@ -16,10 +17,10 @@ public class TxtSpkHandlerApp {
 	/**
 	 * @param args
 	 * @throws IOException 
-	 * @throws InvertedParameterException 
 	 * @throws MissingDataFileException 
+	 * @throws InvalidArgumentException 
 	 */
-	public static void main(String[] args) throws MissingDataFileException, InvertedParameterException, IOException {
+	public static void main(String[] args) throws MissingDataFileException, IOException, InvalidArgumentException {
 		// TODO Auto-generated method stub
 		
 		String path = "/home/nivaldo/projects/crnets/data/spikes/ge5/01/hp";

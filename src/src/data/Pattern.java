@@ -42,6 +42,26 @@ public class Pattern {
 		return ("\nTime(s): "+time+"\tLabel: "+label+"\n"+this.pattern.toString() );
 	}
 	
+	public double getTime() {
+		return (this.time);
+	}
+	
+	public boolean equals (Pattern p) {
+		if (this.dim!=p.getDimension()) {
+			return (false);
+		}
+		if (!this.label.equals(p.getLabel())) {
+			return (false);
+		}
+		if (this.time!=p.getTime()) {
+			return (false);
+		}
+		if (!this.pattern.equals(p.pattern)) {
+			return (false);
+		}
+		return (true);
+	}
+	
 	public double[] toWeka (double classValue) {
 		double values[] = new double [this.dim+1];
 		
@@ -50,6 +70,10 @@ public class Pattern {
 		values[this.dim] = classValue;
 		
 		return (values);
+	}
+	
+	public double[] toArray () {
+		return (this.pattern.toArray());
 	}
 	
 	public String toWeka (String classValue) {

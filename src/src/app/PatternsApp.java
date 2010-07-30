@@ -3,17 +3,22 @@ package app;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import javax.activity.InvalidActivityException;
+
 
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import data.Pattern;
 import data.Patterns;
+import errors.InvalidArgumentException;
 
 public class PatternsApp {
 
 	/**
 	 * @param args
+	 * @throws InvalidActivityException 
+	 * @throws InvalidArgumentException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InvalidActivityException, InvalidArgumentException {
 		// TODO Auto-generated method stub
 		
 		double[] p = new double[20];
@@ -29,7 +34,7 @@ public class PatternsApp {
 		Pattern P3 = new Pattern (p3,"novo",0);
 		
 		
-		Patterns Ps = new Patterns ("testes");
+		Patterns Ps = new Patterns ();
 		
 		Ps.addPattern(P);
 		Ps.addPattern(P2);
