@@ -315,14 +315,12 @@ public class Patterns {
 		for (; labels.hasMoreElements() ;) {
 			currentLabel = (String) labels.nextElement();
 			list = pats.get(currentLabel );
-			result+=currentLabel+"\n";
 			Enumeration<Pattern> e = Collections.enumeration(list);
 		    if (e==null) {
 		    	return ("");
 		    	// Would be better log this kind of event: e equal to null.
 		    }
 		    while(e.hasMoreElements()) {
-	        	//result+=list.get(i).toString();
 	        	result+=e.nextElement().toString();
 		    }
 

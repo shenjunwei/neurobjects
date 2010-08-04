@@ -75,6 +75,8 @@ public class DataSetBuilder {
 		this.numNegativeSamplesToTest = (int) Math.floor(this.numPositiveSamplesToTest*this.setup.getBeta());
 	}
 	
+	
+	
 		
 	/**
 	 * \brief Sets the configuration parameters from XML file to internal class parameters.
@@ -731,6 +733,8 @@ public class DataSetBuilder {
 			interval = e.nextElement();
 			if (this.matrix.possibleInterval(interval[0], interval[1])) {
 				pats = this.matrix.getPatterns(interval[0], interval[1]);
+				//System.out.println (this.matrix);
+				
 				if (pats == null) {
 					System.err
 							.println("Problems reading patterns from matrix: "
@@ -739,6 +743,7 @@ public class DataSetBuilder {
 				}
 				this.patterns.addPatterns(pats, label, interval[0], this.setup
 						.getBinSize());
+				//System.out.println ("fillPartterns:"+this.patterns);
 			}
 	    }
 		return (true);
@@ -793,6 +798,22 @@ public class DataSetBuilder {
 		
 		
 		return atts;
+	}
+
+	public int getNumPositiveSamplesToTrain() {
+		return numPositiveSamplesToTrain;
+	}
+
+	public int getNumPositiveSamplesToTest() {
+		return numPositiveSamplesToTest;
+	}
+
+	public int getNumNegativeSamplesToTrain() {
+		return numNegativeSamplesToTrain;
+	}
+
+	public int getNumNegativeSamplesToTest() {
+		return numNegativeSamplesToTest;
 	}
 
 	

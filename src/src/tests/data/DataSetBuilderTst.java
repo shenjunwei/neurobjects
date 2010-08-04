@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -76,6 +77,8 @@ public class DataSetBuilderTst {
 	public void testDataSetBuilderAnimalSetup() throws InvalidArgumentException {
 		
 		DataGenerator.DataSetBuilder d = new DataGenerator.DataSetBuilder (animal);
+		Assert.assertEquals((int) (Math.floor(this.animal.getTotalSamples()*this.animal.getAlfa())), d.getNumPositiveSamplesToTrain());
+		Assert.assertEquals((int) (animal.getTotalSamples()-d.getNumPositiveSamplesToTrain()), d.getNumPositiveSamplesToTest());
 		
 		
 	}

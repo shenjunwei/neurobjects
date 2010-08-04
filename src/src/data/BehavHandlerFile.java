@@ -61,9 +61,9 @@ public class BehavHandlerFile implements BehavHandlerI {
 			
 			while (((str = in.readLine()) != null) ) {
 				value = str.split(",");
-				interval[0]=Double.parseDouble(value[0]);
-				interval[1]=Double.parseDouble(value[1]);
-				label=value[2];
+				interval[0]=Double.parseDouble(value[0].trim());
+				interval[1]=Double.parseDouble(value[1].trim());
+				label=value[2].trim();
 				this.addInterval(interval.clone(), label);
 			}
 			in.close();
@@ -215,7 +215,7 @@ public class BehavHandlerFile implements BehavHandlerI {
 				if (interval[0]<minBegin) {
 					minBegin = interval[0];
 				}
-				interval = list.get(list.size()-1);
+				interval = list.get(list.size()-1).clone();
 				if (interval[1]>maxEnd) {
 					maxEnd = interval[1];
 				}

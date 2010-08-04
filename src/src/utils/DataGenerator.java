@@ -1,5 +1,6 @@
 package utils;
 
+import errors.InvalidArgumentException;
 import DataGenerator.AnimalSetup;
 import DataGenerator.DataSetBuilder;
 import DataGenerator.DatasetBuffer;
@@ -17,7 +18,7 @@ public class DataGenerator  extends Thread{
 	boolean 			done=false;
 	 
 	
-	public DataGenerator (AnimalSetup s, DatasetBuffer buffer, int numSamples) {
+	public DataGenerator (AnimalSetup s, DatasetBuffer buffer, int numSamples) throws InvalidArgumentException {
 		
 		this.animal = s;
 		this.buffer = buffer;
