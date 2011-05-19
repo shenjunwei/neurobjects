@@ -1,4 +1,4 @@
-package app;
+package app.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import cern.colt.matrix.DoubleMatrix1D;
 import data.CountMatrix;
 import data.TxtSpkHandler;
-import errors.InvalidArgumentException;
-import errors.InvertedParameterException;
 import errors.MissingDataFileException;
 
 
@@ -18,9 +16,9 @@ public class TxtSpkHandlerApp {
 	 * @param args
 	 * @throws IOException 
 	 * @throws MissingDataFileException 
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 */
-	public static void main(String[] args) throws MissingDataFileException, IOException, InvalidArgumentException {
+	public static void main(String[] args) throws MissingDataFileException, IOException {
 		// TODO Auto-generated method stub
 		
 		String path = "/home/nivaldo/projects/crnets/data/spikes/ge5/01/hp";

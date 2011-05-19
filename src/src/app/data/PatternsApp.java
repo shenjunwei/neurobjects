@@ -1,4 +1,4 @@
-package app;
+package app.data;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -9,16 +9,16 @@ import javax.activity.InvalidActivityException;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import data.Pattern;
 import data.Patterns;
-import errors.InvalidArgumentException;
+
 
 public class PatternsApp {
 
 	/**
 	 * @param args
 	 * @throws InvalidActivityException 
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 */
-	public static void main(String[] args) throws InvalidActivityException, InvalidArgumentException {
+	public static void main(String[] args) throws InvalidActivityException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		
 		double[] p = new double[20];

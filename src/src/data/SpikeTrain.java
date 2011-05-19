@@ -17,7 +17,7 @@ import cern.colt.matrix.DoubleMatrix1D;
  * @date 17Mai2010
  * \todo Documentation
  */
-abstract class SpikeTrain {
+public abstract class SpikeTrain {
 	
 	/** 1D vector to store the spike times */
 	DoubleMatrix1D times=null;
