@@ -1,10 +1,7 @@
 package data;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+
 
 /**
  * \brief Models the spike train information as a time series.
@@ -37,16 +34,14 @@ abstract class SpikeTrain {
 	/** value of last spike time */
 	double			last=0;
 	
-	/** is it valid this spike train ?*/
+	/** is this spike train valid ?*/
 	boolean valid=false;
 	
 	
 	
 	/** \brief Returns the time series of the spike train. 
 	 * 
-	 * Returns a 1D vector in which is time series representing the spike train.
-	 * @return a 1D vector with the times of spike train
-	 * 
+	 * @return a 1D vector containing the time series representing the spike train.
 	 * */
 	public DoubleMatrix1D getTimes() {
 		return times;
@@ -97,8 +92,4 @@ abstract class SpikeTrain {
 		return numberOfSpikes;
 	}
 
-	
-
-		
-	
 }

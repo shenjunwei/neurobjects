@@ -7,9 +7,8 @@ import java.io.IOException;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
-import errors.InvalidArgumentException;
 import errors.InvertedParameterException;
-import errors.MissingDataFileException;
+
 
 /**
  * \page TxtSpikeTrainTests Tests on TxtSpikeTrain
@@ -54,7 +53,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * \brief Constructor of a Spike Train given a 1D vector and a name.
 	 * 
 	 * This constructor receive a 1D vector in which should be the spike time in a
-	 * crescent order, internally is built a copy of this 1D vector. Moreover receives the name of spike train. Normally it is the name of neuron.
+	 * crescent order, internally a copy of this 1D vector is built. Moreover receives the name of spike train. Normally it is the name of neuron.
 	 * 
 	 * @param setTime 1D vector with spike times to be stored;
 	 * @param setName String with name of spike train name.
@@ -73,8 +72,8 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * \brief Constructor of a Spike Train given a filename in which there is
 	 * the spike train.
 	 * 
-	 * This constructor receive a filename (with full path) in which should be
-	 * there is a spike train, one time per row. The 
+	 * This constructor receives a filename (with full path) in which there is a spike
+	 * train, one time per row. The 
 	 * 
 	 * @param filename full path and file name in which are stored the spike times
 	 * 
@@ -90,8 +89,8 @@ public class TxtSpikeTrain extends SpikeTrain {
 	/** \brief Constructor of a Spike Train given a filename in which there is
 	 * the spike train and a time interval.
 	 * 
-	 * This constructor receive a filename (with full path) in which should be
-	 * there is a spike train, one time per row and a time interval I=[a;b] and
+	 * This constructor receive a filename (with full path) in which there is a spike
+	 * train, one time per row and a time interval I=[a;b] and
 	 * build spike that stores those spike times into I interval.
 	 * 
 	 * @param filename full path and file name in which are stored the spike times

@@ -11,6 +11,7 @@ import javax.activity.InvalidActivityException;
 import cern.colt.matrix.DoubleMatrix1D;
 import errors.InvalidArgumentException;
 
+
 /** \brief Defines a set of neuronal responses patterns */
 public class Patterns {
 	
@@ -87,11 +88,12 @@ public class Patterns {
 	 * @throws InvalidArgumentException 
 	 * */
 	public void addPattern (Pattern pat) throws InvalidArgumentException {
-		//String currentLabel = ; 
-		ArrayList<Pattern> list = pats.get(pat.getLabel()); 
 		if (pat==null) {
 			throw new InvalidArgumentException("Null pointer given as input"); 
 		}
+		
+		ArrayList<Pattern> list = pats.get(pat.getLabel()); 
+
 		if (list==null) {
 			list = new ArrayList<Pattern>();
 		}

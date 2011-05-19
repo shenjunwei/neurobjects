@@ -1,6 +1,5 @@
 package data;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -8,16 +7,6 @@ import javax.activity.InvalidActivityException;
 
 import errors.InvertedParameterException;
 import errors.MissingDataFileException;
-
-
-/**
- * \page TxtSpkHandlerTests Tests on TxtSpkHandler
- * 
- * The following tests were performed (in tests.utils_TxtSpkHandler): \n
- * 
- * 
- * 
- */
 
 
 /** \todo Implements using hash table 
@@ -38,21 +27,11 @@ public class TxtSpkHandler implements SpkHandlerI {
 	private String spkFileExtension = ".spk"; 
 	private int totalOfSpikes = 0;
 	
-/*	REMOVED 
- *  Cause: for while, it is not necessary deal with situation in which there are no interval [a;b] definitions 
- *  Nivaldo 07June2010 
-	public TxtSpkHandler (String dataSourcePath, String filter) throws MissingDataFileException {
-		this.filter = filter;
-		this.dataPath = dataSourcePath;
-		this.readSpikes(dataSourcePath, filter);
-		// TODO implements
-		
-	} */
 	
 	public TxtSpkHandler (String dataSourcePath, String filter, double a, double b ) throws MissingDataFileException, InvertedParameterException, IOException {
 		// TODO implements
 		if (!this.validateInterval(a, b)) {
-		return;
+			return;
 		}
 		this.a = a;
 		this.b = b;

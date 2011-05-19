@@ -11,8 +11,6 @@ import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.activity.InvalidActivityException;
-
 import org.omg.CORBA.DynAnyPackage.InvalidValue;
 
 import errors.InvalidArgumentException;

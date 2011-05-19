@@ -1,7 +1,7 @@
 package data;
 
 import java.util.ArrayList;
-import cern.colt.matrix.DoubleMatrix1D;
+
 
 /**
  * \brief Handles spikes information from a give animal

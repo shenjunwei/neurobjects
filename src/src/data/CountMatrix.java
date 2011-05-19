@@ -1,9 +1,7 @@
 package data;
 
 import hep.aida.IHistogram1D;
-
 import java.util.ArrayList;
-
 import javax.activity.InvalidActivityException;
 
 import utils.Histogram;
@@ -11,8 +9,6 @@ import utils.Histogram;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import errors.InvalidArgumentException;
-
-//import errors.InvalidArgumentException;
 
 
 /** @brief Create the Matrix of spike count given a interval
@@ -26,9 +22,7 @@ import errors.InvalidArgumentException;
  *  \todo implement the patterns reading 
  *   
  *
- *  @see DoubleMatrix2D
- */
-/**
+ * @see DoubleMatrix2D
  * @author nivaldo
  *
  */

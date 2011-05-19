@@ -1,9 +1,8 @@
 package data;
 
-import java.util.ArrayList;
-
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+
 
 /** \brief Models a neuronal response patterns */
 public class Pattern {

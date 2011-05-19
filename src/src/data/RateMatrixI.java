@@ -1,11 +1,11 @@
 package data;
 
 import java.util.ArrayList;
-
 import javax.activity.InvalidActivityException;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import errors.InvalidArgumentException;
+
 
 /** \page RateMatrixCursor Rate Matrix Cursor 
  * 

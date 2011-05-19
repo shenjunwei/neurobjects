@@ -1,7 +1,8 @@
 package data;
 
 import java.util.ArrayList;
-import cern.colt.matrix.DoubleMatrix1D;
+
+
 /** \page behaveDataSpec Behavior Data Format Spec
  * 
  * In our model the animal behavior is captured as a set of: label and a time interval. \n
