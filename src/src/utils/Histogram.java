@@ -2,8 +2,6 @@ package utils;
 
 import java.util.Arrays;
 
-import errors.InvalidArgumentException;
-
 
 /**
  * This class create the histogram of spikeTimes
@@ -26,9 +24,9 @@ public class Histogram {
 	 * @param a : Begin Time, first spikeTime to search on interval.
 	 * @param b : End Time, last spikeTime to search on interval.
 	 * @param binSize : width of bin.
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 */
-	public Histogram (double a, double b, double binSize) throws InvalidArgumentException {
+	public Histogram (double a, double b, double binSize) throws IllegalArgumentException {
 		this.begin = a;
 		this.end = b;
 		this.binSize = binSize;
@@ -36,7 +34,7 @@ public class Histogram {
 		this.last = (Math.ceil(b/binSize)*binSize);   //defines the smallest bin limit bigger than b;
 		double value = (end-begin)/binSize;
 		if (Math.ceil(value)!=value) {
-			 throw new InvalidArgumentException("Invalid size of bin. It value should divide the interval width");
+			 throw new IllegalArgumentException("Invalid size of bin. It value should divide the interval width");
 		}
 		this.histSize = (int)Math.ceil((end-begin)/binSize)+1;
 		this.histogram = new int[histSize];

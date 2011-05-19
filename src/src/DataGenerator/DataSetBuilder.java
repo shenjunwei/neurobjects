@@ -23,7 +23,6 @@ import data.Patterns;
 import data.RateMatrixI;
 import data.SpkHandlerI;
 import data.TxtSpkHandler;
-import errors.InvalidArgumentException;
 import utils.BuildMode;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -63,9 +62,9 @@ public class DataSetBuilder {
 	 * \brief Sets the configuration parameters from XML file to internal class parameters.
 	 * 
 	 * Defines the positive and negative set sizes to train and test steps
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 */
-	public DataSetBuilder (AnimalSetup s) throws InvalidArgumentException {
+	public DataSetBuilder (AnimalSetup s) throws IllegalArgumentException {
 		
 		validateSetup(s);
 		this.setup = s;
@@ -83,9 +82,9 @@ public class DataSetBuilder {
 	 * 
 	 * Also is defined the Build mode. Please refer to BuildMode for more details.
 	 * Defines the positive and negative set sizes to train and test steps
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 */
-	 public DataSetBuilder (AnimalSetup s, BuildMode mode) throws InvalidArgumentException {
+	 public DataSetBuilder (AnimalSetup s, BuildMode mode) throws IllegalArgumentException {
 		this.setup = s;
 		this.validateSetup(s);
 		this.numPositiveSamplesToTrain = (int) Math.floor(this.setup.getTotalSamples()*this.setup.getAlfa());
@@ -115,15 +114,15 @@ public class DataSetBuilder {
 	} */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
-	private void validateSetup (AnimalSetup animal) throws InvalidArgumentException {
+	private void validateSetup (AnimalSetup animal) throws IllegalArgumentException {
 		if (animal==null) {
-			throw new InvalidArgumentException("null pointer in animal information !!");
+			throw new IllegalArgumentException("null pointer in animal information !!");
 			
 		}
 		
 		// Validates animal information
 		if ( (animal.getName().isEmpty()) || (animal.getBinSize()<=0) || (animal.getWindowWidth()<=0) ) {
-			throw new InvalidArgumentException("Empty values in animal information !!");
+			throw new IllegalArgumentException("Empty values in animal information !!");
 		}
 
 	}
@@ -189,17 +188,17 @@ public class DataSetBuilder {
 		ArrayList<String> zipfiles = new ArrayList<String> ();
 		int i=0;
 		if (!this.setup.validFilters())  {
-			new InvalidArgumentException("Invalid filter!"
+			new IllegalArgumentException("Invalid filter!"
 					+ this.setup.getFilters());
 			return null;
 		}
 		if (!this.setup.validLabels())  {
-			new InvalidArgumentException("Invalid labels!"
+			new IllegalArgumentException("Invalid labels!"
 					+ this.setup.getFilters());
 			return null;
 		}
 		if (numOfSamples<=0) {
-			new InvalidArgumentException("Invalid number of samples !" 
+			new IllegalArgumentException("Invalid number of samples !" 
 					+ numOfSamples);
 			return null;
 		}
@@ -284,10 +283,10 @@ public class DataSetBuilder {
 		Instances[] dataVector = this.getInstances(filter, positiveLabel);
 		String area = this.setup.getArea(filter);
 		/*if (area==null) {
-			new InvalidArgumentException("invalid filter value to define area");
+			new IllegalArgumentException("invalid filter value to define area");
 		} */
 		if (spikes.getNumberOfNeurons()==0) {
-			new InvalidArgumentException("There is no spike with given information");
+			new IllegalArgumentException("There is no spike with given information");
 		}
 		Dataset	data = new Dataset(dataVector[0], dataVector[1], this.setup, positiveLabel, area);
 		
@@ -584,12 +583,12 @@ public class DataSetBuilder {
 			return (false);
 		}
 		if (spikes.getNumberOfNeurons()==0) {
-			new InvalidArgumentException("There is no neuron !!");
+			new IllegalArgumentException("There is no neuron !!");
 			return (false);
 		} 
 		
 		if (spikes.getTotalOfSpikes()==0) {
-			new InvalidArgumentException("There is no spike !");
+			new IllegalArgumentException("There is no spike !");
 			return (false);
 		}
 		
@@ -606,13 +605,13 @@ public class DataSetBuilder {
 		
 		// Is there enough samples with this positive label ?
 		if (patterns.getPatterns(positiveLabel).size()<setup.totalSamples) {
-			new InvalidArgumentException("There is no enough samples with this positive label: " +positiveLabel);
+			new IllegalArgumentException("There is no enough samples with this positive label: " +positiveLabel);
 			
 		}
 		
 		// Is there enough samples with this negative label ?		
 		if (!this.isEnoughNegSamples(positiveLabel)) {
-			new InvalidArgumentException("There is no enough negative samples with this positive label: " +positiveLabel);
+			new IllegalArgumentException("There is no enough negative samples with this positive label: " +positiveLabel);
 		}
 		
 		if (!currentFilter.equals(filter)) {
@@ -682,7 +681,7 @@ public class DataSetBuilder {
 		System.out.println (this.patterns);
 	}
 	
-	private boolean fillPatterns() throws InvalidArgumentException, InvalidActivityException {
+	private boolean fillPatterns() throws IllegalArgumentException, InvalidActivityException {
 		
 		ArrayList<String> labels = setup.getLabels();
 		
@@ -714,10 +713,10 @@ public class DataSetBuilder {
 	 *  @param label label to be used for all patterns inserted;
 	 *  
 	 *  @return \c true if the operation was sucessful, \b or \c false otherwise;
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 * @throws InvalidActivityException 
 	 * */
-	private boolean fillPatterns (ArrayList<double[]> intervals, String label ) throws InvalidArgumentException, InvalidActivityException {
+	private boolean fillPatterns (ArrayList<double[]> intervals, String label ) throws IllegalArgumentException, InvalidActivityException {
 		
 		Enumeration<double[]> e = Collections.enumeration(intervals);
 		

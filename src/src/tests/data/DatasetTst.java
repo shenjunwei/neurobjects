@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,11 +26,9 @@ import utils.Properties;
 import weka.core.Instances;
 
 import DataGenerator.AnimalSetup;
-import DataGenerator.DataSetBuilder;
 
 import data.Dataset;
 
-import errors.InvalidArgumentException;
 
 public class DatasetTst {
 	
@@ -80,18 +77,18 @@ public class DatasetTst {
 	}
 
 	/** Tests if the exception is correctly created */
-	@Test (expected=InvalidArgumentException.class)  
-	public void testExcpDatasetInstancesInstancesAnimalSetupStringString01 () throws InvalidArgumentException {
+	@Test (expected=IllegalArgumentException.class)  
+	public void testExcpDatasetInstancesInstancesAnimalSetupStringString01 () throws IllegalArgumentException {
 		Dataset D = new Dataset(null, null, null, null, null);
 	}
 	/** Tests if the exception is correctly created */
-	@Test (expected=InvalidArgumentException.class)  
-	public void testExcpDatasetInstancesInstancesAnimalSetupStringString02 () throws InvalidArgumentException {
+	@Test (expected=IllegalArgumentException.class)  
+	public void testExcpDatasetInstancesInstancesAnimalSetupStringString02 () throws IllegalArgumentException {
 		Dataset D = new Dataset(null, null, null, "", "");
 	}
 	
-	@Test (expected=InvalidArgumentException.class)  
-	public void testExcpDatasetInstancesInstancesAnimalSetupStringString03 () throws InvalidArgumentException, FileNotFoundException, IOException {
+	@Test (expected=IllegalArgumentException.class)  
+	public void testExcpDatasetInstancesInstancesAnimalSetupStringString03 () throws IllegalArgumentException, FileNotFoundException, IOException {
 		String trainingFilename = "setup/datasets/10883428.trn.arff";
 		String testFilename = "setup/datasets/10883428.tst.arff";
 		
@@ -111,7 +108,7 @@ public class DatasetTst {
 	
 	
 	@Test
-	public void testDatasetInstancesInstancesAnimalSetupStringString() throws FileNotFoundException, IOException, InvalidArgumentException {
+	public void testDatasetInstancesInstancesAnimalSetupStringString() throws FileNotFoundException, IOException, IllegalArgumentException {
 		String trainingFilename = "setup/datasets/10883428.trn.arff";
 		String testFilename = "setup/datasets/10883428.tst.arff";
 		
@@ -151,7 +148,7 @@ public class DatasetTst {
 	}
 
 	@Test
-	public void testSaveZipString() throws FileNotFoundException, IOException, InvalidArgumentException {
+	public void testSaveZipString() throws FileNotFoundException, IOException, IllegalArgumentException {
 		String trainingFilename = "setup/datasets/10883428.trn.arff";
 		String testFilename = "setup/datasets/10883428.tst.arff";
 		

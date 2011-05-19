@@ -85,8 +85,8 @@ abstract class SpikeTrain {
 	}
 	
 	/**
-	 * \brief Returns the total number of spikes in 'times' attribute
-	 * @return
+	 * \brief Number of spikes in this train (number of elements in the time series)
+	 * @return Returns the total number of spikes in 'times' attribute 
 	 */
 	public int getNumberOfSpikes() {
 		return numberOfSpikes;

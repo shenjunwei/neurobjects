@@ -21,10 +21,9 @@ import org.xml.sax.SAXException;
 
 import utils.BuildMode;
 
-import errors.InvalidArgumentException;
-
 import DataGenerator.AnimalSetup;
 import DataGenerator.DatasetBufferSingle;
+
 
 public class DataSetBuilderTst {
 	
@@ -74,7 +73,7 @@ public class DataSetBuilderTst {
 	}
 
 	@Test
-	public void testDataSetBuilderAnimalSetup() throws InvalidArgumentException {
+	public void testDataSetBuilderAnimalSetup() throws IllegalArgumentException {
 		
 		DataGenerator.DataSetBuilder d = new DataGenerator.DataSetBuilder (animal);
 		Assert.assertEquals((int) (Math.floor(this.animal.getTotalSamples()*this.animal.getAlfa())), d.getNumPositiveSamplesToTrain());
@@ -84,7 +83,7 @@ public class DataSetBuilderTst {
 	}
 
 	@Test
-	public void testDataSetBuilderAnimalSetupBuildMode() throws InvalidArgumentException {
+	public void testDataSetBuilderAnimalSetupBuildMode() throws IllegalArgumentException {
 		BuildMode bmode = BuildMode.RANDOM;
 		DataGenerator.DataSetBuilder d = new DataGenerator.DataSetBuilder (animal,bmode);
 		System.out.println (d);

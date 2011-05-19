@@ -8,7 +8,6 @@ import data.Dataset;
 import DataGenerator.DatasetBuffer;
 
 import errors.EmptySourceException;
-import errors.InvalidArgumentException;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
@@ -71,7 +70,7 @@ public class ModelEvaluater extends Thread {
 					} catch (EmptySourceException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (InvalidArgumentException e) {
+					} catch (IllegalArgumentException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -142,7 +141,7 @@ public class ModelEvaluater extends Thread {
 		}
 		if (this.cModel==null) {
 			//TODO creates a exception !!
-			new InvalidArgumentException("Unknown model: " + this.model);
+			new IllegalArgumentException("Unknown model: " + this.model);
 			return;
 		}
 		

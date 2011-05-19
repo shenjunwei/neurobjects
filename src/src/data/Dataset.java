@@ -13,8 +13,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.omg.CORBA.DynAnyPackage.InvalidValue;
 
-import errors.InvalidArgumentException;
-
 import DataGenerator.AnimalSetup;
 
 import utils.Properties;
@@ -44,9 +42,9 @@ public class Dataset {
 	 * @param animal Information about the animal setup
 	 * @param label label to be used by the dataset
 	 * @param area area related to dataset 
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 */
-	public Dataset (Instances trainData, Instances testData,AnimalSetup animal, String label, String area ) throws InvalidArgumentException {
+	public Dataset (Instances trainData, Instances testData,AnimalSetup animal, String label, String area ) throws IllegalArgumentException {
 		this.validSetup(trainData, testData, animal, label, area);
 		
 		
@@ -65,42 +63,42 @@ public class Dataset {
 		
 	}
 	
-	private void validSetup (Instances trainData, Instances testData,AnimalSetup animal, String label, String area ) throws InvalidArgumentException {
+	private void validSetup (Instances trainData, Instances testData,AnimalSetup animal, String label, String area ) throws IllegalArgumentException {
 		
 		if ( (trainData==null) || (testData==null)) {
-			throw new InvalidArgumentException("null pointer in instances information  !!");	
+			throw new IllegalArgumentException("null pointer in instances information  !!");	
 		}
 		
 		if (animal==null) {
-			throw new InvalidArgumentException("null pointer in animal information !!");
+			throw new IllegalArgumentException("null pointer in animal information !!");
 			
 		}
 		if (label==null) {
-			throw new InvalidArgumentException("null pointer label information !!");
+			throw new IllegalArgumentException("null pointer label information !!");
 		}
 		
 		if (area==null) {
-			throw new InvalidArgumentException("null pointer in area information !!");
+			throw new IllegalArgumentException("null pointer in area information !!");
 		}
 		
 		
 		if ( (trainData.numAttributes()==0) || (testData.numAttributes()==0) ) {
-			throw new InvalidArgumentException("Empty set in instances information !!");
+			throw new IllegalArgumentException("Empty set in instances information !!");
 		}
 		
 		if (!trainData.equalHeaders(testData)) {
-			throw new InvalidArgumentException("Training and testing instances have different headers !!");
+			throw new IllegalArgumentException("Training and testing instances have different headers !!");
 
 		}
 		
 		// Validates animal information
 		if ( (animal.getName().isEmpty()) || (animal.getBinSize()<=0) || (animal.getWindowWidth()<=0) ) {
-			throw new InvalidArgumentException("Empty values in animal information !!");
+			throw new IllegalArgumentException("Empty values in animal information !!");
 		}
 		
 		// Validates label information
 		if (label.isEmpty()) {
-			throw new InvalidArgumentException("Empty value in label information !!");
+			throw new IllegalArgumentException("Empty value in label information !!");
 		}
 			
 		}

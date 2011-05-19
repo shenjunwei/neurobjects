@@ -9,7 +9,6 @@ import java.util.Hashtable;
 import javax.activity.InvalidActivityException;
 
 import cern.colt.matrix.DoubleMatrix1D;
-import errors.InvalidArgumentException;
 
 
 /** \brief Defines a set of neuronal responses patterns */
@@ -87,9 +86,9 @@ public class Patterns {
 	 * @throws InvalidActivityException 
 	 * @throws InvalidArgumentException 
 	 * */
-	public void addPattern (Pattern pat) throws InvalidArgumentException {
+	public void addPattern (Pattern pat) {
 		if (pat==null) {
-			throw new InvalidArgumentException("Null pointer given as input"); 
+			throw new IllegalArgumentException("Null pointer given as input"); 
 		}
 		
 		ArrayList<Pattern> list = pats.get(pat.getLabel()); 
@@ -106,7 +105,7 @@ public class Patterns {
 				list.add(pat);
 				pats.put(pat.getLabel(), list);
 			} else {
-				throw new InvalidArgumentException("Invalid pattern format. Its size should be: "+this.dimension);
+				throw new IllegalArgumentException("Invalid pattern format. Its size should be: "+this.dimension);
 			}
 		}
 		
@@ -129,9 +128,8 @@ public class Patterns {
 	 * @throws InvalidActivityException 
 	 * @throws InvalidArgumentException 
 	 *  */
-	public void addPatterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException, InvalidArgumentException {
+	public void addPatterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException {
 		Pattern p = null;
-		
 		
 		if (ps==null) {
 			return;

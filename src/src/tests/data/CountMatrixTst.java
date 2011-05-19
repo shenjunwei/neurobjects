@@ -17,7 +17,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 
 import data.CountMatrix;
 import data.TxtSpkHandler;
-import errors.InvalidArgumentException;
+
 
 public class CountMatrixTst extends TestCase {
 	
@@ -39,15 +39,15 @@ public class CountMatrixTst extends TestCase {
 	}
 	
 	
-	@Test (expected=InvalidArgumentException.class) 
-	public void testSpikesNull () throws InvalidActivityException, InvalidArgumentException {
+	@Test (expected=IllegalArgumentException.class) 
+	public void testSpikesNull () throws InvalidActivityException, IllegalArgumentException {
 		spikes = null;
 		double 			binSize=0.050;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
 	}
 	
-	public void test50ms() throws InvalidArgumentException, InvalidActivityException {
+	public void test50ms() throws IllegalArgumentException, InvalidActivityException {
 		double 			binSize=0.050;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
@@ -79,7 +79,7 @@ public class CountMatrixTst extends TestCase {
 		}
 	}
 	
-	public void test100ms() throws InvalidArgumentException, InvalidActivityException {
+	public void test100ms() throws IllegalArgumentException, InvalidActivityException {
 		double 			binSize=0.100;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
@@ -112,7 +112,7 @@ public class CountMatrixTst extends TestCase {
 	}
 	
 	
-	public void test200ms() throws InvalidArgumentException, InvalidActivityException {
+	public void test200ms() throws IllegalArgumentException, InvalidActivityException {
 		double 			binSize=0.200;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
@@ -145,7 +145,7 @@ public class CountMatrixTst extends TestCase {
 	}
 
 	
-	public void test250ms() throws InvalidArgumentException, InvalidActivityException {
+	public void test250ms() throws IllegalArgumentException, InvalidActivityException {
 		double 			binSize=0.250;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
@@ -174,7 +174,7 @@ public class CountMatrixTst extends TestCase {
 			
 	}
 	
-	public void test500ms() throws InvalidArgumentException, InvalidActivityException {
+	public void test500ms() throws IllegalArgumentException, InvalidActivityException {
 		double 			binSize=0.500;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
@@ -216,10 +216,10 @@ public class CountMatrixTst extends TestCase {
 	 * Case: returns -1 if is given (b+100) as time;
 	 * Case: returns 0 if is given a as time;
 	 * Case: returns 0 if is given a as time;
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 * @throws InvalidActivityException 
 	 * */
-	public void testGetIdx() throws InvalidActivityException, InvalidArgumentException {
+	public void testGetIdx() throws InvalidActivityException, IllegalArgumentException {
 		double 			binSize=0.050;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
@@ -232,7 +232,7 @@ public class CountMatrixTst extends TestCase {
 		
 	}
 	
-	public void testGetNeuronsNames() throws InvalidActivityException, InvalidArgumentException {
+	public void testGetNeuronsNames() throws InvalidActivityException, IllegalArgumentException {
 		double 			binSize=0.050;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
@@ -244,7 +244,7 @@ public class CountMatrixTst extends TestCase {
 		}
 	}
 	
-	public void testGetPatterns () throws InvalidActivityException, InvalidArgumentException {
+	public void testGetPatterns () throws InvalidActivityException, IllegalArgumentException {
 		double 			binSize=0.250;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
 		matrix.setWindowWidth(2);
@@ -280,7 +280,7 @@ public class CountMatrixTst extends TestCase {
 		
 		
 	}
-	public void testWindowPossible() throws InvalidActivityException, InvalidArgumentException {
+	public void testWindowPossible() throws InvalidActivityException, IllegalArgumentException {
 
 		double 			binSize=0.250;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
@@ -292,7 +292,7 @@ public class CountMatrixTst extends TestCase {
 		}
 	
 	
-	public void testPossibleInterval () throws InvalidActivityException, InvalidArgumentException {
+	public void testPossibleInterval () throws InvalidActivityException, IllegalArgumentException {
 		
 		double 			binSize=0.250;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
@@ -305,7 +305,7 @@ public class CountMatrixTst extends TestCase {
 		
 	}
 	
-	public void testIncCursor() throws InvalidActivityException, InvalidArgumentException {
+	public void testIncCursor() throws InvalidActivityException, IllegalArgumentException {
 		
 		double 			binSize=0.250;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);
@@ -318,7 +318,7 @@ public class CountMatrixTst extends TestCase {
 	}
 	
 
-	public void testAvgs() throws InvalidActivityException, InvalidArgumentException {
+	public void testAvgs() throws InvalidActivityException, IllegalArgumentException {
 		
 		double 			binSize=0.250;
 		CountMatrix     matrix = new CountMatrix(spikes, binSize);

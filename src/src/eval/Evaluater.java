@@ -44,13 +44,11 @@ import org.apache.commons.net.ntp.TimeInfo;
 
 import data.Dataset;
 
-import DataGenerator.DatasetBuffer;
-
 import utils.Properties;
 import utils.SmallNTPClient;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
-import errors.InvalidArgumentException;
+
 
 /** \brief Models a dataset evaluater */
 public class Evaluater {
@@ -312,7 +310,7 @@ private synchronized void  setModel (String model) {
 		}
 		if (this.cModel==null) {
 			//TODO creates a exception !!
-			new InvalidArgumentException("Unknown model: " + model);
+			new IllegalArgumentException("Unknown model: " + model);
 			return;
 		}
 		

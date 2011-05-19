@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import javax.activity.InvalidActivityException;
 
 import cern.colt.matrix.DoubleMatrix1D;
-import errors.InvalidArgumentException;
 
 
 /** \page RateMatrixCursor Rate Matrix Cursor 
@@ -212,20 +211,20 @@ public interface RateMatrixI {
 	 * 
 	 * @param row index of the row; 
 	 * @return the value of average of given row \b or NaN if the matrix content is not valid 
-	 * @throws InvalidArgumentException */
-	public double   avgRow (int idx) throws InvalidArgumentException;
+	 * @throws IllegalArgumentException */
+	public double   avgRow (int idx) throws IllegalArgumentException;
 	
 	/** \brief Return the average of a column 
 	 * 
 	 * @param neuron index of the column; 
 	 * @return the value of average of given column \b or NaN if the matrix content is not valid; 
-	 * @throws InvalidArgumentException */
-	public double   avgColumn (int idx) throws InvalidArgumentException;
+	 * @throws IllegalArgumentException */
+	public double   avgColumn (int idx) throws IllegalArgumentException;
 	
 	//TODO Doc
 	/** Returns a set of pattern give a time interval 
-	 * @throws InvalidArgumentException */
-	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) throws InvalidArgumentException;
+	 * @throws IllegalArgumentException */
+	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) throws IllegalArgumentException;
 	
 	/** Informs if a given window is possible in the Count Matrix 
 	 * Given time instant and a temporal width, informs if the respective window is possible in 

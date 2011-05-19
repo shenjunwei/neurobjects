@@ -8,7 +8,7 @@ package errors;
  *  
  * @author ambar
 */
-public class InvertedParameterException extends InvalidArgumentException {
+public class InvertedParameterException extends IllegalArgumentException {
 	
 	private static final long serialVersionUID = 5114324521075873647L;
 	

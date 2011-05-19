@@ -3,7 +3,6 @@ package DataGenerator;
 import java.util.ArrayList;
 import org.w3c.dom.*;
 
-import errors.InvalidArgumentException;
 
 /**
  * \page todopage TODO page information

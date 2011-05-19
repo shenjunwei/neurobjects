@@ -1,9 +1,9 @@
 package utils;
 
-import errors.InvalidArgumentException;
 import DataGenerator.AnimalSetup;
 import DataGenerator.DataSetBuilder;
 import DataGenerator.DatasetBuffer;
+
 
 /** \brief Thread to generate data
  * 
@@ -18,7 +18,7 @@ public class DataGenerator  extends Thread{
 	boolean 			done=false;
 	 
 	
-	public DataGenerator (AnimalSetup s, DatasetBuffer buffer, int numSamples) throws InvalidArgumentException {
+	public DataGenerator (AnimalSetup s, DatasetBuffer buffer, int numSamples) throws IllegalArgumentException {
 		
 		this.animal = s;
 		this.buffer = buffer;

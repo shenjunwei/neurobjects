@@ -19,7 +19,7 @@ import data.CountMatrix;
 import data.Pattern;
 import data.Patterns;
 import data.TxtSpkHandler;
-import errors.InvalidArgumentException;
+
 
 public class PatternsTst {
 	
@@ -63,7 +63,7 @@ public class PatternsTst {
 	}
 
 	@Test  
-	public void testAddPatternExcpNullPat() throws InvalidActivityException, InvalidArgumentException {
+	public void testAddPatternExcpNullPat() throws InvalidActivityException, IllegalArgumentException {
 		Pattern pat = null;
 		Patterns pats = new Patterns ();
 		Assert.assertEquals(0, pats.size());
@@ -77,7 +77,7 @@ public class PatternsTst {
 	}
 	
 	@Test
-	public void testAddPattern() throws InvalidActivityException, InvalidArgumentException {
+	public void testAddPattern() throws InvalidActivityException, IllegalArgumentException {
 		
 		Pattern pat = null;
 		Patterns pats = new Patterns (); 
@@ -102,7 +102,7 @@ public class PatternsTst {
 	}
 
 	@Test
-	public void testAddPatterns() throws InvalidActivityException, InvalidArgumentException {
+	public void testAddPatterns() throws InvalidActivityException, IllegalArgumentException {
 		ArrayList<DoubleMatrix1D> list = new ArrayList<DoubleMatrix1D> ();
 		for (int i=0; i<patts.length; i++) {
 			list.add(new DenseDoubleMatrix1D (patts[i]));
@@ -117,7 +117,7 @@ public class PatternsTst {
 	}
 
 	@Test
-	public void testGetPattern() throws InvalidActivityException, InvalidArgumentException {
+	public void testGetPattern() throws InvalidActivityException, IllegalArgumentException {
 		ArrayList<Pattern> list = new ArrayList<Pattern> ();
 		ArrayList<DoubleMatrix1D> list1d = new ArrayList<DoubleMatrix1D> ();
 		double time=a;
@@ -139,7 +139,7 @@ public class PatternsTst {
 	}
 
 	@Test
-	public void testGetPatterns() throws InvalidActivityException, InvalidArgumentException {
+	public void testGetPatterns() throws InvalidActivityException, IllegalArgumentException {
 		ArrayList<Pattern> list = new ArrayList<Pattern> ();
 		ArrayList<Pattern> listTest = null;
 		ArrayList<DoubleMatrix1D> list1d = new ArrayList<DoubleMatrix1D> ();

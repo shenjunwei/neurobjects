@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import errors.InvalidArgumentException;
 
 /** \brief Stores a set of properties */
 public class Properties {
@@ -104,7 +103,7 @@ public class Properties {
 			this.delProperty("table_name");
 		}
 		else {
-			new InvalidArgumentException("Undefined table name !!");
+			new IllegalArgumentException("Undefined table name !!");
 			return "";
 		}
 		String keys =this.keys();
@@ -133,7 +132,7 @@ public class Properties {
 			this.delProperty("table_name");
 		}
 		else {
-			new InvalidArgumentException("Undefined table name !!");
+			new IllegalArgumentException("Undefined table name !!");
 			return "";
 		}
 		String keys =this.keys();
@@ -197,7 +196,7 @@ public class Properties {
 	public void delProperty (String key) {
 		
 		if (!this.getValues().containsKey(key)) {
-			new InvalidArgumentException("Undefined property !!");
+			new IllegalArgumentException("Undefined property !!");
 			return;
 		}
 		this.getValues().remove(key);

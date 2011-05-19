@@ -1,7 +1,5 @@
 package tests.utils;
 
-
-
 /** 
  * 
  * Necessário gerar a massa de dados de entrada para os diferentes tamanhos de bins: 50,100,200,250,500
@@ -23,9 +21,8 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 
-import errors.InvalidArgumentException;
-
 import utils.Histogram;
+
 
 public class HistogramTst extends TestCase {
 
@@ -39,7 +36,7 @@ public class HistogramTst extends TestCase {
 	}
 
 	/** Tests the Histogram class using 50ms as bin size */
-	public void testBasic50ms() throws InvalidArgumentException {
+	public void testBasic50ms() throws IllegalArgumentException {
 
 		this.binSize = 0.050;
 		h = new utils.Histogram(a, b, binSize);
@@ -75,7 +72,7 @@ public class HistogramTst extends TestCase {
 
 	}
 
-	public void testBasic100ms() throws InvalidArgumentException {
+	public void testBasic100ms() throws IllegalArgumentException {
 
 		this.binSize = 0.100;
 		h = new utils.Histogram(a, b, binSize);
@@ -111,7 +108,7 @@ public class HistogramTst extends TestCase {
 
 	}
 
-	public void testBasic200ms() throws InvalidArgumentException {
+	public void testBasic200ms() throws IllegalArgumentException {
 
 		this.binSize = .200;
 		h = new utils.Histogram(a, b, binSize);
@@ -146,7 +143,7 @@ public class HistogramTst extends TestCase {
 		}
 	}
 
-	public void testBasic250ms() throws InvalidArgumentException {
+	public void testBasic250ms() throws IllegalArgumentException {
 
 		this.binSize = .250;
 		h = new utils.Histogram(a, b, binSize);
@@ -183,7 +180,7 @@ public class HistogramTst extends TestCase {
 
 	}
 
-	public void testBasic500ms() throws InvalidArgumentException {
+	public void testBasic500ms() throws IllegalArgumentException {
 
 		this.binSize = .500;
 		h = new utils.Histogram(a, b, binSize);

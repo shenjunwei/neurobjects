@@ -13,7 +13,6 @@ import java.util.zip.ZipOutputStream;
 
 import data.Dataset;
 
-import errors.InvalidArgumentException;
 
 /**
  * \brief Models a single buffer of Dataset
@@ -48,17 +47,17 @@ public class DatasetBufferSingle {
 	 *            maximum number of datasets in the queue;
 	 * @param workDir
 	 *            working directory;
-	 * @throws InvalidArgumentException
+	 * @throws IllegalArgumentException
 	 */
-	public DatasetBufferSingle (int max, String workDir ) throws InvalidArgumentException {
+	public DatasetBufferSingle (int max, String workDir ) throws IllegalArgumentException {
 		
 		if (max<=0) {			
-			throw new InvalidArgumentException("Invalid max input values!!");  
+			throw new IllegalArgumentException("Invalid max input values!!");  
 		}
 		
 		File d = new File(workDir);
 		if ((!d.isDirectory()) || (!d.canWrite())) {
-			throw new InvalidArgumentException();  
+			throw new IllegalArgumentException();  
 		}
 		this.workDir = workDir;
 		this.maxAtts= max;

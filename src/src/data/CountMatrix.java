@@ -8,7 +8,6 @@ import utils.Histogram;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
-import errors.InvalidArgumentException;
 
 
 /** @brief Create the Matrix of spike count given a interval
@@ -87,14 +86,14 @@ public class CountMatrix implements RateMatrixI {
 	 * 
 	 * @param spikes set of spikes in whose must be done the spike couting.
 	 * @param binSize size of bins, in milliseconds, to be used in spike counting process. 
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 * @throws InvalidActivityException 
 	 * */
-	public CountMatrix (SpkHandlerI spikes, double binSize) throws InvalidArgumentException, InvalidActivityException {
+	public CountMatrix (SpkHandlerI spikes, double binSize) throws InvalidActivityException {
 		
 		
 		if (spikes==null) {
-			throw new InvalidArgumentException("Null pointer given as spikes input !!"); 
+			throw new IllegalArgumentException("Null pointer given as spikes input !!"); 
 		}
 		
 		if (!this.setupInterval(binSize, spikes.beginInterval(), spikes.endInterval())) {
@@ -277,21 +276,20 @@ public class CountMatrix implements RateMatrixI {
 	 * @param t2
 	 *            end of the time interval
 	 * @return a list of patterns
-	 * @throws InvalidArgumentException 
+	 * @throws IllegalArgumentException 
 	 * 
 	 * @see getPattern()
 	 * */
 	
-	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) throws InvalidArgumentException {
+	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) {
 	
 		ArrayList<DoubleMatrix1D> patterns = null;
 		if (t1>t2) {
-			throw new InvalidArgumentException("CountMatrix:getPatterns: invalid arguments");	
+			throw new IllegalArgumentException("CountMatrix:getPatterns: invalid arguments");	
 		}
 		
-		//if ( (!this.windowPossible(t1,this.windowWidth)) || (!this.windowPossible(t2,this.windowWidth)))  {
 		if (!this.possibleInterval(t1, t2))  {			
-			throw new InvalidArgumentException("CountMatrix:getPatterns: invalid input arguments can not possible windows");			
+			throw new IllegalArgumentException("CountMatrix:getPatterns: invalid input arguments can not possible windows");			
 		}
 		 
 		
@@ -785,10 +783,10 @@ public class CountMatrix implements RateMatrixI {
       * @return the average of a given row 
      * @see data.RateMatrixI#avgRow(int)
      */
-    public double  avgRow (int idx) throws InvalidArgumentException {
+    public double  avgRow (int idx) {
     	 
     	 if (!this.isValidRow(idx)){
-    		 throw new InvalidArgumentException("Invalid value to column: "+idx);
+    		 throw new IllegalArgumentException("Invalid value to column: "+idx);
     	 }
     	 int sum = 0;
     	 for (int i=0; i<this.numberOfCols; i++) {
@@ -800,14 +798,14 @@ public class CountMatrix implements RateMatrixI {
      /** \brief Returns the average of a given row 
       * @param idx number of column in which must be calculated the average 
       * @return the average of a given column
-     * @throws InvalidArgumentException 
+     * @throws IllegalArgumentException 
       *  
      * @see data.RateMatrixI#avgColumn(int)
      */
-    public double  avgColumn (int idx) throws InvalidArgumentException {
+    public double  avgColumn (int idx) throws IllegalArgumentException {
     	 
     	 if (!this.isValidColumn(idx)){
-    		 throw new InvalidArgumentException("Invalid value to column: "+idx);
+    		 throw new IllegalArgumentException("Invalid value to column: "+idx);
     	 }
     	 int sum = 0;
     	 for (int i=0; i<this.numberOfRows; i++) {
@@ -823,10 +821,10 @@ public class CountMatrix implements RateMatrixI {
     }
     
     /** Returns a value of a given position into counting matrix */
-    public int get (int row, int col) throws InvalidArgumentException {
+    public int get (int row, int col) {
     	
     	if ( (!this.isValidColumn(col)) || (!this.isValidRow(row)) ) {
-    		throw new InvalidArgumentException("Invalid position in counting matrix: ("+row+","+col+")");
+    		throw new IllegalArgumentException("Invalid position in counting matrix: ("+row+","+col+")");
     	}
     	return (this.matrix[row][col]);
     }

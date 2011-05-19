@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import errors.InvalidArgumentException;
 
 public class NegativeList {
 	
@@ -36,7 +35,7 @@ public class NegativeList {
 	/** \todo Defines the legal format to label. Not use ':', for example. */
 	public String getLabel (int pos) {
 		if (pos>this.list.size()-1) {
-			new InvalidArgumentException("\nInvalid position in negative list");
+			new IllegalArgumentException("\nInvalid position in negative list");
 		}
 		return (this.list.get(pos).split(":")[0]);
 	}
@@ -44,14 +43,14 @@ public class NegativeList {
 	/** \todo Defines the legal format to label. Not use ':', for example. */
 	public int getIdx (int pos) {
 		if (pos>this.list.size()-1) {
-			new InvalidArgumentException("\nInvalid position in negative list");
+			new IllegalArgumentException("\nInvalid position in negative list");
 		}
 		return (Integer.parseInt(this.list.get(pos).split(":")[1]));
 	}
 	
 	public String[] getInfo (int pos) {
 		if (pos>this.list.size()-1) {
-			new InvalidArgumentException("\nInvalid position in negative list: "+pos);
+			new IllegalArgumentException("\nInvalid position in negative list: "+pos);
 		}
 		return (this.list.get(pos).split(":"));
 	}
@@ -62,7 +61,7 @@ public class NegativeList {
 	
 	public void remove(int pos) {
 		if ( (pos>this.list.size()-1) || (pos<0) )  {
-			new InvalidArgumentException("\nInvalid position in negative list: "+pos);
+			new IllegalArgumentException("\nInvalid position in negative list: "+pos);
 		}
 		this.list.remove(pos);
 	}

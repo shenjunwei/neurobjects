@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import data.Dataset;
 
 import errors.EmptySourceException;
-import errors.InvalidArgumentException;
+
 
 /** \brief Models a set of buffers of dataset */
 public class DatasetBuffer {
@@ -23,21 +23,21 @@ public class DatasetBuffer {
 	//int dimension=-1;
 	//String label="";
 	
-	public DatasetBuffer (ArrayList<String> models, int max ) throws InvalidArgumentException {
+	public DatasetBuffer (ArrayList<String> models, int max ) throws IllegalArgumentException {
 		
 		if (models==null) {
 			System.out.println ("Null pointer as model list input ");
-			throw new InvalidArgumentException(); 
+			throw new IllegalArgumentException(); 
    	 
 		}
 		if (models.size()==0) {
 			System.out.println ("Empty models input !!");
-			throw new InvalidArgumentException();  
+			throw new IllegalArgumentException();  
 		}
 		
 		if (max<=0) {
 			System.out.println ("Invalid max input values!!");
-			throw new InvalidArgumentException();  
+			throw new IllegalArgumentException();  
 			
 		}
 		this.maxSize = max;
@@ -112,7 +112,7 @@ public class DatasetBuffer {
 		return true;
 	}
 	
-	public synchronized Dataset getDataset (String model) throws EmptySourceException, InvalidArgumentException {	
+	public synchronized Dataset getDataset (String model) throws EmptySourceException, IllegalArgumentException {	
 		
 		Dataset data=null;
 		
@@ -121,7 +121,7 @@ public class DatasetBuffer {
 		}
 		
 		if (!this.data.containsKey(model)) {
-			throw new InvalidArgumentException("Model not defined !");		
+			throw new IllegalArgumentException("Model not defined !");		
 		}
 		data = this.data.get(model).poll();
 		//data.setTag(model);
