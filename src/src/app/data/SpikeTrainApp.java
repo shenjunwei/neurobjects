@@ -5,8 +5,6 @@ import java.io.IOException;
 import data.SpikeTrain;
 import data.TxtSpkHandler;
 
-import cern.jet.math.Functions;
-import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleMatrix1D;
 
 
@@ -22,8 +20,8 @@ import cern.colt.matrix.DoubleMatrix1D;
 public class SpikeTrainApp {
 	public static void main(String[] args) throws IOException {
 		String path = "/home/giulianoxt/workspace/nda/setup/spikes";
-		String filter = "HP";
-		double a = 5810;
+		String filter = "V1";
+		double a = 0;
 		double b = 5820;
 		
 		TxtSpkHandler spikeHandler = new TxtSpkHandler(path, filter, a, b);
@@ -33,12 +31,11 @@ public class SpikeTrainApp {
 		
 		for (SpikeTrain spikeTrain : spikeHandler.getAllSpikes()) {
 			DoubleMatrix1D times = spikeTrain.getTimes();
-			DoubleMatrix1D isi = getISI(times);
+			DoubleMatrix1D isi = spikeTrain.getISI();
 				
-			System.out.printf("%s %.3f %.3f %.3f %.3f %.3f %.3f\n",
-					spikeTrain.getName(),
-					times.get(0), times.get(times.size()-1), getAverage(times),
-					getMin(isi), getMax(isi), getAverage(isi)
+			System.out.printf("%s %10.3f %11.3f %11.3f %9.3f %10.3f %10.3f\n",
+					spikeTrain.getName(), spikeTrain.getFirst(), spikeTrain.getLast(),
+					getAverage(times), getMin(isi), getMax(isi), getAverage(isi)
 			);
 		}
 	}
@@ -65,20 +62,6 @@ public class SpikeTrainApp {
 	
 	public static double getAverage(DoubleMatrix1D mat) {
 		assert mat.size() != 0;
-		double sum = mat.aggregate(Functions.plus, Functions.identity);
-		return sum / mat.size();
-	}
-	
-	public static DoubleMatrix1D getISI(DoubleMatrix1D mat) {
-		if (mat.size() == 0) {
-			return mat;
-		}
-		
-		DoubleMatrix1D isi = DoubleFactory1D.dense.make(mat.size()-1);
-		for (int i = 1; i < mat.size(); ++i) {
-			isi.set(i-1, mat.get(i) - mat.get(i-1));
-		}
-		
-		return isi;
+		return mat.zSum() / mat.size();
 	}
 }

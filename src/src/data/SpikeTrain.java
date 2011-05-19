@@ -1,5 +1,6 @@
 package data;
 
+import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleMatrix1D;
 
 
@@ -92,4 +93,22 @@ public abstract class SpikeTrain {
 		return numberOfSpikes;
 	}
 
+	
+	/**
+	 * \brief Calculate the inter spike intervals (ISI) for this spike train
+	 * 
+	 * @return The ISI vector for this spike train
+	 */
+	public DoubleMatrix1D getISI() {
+		if (times.size() == 0) {
+			return times.copy();
+		}
+		
+		DoubleMatrix1D isi = DoubleFactory1D.dense.make(times.size()-1);
+		for (int i = 1; i < times.size(); ++i) {
+			isi.set(i-1, times.get(i) - times.get(i-1));
+		}
+		
+		return isi;
+	}
 }
