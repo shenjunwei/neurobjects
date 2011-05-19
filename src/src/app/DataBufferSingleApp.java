@@ -18,8 +18,6 @@ import org.xml.sax.SAXParseException;
 
 import data.Dataset;
 
-import errors.InvalidArgumentException;
-
 import utils.BuildMode;
 
 import DataGenerator.AnimalSetup;
@@ -80,7 +78,7 @@ public class DataBufferSingleApp {
 			if (bMode.equals("equals")) {
 				bmode = BuildMode.EQUALS;
 			} else {
-				new InvalidArgumentException("Invalid value to bMode: " + bMode);
+				new IllegalArgumentException("Invalid value to bMode: " + bMode);
 			}
 		}
 		
