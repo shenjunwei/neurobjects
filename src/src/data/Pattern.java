@@ -1,14 +1,13 @@
 package data;
 
-import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import java.util.Arrays;
 
 
 /** \brief Models a neuronal response patterns */
 public class Pattern {
 	
 	/** vector with the patterns elements*/
-	DoubleMatrix1D pattern=null;
+	double[] pattern=null;
 	
 	/** Pattern label to pattern */
 	String label="";
@@ -20,22 +19,15 @@ public class Pattern {
 	int dim = 0;
 	
 	
-	public Pattern (DoubleMatrix1D p, String label, double time) {
-		this.pattern = p.copy();
+	public Pattern (double[] p, String label, double time) {
+		this.pattern = Arrays.copyOf(p, p.length);
 		this.basicSetup(label, time); 
 	}
 	
-	public Pattern (double p[], String label, double time) {
-		this.pattern = new DenseDoubleMatrix1D(p);
-		this.basicSetup(label, time);
-	
-	}
-	
 	private void basicSetup (String label, double time) {
-	
 		this.label = label;
 		this.time = time;
-		this.dim = this.pattern.size();
+		this.dim = this.pattern.length;
 	}
 	public String toString () {
 		return ("\nTime(s): "+time+"\tLabel: "+label+"\n"+this.pattern.toString() );
@@ -62,26 +54,23 @@ public class Pattern {
 	}
 	
 	public double[] toWeka (double classValue) {
-		double values[] = new double [this.dim+1];
-		
-		
-		this.pattern.toArray(values);
+		double[] values = Arrays.copyOf(this.pattern, this.dim+1);
 		values[this.dim] = classValue;
 		
-		return (values);
+		return values;
 	}
 	
 	public double[] toArray () {
-		return (this.pattern.toArray());
+		return this.pattern;
 	}
 	
 	public String toWeka (String classValue) {
 		String result="";
-		for (int i=0; i<this.pattern.size(); i++) {
-			result+=this.pattern.get(i)+",";
+		for (int i = 0; i < this.pattern.length; i++) {
+			result += this.pattern[i] + ",";
 		}
 		result +=classValue;
-		return (result);
+		return result;
 	}
 	
 	public String getLabel() {
@@ -93,7 +82,7 @@ public class Pattern {
 	}
 	
 	
-	public DoubleMatrix1D getPattern() {
+	public double[] getPattern() {
 		return (this.pattern);
 	}
 

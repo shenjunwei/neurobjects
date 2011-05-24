@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import javax.activity.InvalidActivityException;
 
 
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import data.Pattern;
 import data.Patterns;
 
@@ -25,7 +24,6 @@ public class PatternsApp {
 		double[] p2 = new double[20];
 		double[] p3 = new double[20];
 		String label = "teste";
-		DenseDoubleMatrix1D Ptmp = new DenseDoubleMatrix1D(p);
 		
 		Pattern P = new Pattern (p,label,0);
 		p2[0]=2;

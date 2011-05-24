@@ -8,7 +8,6 @@ import java.util.Hashtable;
 
 import javax.activity.InvalidActivityException;
 
-import cern.colt.matrix.DoubleMatrix1D;
 
 
 /** \brief Defines a set of neuronal responses patterns */
@@ -99,9 +98,9 @@ public class Patterns {
 		
 		if (this.singleDimension) {
 			if (this.dimension < 0) {
-				this.dimension = pat.pattern.size();
+				this.dimension = pat.pattern.length;
 			}
-			if (this.dimension == pat.pattern.size()) {
+			if (this.dimension == pat.pattern.length) {
 				list.add(pat);
 				pats.put(pat.getLabel(), list);
 			} else {
@@ -128,7 +127,7 @@ public class Patterns {
 	 * @throws InvalidActivityException 
 	 * @throws InvalidArgumentException 
 	 *  */
-	public void addPatterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep) throws InvalidActivityException {
+	public void addPatterns (ArrayList<double[]> ps, String labels, double time, double timeStep) throws InvalidActivityException {
 		Pattern p = null;
 		
 		if (ps==null) {
@@ -136,7 +135,7 @@ public class Patterns {
 			// Would be better log this kind of event: e equal to null.
 		}
 		//get the Enumeration object
-	    Enumeration<DoubleMatrix1D> e = Collections.enumeration(ps);
+	    Enumeration<double[]> e = Collections.enumeration(ps);
 	    if (e==null) {
 	    	return;
 	    	// Would be better log this kind of event: e equal to null.

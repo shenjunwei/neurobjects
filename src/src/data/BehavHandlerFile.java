@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
-import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 /**
  * \brief Handles a animal behavior file
@@ -101,17 +101,23 @@ public class BehavHandlerFile implements BehavHandlerI {
 	private void sortIntervals (ArrayList<double[]> list) {
 		int numIntervals = list.size();
 		double interval[] = {0,0};
-		DoubleMatrix2D M = new DenseDoubleMatrix2D (numIntervals,2);
-		for (int i=0; i<numIntervals; i++) {
+		List<double[]> M = new ArrayList<double[]>(numIntervals); 
+
+		for (int i = 0; i < numIntervals; i++) {
 			interval = list.get(i);
-			M.setQuick(i, 0,interval[0]);
-			M.setQuick(i, 1,interval[1]);
+			M.set(i, new double[] { interval[0], interval[1] });
 		}
-		M = M.viewSorted(0);
+		
+		Collections.sort(M, new Comparator<double[]>() {
+			public int compare(double[] a, double[] b) {
+				return Double.compare(a[0], b[0]);
+			}
+		});
+		
 		list.clear();
 		for (int i=0; i<numIntervals; i++) {
-			interval[0] = M.getQuick(i, 0);
-			interval[1] = M.getQuick(i, 1);
+			interval[0] = M.get(i)[0];
+			interval[1] = M.get(i)[1];
 			list.add(interval.clone());
 		}	
 	}
@@ -138,7 +144,7 @@ public class BehavHandlerFile implements BehavHandlerI {
 	 * @return a String with animal behavior description.*/
 	public String toString () {
 		ArrayList<double[]> list = null;
-		Enumeration labels = this.intervals.keys();
+		Enumeration<String> labels = this.intervals.keys();
 		String result = "File path: "+this.filePath+"\n";
 		String currentLabel="";
 		double interval[]={0,0};

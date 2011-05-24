@@ -1,9 +1,9 @@
 package app.data;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import data.*;
-import cern.colt.matrix.DoubleMatrix1D;
 
 
 /**
@@ -49,8 +49,8 @@ public class SpikeTrainApp {
 				           "ISI min | ISI max | ISI avg");
 		
 		for (SpikeTrain spikeTrain : spikeHandler.getAllSpikes()) {
-			DoubleMatrix1D times = spikeTrain.getTimes();
-			DoubleMatrix1D isi = spikeTrain.getISI();
+			double[] times = spikeTrain.getTimes();
+			double[] isi = spikeTrain.getISI();
 				
 			System.out.printf("%s %10.3f %11.3f %11.3f %9.3f %10.3f %10.3f\n",
 					spikeTrain.getName(), spikeTrain.getFirst(), spikeTrain.getLast(),
@@ -59,28 +59,31 @@ public class SpikeTrainApp {
 		}
 	}
 	
-	public static double getMin(DoubleMatrix1D mat) {
-		assert mat.size() != 0;
+	public static double getMin(double[] mat) {
+		assert mat.length != 0;
 		
-		double min = mat.get(0);
-		for (int i = 1; i < mat.size(); ++i)
-			min = Math.min(min, mat.get(i));
+		double min = mat[0];
+		for (int i = 1; i < mat.length; ++i)
+			min = Math.min(min, mat[i]);
 		
 		return min;
 	}
 	
-	public static double getMax(DoubleMatrix1D mat) {
-		assert mat.size() != 0;
+	public static double getMax(double[] mat) {
+		assert mat.length != 0;
 		
-		double max = mat.get(0);
-		for (int i = 1; i < mat.size(); ++i)
-			max = Math.max(max, mat.get(i));
+		double max = mat[0];
+		for (int i = 1; i < mat.length; ++i)
+			max = Math.max(max, mat[i]);
 		
 		return max;
 	}
 	
-	public static double getAverage(DoubleMatrix1D mat) {
-		assert mat.size() != 0;
-		return mat.zSum() / mat.size();
+	public static double getAverage(double[] mat) {
+		assert mat.length != 0;
+		double sum = 0;
+		for (double x : mat) sum += x;
+		
+		return sum / mat.length;
 	}
 }

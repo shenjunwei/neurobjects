@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="utils/commons-net-2.0.jar" sourcepath="/home/nivaldo/Download/tmp/commons-net-2.0-src.zip"/>
-	<classpathentry kind="lib" path="utils/colt.jar"/>
 	<classpathentry kind="lib" path="utils/weka.jar" sourcepath="utils/weka-src.jar"/>
 	<classpathentry kind="lib" path="utils/weka-src.jar"/>
 	<classpathentry kind="lib" path="utils/junit-4.8.2.jar" sourcepath="utils/junit-4.8.2.jar"/>

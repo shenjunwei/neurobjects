@@ -1,8 +1,5 @@
 package data;
 
-import cern.colt.matrix.DoubleFactory1D;
-import cern.colt.matrix.DoubleMatrix1D;
-
 
 /**
  * \brief Models the spike train information as a time series.
@@ -21,7 +18,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 public abstract class SpikeTrain {
 	
 	/** 1D vector to store the spike times */
-	DoubleMatrix1D times=null;
+	double[] times=null;
 	
 	/** Spike train name*/
 	String			name="";
@@ -44,7 +41,7 @@ public abstract class SpikeTrain {
 	 * 
 	 * @return a 1D vector containing the time series representing the spike train.
 	 * */
-	public DoubleMatrix1D getTimes() {
+	public double[] getTimes() {
 		return times;
 	}
 
@@ -99,14 +96,14 @@ public abstract class SpikeTrain {
 	 * 
 	 * @return The ISI vector for this spike train
 	 */
-	public DoubleMatrix1D getISI() {
-		if (times.size() == 0) {
-			return times.copy();
+	public double[] getISI() {
+		if (times.length == 0) {
+			return new double[0];
 		}
 		
-		DoubleMatrix1D isi = DoubleFactory1D.dense.make(times.size()-1);
-		for (int i = 1; i < times.size(); ++i) {
-			isi.set(i-1, times.get(i) - times.get(i-1));
+		double[] isi = new double[times.length - 1];
+		for (int i = 1; i < times.length; ++i) {
+			isi[i-1] = times[i] - times[i-1];
 		}
 		
 		return isi;

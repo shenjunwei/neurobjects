@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import errors.InvertedParameterException;
 
 
@@ -60,11 +58,10 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * 
 	 *
 	 * */ 
-	public TxtSpikeTrain(DoubleMatrix1D setTime, String setName) {
+	public TxtSpikeTrain(double[] setTime, String setName) {
 		times = setTime;
 		setInitialValues(setName);
-		this.numberOfSpikes = setTime.size();
-		
+		this.numberOfSpikes = setTime.length;
 	}
 	
 	
@@ -80,7 +77,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * */
 	public TxtSpikeTrain(String filename) {
 		this.numberOfSpikes = this.getNumSpkFromFile(filename);
-		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
+		this.times = new double[numberOfSpikes];
 		this.fillFromFile(filename);
 		setInitialValues(filename);
 		return;
@@ -109,7 +106,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 		}
 		
 		this.numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
-		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
+		this.times = new double[numberOfSpikes];
 		this.fillFromFile(filename,a,b);
 		setInitialValues(filename);
 		return;
@@ -128,7 +125,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * */
 	public TxtSpikeTrain(String filename, String name) {
 		this.numberOfSpikes = this.getNumSpkFromFile(filename);
-		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
+		this.times = new double[numberOfSpikes];
 		this.fillFromFile(filename);
 		setInitialValues(name);
 		return;
@@ -159,7 +156,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 
 		
 		this.numberOfSpikes = this.getNumSpkFromFile(filename,a,b);
-		this.times = new DenseDoubleMatrix1D (numberOfSpikes);
+		this.times = new double[numberOfSpikes];
 		this.fillFromFile(filename,a,b);
 		setInitialValues(name);
 		return;
@@ -231,20 +228,17 @@ public class TxtSpikeTrain extends SpikeTrain {
 	
 	
 	private void fillFromFile(String filename){
-		
-		
-		try { 
+		try {
 			BufferedReader in = new BufferedReader(new FileReader(
 					filename));
 			String str;
 			
 			int i = 0;
 			while ((str = in.readLine()) != null) {
-				this.times.set(i++, Double.parseDouble(str));
+				times[i++] = Double.parseDouble(str);
 			}
 			in.close();
 		} catch (IOException e) { }
-		
 	}
 	
 	private void fillFromFile(String filename, double a, double b) throws  IOException, FileNotFoundException {
@@ -256,12 +250,12 @@ public class TxtSpikeTrain extends SpikeTrain {
 			while (((str = in.readLine()) != null) && (spikeTime < b)) {
 				spikeTime = Double.parseDouble(str);
 				if ((spikeTime >= a) && (spikeTime <= b)) {
-					this.times.set(i++, spikeTime);
+					times[i++] = spikeTime;
 				}
 			}
 			
 			//Some times there's no spikes in given interval
-			if (this.times.size()==0) {
+			if (i == 0) {
 				this.valid = false;
 				System.out.println("TxtSpikeTrain:: WARNING:  "+filename+" has no spikes in given interval [ "+a+" , "+b+" ]");
 			}
@@ -273,7 +267,7 @@ public class TxtSpikeTrain extends SpikeTrain {
 	 * and last time, neuron name
 	 */
 	private void setInitialValues(String name) {
-		int numberOfSpikes = this.times.size();
+		int numberOfSpikes = times.length;
 		if (numberOfSpikes==0) {
 			this.valid = false;
 		}
@@ -286,8 +280,8 @@ public class TxtSpikeTrain extends SpikeTrain {
 			return;
 		}
 		this.name = this.parseName(name);
-		this.first= this.times.get(0);
-		this.last= this.times.get(this.times.size()-1);
+		this.first= times[0];
+		this.last= times[times.length-1];
 	}
 	
 	public int getNumberOfSpikes() {

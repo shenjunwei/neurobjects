@@ -3,8 +3,6 @@ package data;
 import java.util.ArrayList;
 import javax.activity.InvalidActivityException;
 
-import cern.colt.matrix.DoubleMatrix1D;
-
 
 /** \page RateMatrixCursor Rate Matrix Cursor 
  * 
@@ -224,7 +222,7 @@ public interface RateMatrixI {
 	//TODO Doc
 	/** Returns a set of pattern give a time interval 
 	 * @throws IllegalArgumentException */
-	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) throws IllegalArgumentException;
+	public ArrayList<double[]> getPatterns(double t1, double t2) throws IllegalArgumentException;
 	
 	/** Informs if a given window is possible in the Count Matrix 
 	 * Given time instant and a temporal width, informs if the respective window is possible in 

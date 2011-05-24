@@ -12,9 +12,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
-
 import data.CountMatrix;
 import data.Pattern;
 import data.Patterns;
@@ -103,15 +100,17 @@ public class PatternsTst {
 
 	@Test
 	public void testAddPatterns() throws InvalidActivityException, IllegalArgumentException {
-		ArrayList<DoubleMatrix1D> list = new ArrayList<DoubleMatrix1D> ();
+		ArrayList<double[]> list = new ArrayList<double[]> ();
 		for (int i=0; i<patts.length; i++) {
-			list.add(new DenseDoubleMatrix1D (patts[i]));
+			double[] l = Arrays.copyOf(patts[i], patts[i].length);
+			list.add(l);
 		}
+		
 		Patterns pats = new Patterns ();
 		pats.addPatterns(list,"teste",a,binSize);
 		Assert.assertEquals(patts.length, pats.size());
 		for (int i=0; i<patts.length; i++) {
-			Assert.assertTrue (Arrays.equals (list.get(i).toArray(),patts[i]));
+			Assert.assertTrue (Arrays.equals (list.get(i),patts[i]));
 		}
 		System.out.println ("'public void addPatterns (ArrayList<DoubleMatrix1D> ps, String labels, double time, double timeStep)' method [OK]");
 	}
@@ -119,14 +118,14 @@ public class PatternsTst {
 	@Test
 	public void testGetPattern() throws InvalidActivityException, IllegalArgumentException {
 		ArrayList<Pattern> list = new ArrayList<Pattern> ();
-		ArrayList<DoubleMatrix1D> list1d = new ArrayList<DoubleMatrix1D> ();
+		ArrayList<double[]> list1d = new ArrayList<double[]> ();
 		double time=a;
 		// Creates a list of patterns 
 		for (int i=0; i<patts.length; i++, time+=.25) {
 			list.add(new Pattern (patts[i], "teste",time));
 		}
 		for (int i=0; i<patts.length; i++) {
-			list1d.add(new DenseDoubleMatrix1D (patts[i]));
+			list1d.add(patts[i].clone());
 		}
 		Patterns pats = new Patterns ();
 		pats.addPatterns(list1d,"teste",a,binSize);
@@ -142,14 +141,14 @@ public class PatternsTst {
 	public void testGetPatterns() throws InvalidActivityException, IllegalArgumentException {
 		ArrayList<Pattern> list = new ArrayList<Pattern> ();
 		ArrayList<Pattern> listTest = null;
-		ArrayList<DoubleMatrix1D> list1d = new ArrayList<DoubleMatrix1D> ();
+		ArrayList<double[]> list1d = new ArrayList<double[]> ();
 		double time=a;
 		// Creates a list of patterns 
 		for (int i=0; i<patts.length; i++, time+=.25) {
 			list.add(new Pattern (patts[i], "teste",time));
 		}
 		for (int i=0; i<patts.length; i++) {
-			list1d.add(new DenseDoubleMatrix1D (patts[i]));
+			list1d.add(patts[i].clone());
 		}
 		Patterns pats = new Patterns ();
 		pats.addPatterns(list1d,"teste",a,binSize);

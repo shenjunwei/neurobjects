@@ -1,13 +1,9 @@
 package data;
 
-import hep.aida.IHistogram1D;
 import java.util.ArrayList;
 import javax.activity.InvalidActivityException;
 
 import utils.Histogram;
-
-import cern.colt.matrix.DoubleMatrix1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 
 /** @brief Create the Matrix of spike count given a interval
@@ -165,17 +161,11 @@ public class CountMatrix implements RateMatrixI {
 	 * @see IHistogram1D
 	 */
 	private boolean fillMatrixRow2D (IHistogram1D h1, int row) {
-		
-		/*if (h1.entries()<this.numberOfCols) {
-			this.valid = false;
-			this.log = this.log + "fillMatrixRow2D: Histogram not smaller than number of columns\n";
-			return (false);
-		} */
 		for (int column = 0; column < this.numberOfCols; column++) {
 			this.matrix[row][column]=h1.binEntries(column);
 		}
-		return (true);
 		
+		return (true);
 	}
 	/* ------------------------------------------------------------------------------------------ */
 	

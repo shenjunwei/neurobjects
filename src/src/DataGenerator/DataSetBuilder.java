@@ -13,7 +13,6 @@ import java.util.Random;
 
 import javax.activity.InvalidActivityException;
 
-import cern.colt.matrix.DoubleMatrix1D;
 import data.BehavHandlerFile;
 import data.BehavHandlerI;
 import data.CountMatrix;
@@ -725,7 +724,7 @@ public class DataSetBuilder {
 			return (false);
 		}
 		
-		ArrayList<DoubleMatrix1D> pats = null;
+		ArrayList<double[]> pats = null;
 		double interval[] = null;
 		double width = this.setup.getWindowWidth()*this.setup.getBinSize();
 		while(e.hasMoreElements()) {

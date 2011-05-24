@@ -3,8 +3,6 @@ package app.data;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
-import cern.colt.matrix.DoubleMatrix1D;
 import data.CountMatrix;
 import data.TxtSpkHandler;
 import errors.MissingDataFileException;
@@ -33,8 +31,8 @@ public class TxtSpkHandlerApp {
 		System.out.println(matrix);
 		
 		
-		ArrayList <DoubleMatrix1D> patterns = matrix.getPatterns(0,5);
-		DoubleMatrix1D p;
+		ArrayList <double[]> patterns = matrix.getPatterns(0,5);
+		double[] p;
 		
 		if (patterns!=null) {
 		for (int i=0; i<patterns.size();i++) {
