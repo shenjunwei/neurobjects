@@ -13,8 +13,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import cern.colt.matrix.DoubleMatrix1D;
-
 import data.CountMatrix;
 import data.TxtSpkHandler;
 
@@ -257,7 +255,7 @@ public class CountMatrixTst extends TestCase {
 				{00,01,04,05,01,01,02,01,03,06,01,00,06,05,05,9,03,02,00,06},
 				{01,00,05,00,01,00,01,00,06,00,00,00,05,00,9,00,02,00,06,00}};
 		
-		ArrayList<DoubleMatrix1D> actual = matrix.getPatterns(a, b);
+		ArrayList<double[]> actual = matrix.getPatterns(a, b);
 		double tmp[] = null;
 		int patts_num_rows = patts.length;
 		if (actual.size()!=(patts.length)) {
@@ -266,12 +264,12 @@ public class CountMatrixTst extends TestCase {
 			
 		}
 		for (int i=0; i<actual.size(); i++ ) {
-			tmp = actual.get(i).toArray();
+			tmp = actual.get(i);
 			if (!Arrays.equals(tmp, patts[i])) {
 				System.out.println ("Different in: "+i);
 				System.out.println ("Test patterns: "+Arrays.toString(patts[i]));
 				System.out.println ("Current patterns: "+Arrays.toString(tmp));
-				Assert.assertTrue(Arrays.equals(actual.get(i).toArray(), patts[i]));
+				Assert.assertTrue(Arrays.equals(actual.get(i), patts[i]));
 			}
 			
 			

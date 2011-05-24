@@ -160,13 +160,13 @@ public class CountMatrix implements RateMatrixI {
 	 * @return TRUE operation was successful, or FALSE otherwise.
 	 * @see IHistogram1D
 	 */
-	private boolean fillMatrixRow2D (IHistogram1D h1, int row) {
+	/*private boolean fillMatrixRow2D (IHistogram1D h1, int row) {
 		for (int column = 0; column < this.numberOfCols; column++) {
 			this.matrix[row][column]=h1.binEntries(column);
 		}
 		
 		return (true);
-	}
+	}*/
 	/* ------------------------------------------------------------------------------------------ */
 	
 	
@@ -271,9 +271,9 @@ public class CountMatrix implements RateMatrixI {
 	 * @see getPattern()
 	 * */
 	
-	public ArrayList<DoubleMatrix1D> getPatterns(double t1, double t2) {
+	public ArrayList<double[]> getPatterns(double t1, double t2) {
 	
-		ArrayList<DoubleMatrix1D> patterns = null;
+		ArrayList<double[]> patterns = null;
 		if (t1>t2) {
 			throw new IllegalArgumentException("CountMatrix:getPatterns: invalid arguments");	
 		}
@@ -284,8 +284,8 @@ public class CountMatrix implements RateMatrixI {
 		 
 		
 		int lastCol = this.getIdx(t2);
-		patterns = new ArrayList<DoubleMatrix1D> ();
-		DoubleMatrix1D p = null; 
+		patterns = new ArrayList<double[]> ();
+		double[] p = null; 
 		for (int i = this.getIdx(t1); i <= lastCol; i++) {
 			p = this.getPattern(i, this.windowWidth);
 			if (p != null) {
@@ -305,7 +305,7 @@ public class CountMatrix implements RateMatrixI {
 	 * \todo This method should describe better the structure of Pattern (what each line and column means, how the pattern is assembled) 
 	 * \n    check it !!
 	 */
-	private DoubleMatrix1D getPattern(int firstCol, int windowWidth){
+	private double[] getPattern(int firstCol, int windowWidth){
 		
 		String errorMsg = "";
 		// checks the firstCol input parameter
@@ -324,13 +324,12 @@ public class CountMatrix implements RateMatrixI {
 			return (null);
 		}
 		
-		DoubleMatrix1D pattern = new DenseDoubleMatrix1D(this.numberOfRows*windowWidth);
+		double[] pattern = new double[this.numberOfRows*windowWidth];
 		int colLimit = firstCol + windowWidth;
-		 
 		
 		for (int row=0, i=0; row<this.numberOfRows; row++) {
 			for (int col=firstCol; col<colLimit; col++,i++) {		
-				pattern.setQuick(i,this.matrix[row][col]);
+				pattern[i] = this.matrix[row][col];
 			}
 		} 
 		return (pattern);
@@ -410,33 +409,32 @@ public class CountMatrix implements RateMatrixI {
 	 * @param h1 histogram used 
 	 * @return TRUE operation was successful, or FALSE otherwise.
 	 * @see IHistogram1D */
-	private boolean insertNeuronSpikes(IHistogram1D h1, SpikeTrain spikes) {
+	/*private boolean insertNeuronSpikes(IHistogram1D h1, SpikeTrain spikes) {
 		
 		double spikeTime = 0;
 		int numOfSpikes = -1;
-		DoubleMatrix1D spike = spikes.getTimes();
+		double[] spike = spikes.getTimes();
 		int i=0;
-		spikeTime = spike.get(i++);
-		int spikeTrainSize = spike.size();
+		spikeTime = spike[i++];
+		int spikeTrainSize = spike.length;
 		h1.reset();
 		while ((spikeTime <= this.last) && (i<spikeTrainSize) ) {
 			if ((spikeTime >= this.first) && (spikeTime <= this.last)) {
 				numOfSpikes++;
 				h1.fill(spikeTime);
 			}
-			spikeTime = spike.get(i++);
+			spikeTime = spike[i++];
 		}
 		
 		if (numOfSpikes==0) {
 			this.valid = false;
 			this.log = this.log + "Problems reading spikes from " +  spikes.getName()+"\n";
-		
 		}
 		else {
 			this.valid = true;
 		}
 		return (this.valid);
-	}
+	}*/
 	/* ------------------------------------------------------------------------------------------ */
 	
 	
@@ -459,12 +457,12 @@ public class CountMatrix implements RateMatrixI {
 		
 		double spikeTime = 0;
 		int numOfSpikes = 0;
-		DoubleMatrix1D spike = spikes.getTimes();
+		double[] spike = spikes.getTimes();
 		int i=0;
-		int spikeTrainSize = spike.size();
+		int spikeTrainSize = spike.length;
 		h1.reset();
 		for (i=0; i<spikeTrainSize; i++) {
-			spikeTime = spike.get(i);
+			spikeTime = spike[i];
 			if ((spikeTime >= this.first) && (spikeTime <= this.last)) {
 				numOfSpikes++;
 				h1.fill(spikeTime);

@@ -3,8 +3,6 @@ package tests;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-
-import cern.colt.matrix.DoubleMatrix1D;
 import data.TxtSpikeTrain;
 import errors.InvertedParameterException;
 
@@ -72,7 +70,7 @@ public class utils_TxtSpikeTrainTest {
 				
 				//Testing in an abnormal situation which the 'firstime' and 'lastTime' parameter is much larger than the existing in source file
 				TxtSpikeTrain spkTrain_10 = new TxtSpikeTrain(filePath, "neuron_S1_02a", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-				DoubleMatrix1D spikes_10 = spkTrain_10.getTimes();
+				double[] spikes_10 = spkTrain_10.getTimes();
 				System.out.println("spikes size: "+spkTrain_10.getNumberOfSpikes());
 				/**				
 				**/
