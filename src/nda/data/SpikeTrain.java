@@ -16,23 +16,33 @@ package nda.data;
  */
 public abstract class SpikeTrain {
     /** 1D vector to store the spike times */
-    double[] times = null;
+    protected double[] times = null;
 
     /** Spike train name */
-    String name = "";
+    protected String name = "";
 
     /** Total number of spikes in 'times' attribute */
-    int numberOfSpikes = 0;
+    protected int numberOfSpikes = 0;
 
     /** value of first spike time */
-    double first = 0;
+    protected double first = 0;
 
     /** value of last spike time */
-    double last = 0;
+    protected double last = 0;
+    
 
-    /** is this spike train valid ? */
-    boolean valid = false;
-
+    @Override
+    public String toString() {
+        String str = name + ": [";
+        
+        for (double t : times) {
+            if (!str.endsWith("[")) str += ", ";
+            str += String.format("%.3f", t);
+        }
+        
+        return str + "]";
+    }
+    
     /**
      * \brief Returns the time series of the spike train.
      * 
@@ -80,13 +90,39 @@ public abstract class SpikeTrain {
         return last;
     }
 
+    public double getSpike(int i) {
+        return times[i];
+    }
+    
     /**
-     * \brief Informs if the spike train content is valid.
+     * \brief Returns the time interval in which the spikes in this train occur.
      * 
-     * @return \c TRUE if the spike is valid \b or \n \c FALSE otherwise
+     * @return a Interval representing the time interval containing all spikes.
      */
-    public boolean isValid() {
-        return valid;
+    public Interval getInterval() {
+        return Interval.make(first, last);
+    }
+    
+    /**
+     * \brief Returns a spike train as a time series, into a given time
+     * interval.
+     * 
+     * Given a neuron name, and a time interval I=[a;b], this method returns a
+     * set of spike times whose belong to I, from that neuron as a time series.
+     * This neuron name is under filter definition, therefore the given neuron
+     * name is seek from a list under filter selection, if it is not found, this
+     * method returns a \c null value as result.
+     * 
+     * @return the spike train. If the neuron name is not found under filter
+     *         selection returns a \c null value.
+     * 
+     *         \sa setFilter(), getFilter()
+     * */
+    public abstract SpikeTrain extractInterval(Interval interval);
+    
+    
+    public boolean isEmpty() {
+        return times.length == 0;
     }
 
     /**
