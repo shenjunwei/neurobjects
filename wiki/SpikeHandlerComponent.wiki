@@ -1,6 +1,6 @@
 #summary Explains the use of the SpikeHandler component.
 
-= SpikeHandler =
+= `SpikeHandler` =
 
 == Introduction ==
 
