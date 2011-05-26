@@ -228,8 +228,15 @@ public class TextSpikeTrain extends SpikeTrain {
      */
     protected void setInitialValues(String spikeStr) {
         name = parseFileName(spikeStr);
-        first = times[0];
-        last = times[times.length-1];
+        
+        if (times.length > 0) {
+            first = times[0];
+            last = times[times.length-1];
+        }
+        else {
+            first = Double.NaN;
+            last = Double.NaN;
+        }
     }
 
     @Override
@@ -240,11 +247,11 @@ public class TextSpikeTrain extends SpikeTrain {
     @Override
     public SpikeTrain extractInterval(Interval interval) {
         int i = Arrays.binarySearch(times, interval.start());
-        int j = Arrays.binarySearch(times, i, times.length, interval.end());
+        if (i < 0) i = -i - 1; // see binarySearch docs
         
-        // see binarySearch docs
-        if (i < 0) i = -i - 1;
+        int j = Arrays.binarySearch(times, i, times.length, interval.end());
         if (j < 0) j = -j - 1;
+        else j = j + 1;
         
         double[] new_times = Arrays.copyOfRange(times, i, j);
         return new TextSpikeTrain(new_times, name + '@' + interval);

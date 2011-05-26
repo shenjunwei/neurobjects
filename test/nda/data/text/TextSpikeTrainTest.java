@@ -16,11 +16,15 @@ import nda.data.SpikeTrain;
 public class TextSpikeTrainTest extends TextSpikeTrain {
     private TextSpikeTrain spikeTest;
     private String spikeTestName = "Test";
-    private String spikeTestPath = "setup/spikes/Test.spk";
+    private String spikeTestPath = "setup/test_spikes/test.spk";
     
     private TextSpikeTrain spikeHP02a;
     private String spikeHP02aName = "HP_02a"; 
     private String spikeHP02aPath = "setup/spikes/HP_02a.spk";
+    
+    private String missingSpikePath = "setup/test_spikes/MISSING.spk";
+    private String invalidSpikePath = "setup/test_spikes/invalid.spk";
+    private String unsortedSpikePath = "setup/test_spikes/unsorted.spk";
     
     
     @Before
@@ -34,7 +38,12 @@ public class TextSpikeTrainTest extends TextSpikeTrain {
      */
     @Test
     public void testTextSpikeTrainDoubleArrayString() {
-        fail("Not yet implemented");
+        double[] times = new double[] { 0, 1, 2, 3, 4, 5 };
+        String name = "testDoubleArray";
+        
+        SpikeTrain test = new TextSpikeTrain(times, name);
+        assertEquals(6, test.getNumberOfSpikes());
+        assertTrue(Interval.make(0, 5).contains(test.getInterval()));
     }
 
     /**
@@ -82,14 +91,6 @@ public class TextSpikeTrainTest extends TextSpikeTrain {
     }
 
     /**
-     * Test method for {@link nda.data.SpikeTrain#isEmpty()}.
-     */
-    @Test
-    public void testIsEmpty() {
-        fail("Not yet implemented");
-    }
-
-    /**
      * Test method for {@link nda.data.SpikeTrain#getInterspikeInterval()}.
      */
     @Test
@@ -107,23 +108,24 @@ public class TextSpikeTrainTest extends TextSpikeTrain {
      */
     @Test
     public void testExtractInterval() {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link nda.data.text.TextSpikeTrain#getNumberOfSpikes()}.
-     */
-    @Test
-    public void testGetNumberOfSpikes() {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for {@link nda.data.text.TextSpikeTrain#setInitialValues(java.lang.String)}.
-     */
-    @Test
-    public void testSetInitialValues() {
-        fail("Not yet implemented");
+        Interval it1 = Interval.make(0.5, 5);
+        Interval it2 = Interval.make(5, 5);
+        
+        SpikeTrain st1 = spikeTest.extractInterval(it1);
+        assertEquals(5, st1.getNumberOfSpikes());
+        assertTrue(it1.contains(st1.getInterval()));
+        
+        SpikeTrain st2 = spikeTest.extractInterval(it2);
+        assertEquals(1, st2.getNumberOfSpikes());
+        assertEquals(5, st2.getSpike(0), 1e-8);
+        
+        SpikeTrain st3 = spikeHP02a.extractInterval(it1);
+        assertTrue(st3.isEmpty());
+        
+        SpikeTrain st4 = st1.extractInterval(Interval.EMPTY);
+        SpikeTrain st5 = st1.extractInterval(Interval.INF);
+        assertTrue(st4.isEmpty());
+        assertTrue(st5.getInterval().contains(st1.getInterval()));
     }
 
     /**
@@ -135,11 +137,18 @@ public class TextSpikeTrainTest extends TextSpikeTrain {
         assertEquals("name2", parseFileName("p/p1/p2/p3/name2.spk"));
     }
 
-    /**
-     * Test method for {@link nda.data.text.TextSpikeTrain#isSorted(java.util.List)}.
-     */
-    @Test
-    public void testIsSorted() {
-        fail("Not yet implemented");
+    @Test(expected = MissingDataFileException.class)
+    public void testMissingFile() throws Exception {
+        new TextSpikeTrain(missingSpikePath); 
+    }
+    
+    @Test(expected = InvalidDataFileException.class)
+    public void testInvalidFile() throws Exception {
+        new TextSpikeTrain(invalidSpikePath);
+    }
+    
+    @Test(expected = InvalidDataFileException.class)
+    public void testUnsortedFile() throws Exception {
+        new TextSpikeTrain(unsortedSpikePath);
     }
 }
