@@ -11,6 +11,8 @@ import java.util.List;
 
 import nda.data.Interval;
 import nda.data.SpikeTrain;
+import nda.util.FileUtils;
+import nda.util.ArrayUtils;
 
 
 /**
@@ -204,7 +206,7 @@ public class TextSpikeTrain extends SpikeTrain {
             throw new InvalidDataFileException(e);
         }
         
-        if (!isSorted(timesList)) {
+        if (!ArrayUtils.isSorted(timesList)) {
             throw new InvalidDataFileException(
                     filename + ": times aren't in ascending order.");
         }
@@ -227,7 +229,7 @@ public class TextSpikeTrain extends SpikeTrain {
      * and last time, neuron name
      */
     protected void setInitialValues(String spikeStr) {
-        name = parseFileName(spikeStr);
+        name = FileUtils.parseFileName(spikeStr);
         
         if (times.length > 0) {
             first = times[0];
@@ -256,28 +258,4 @@ public class TextSpikeTrain extends SpikeTrain {
         double[] new_times = Arrays.copyOfRange(times, i, j);
         return new TextSpikeTrain(new_times, name + '@' + interval);
     }
-    
-    protected static String parseFileName(String filepath) {
-        int dotPos = filepath.lastIndexOf('.');
-        int pathPos = filepath.lastIndexOf(File.separatorChar);
-        
-        if (dotPos < 0 || pathPos < 0)
-            return filepath;
-
-        String newName = filepath.substring(pathPos+1, dotPos);
-        return newName;
-    }
-    
-    protected static boolean isSorted(List<Double> list) {
-        for (int i = 1; i < list.size(); ++i)
-            if (list.get(i).compareTo(list.get(i-1)) < 0)
-                return false;
-        
-        return true;
-    }
-    
-    /*
-     * Needed in TextSpikeTrainTest to test protected methods.
-     */
-    protected TextSpikeTrain() { }
 }

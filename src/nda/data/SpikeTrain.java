@@ -1,5 +1,7 @@
 package nda.data;
 
+import java.util.Arrays;
+
 
 /**
  * \brief Models the spike train information as a time series.
@@ -33,14 +35,7 @@ public abstract class SpikeTrain {
 
     @Override
     public String toString() {
-        String str = name + ": [";
-        
-        for (double t : times) {
-            if (!str.endsWith("[")) str += ", ";
-            str += String.format("%.3f", t);
-        }
-        
-        return str + "]";
+        return String.format("%s: %s", name, Arrays.toString(times));
     }
     
     /**

@@ -13,7 +13,7 @@ import nda.data.SpikeTrain;
  * 
  * @author giulianoxt
  */
-public class TextSpikeTrainTest extends TextSpikeTrain {
+public class TextSpikeTrainTest {
     private TextSpikeTrain spikeTest;
     private String spikeTestName = "Test";
     private String spikeTestPath = "setup/test_spikes/test.spk";
@@ -132,16 +132,6 @@ public class TextSpikeTrainTest extends TextSpikeTrain {
         SpikeTrain st5 = st1.extractInterval(Interval.INF);
         assertTrue(st4.isEmpty());
         assertTrue(st5.getInterval().contains(st1.getInterval()));
-    }
-
-    /**
-     * Test method for {@link nda.data.text.TextSpikeTrain#parseFileName(java.lang.String)}.
-     */
-    @Test
-    public void testParseFileName() {
-        assertEquals("name", parseFileName("name"));
-        assertEquals("name2", parseFileName("p/p1/p2/p3/name2.spk"));
-        assertEquals("NAME3", parseFileName("path/path2/NAME3.spk"));
     }
 
     @Test(expected = MissingDataFileException.class)
