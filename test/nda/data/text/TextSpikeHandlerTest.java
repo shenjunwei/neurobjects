@@ -110,7 +110,8 @@ public class TextSpikeHandlerTest {
      */
     @Test
     public void testGetAnimalName() {
-        fail("Not yet implemented");
+        assertEquals("<unknown>", hpNeurons.getAnimalName());
+        assertEquals("<unknown>", v1Neurons.getAnimalName());
     }
 
     /**

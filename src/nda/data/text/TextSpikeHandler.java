@@ -41,6 +41,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
             throws InvalidDataFileException, InvalidDataDirectoryException {
         dataDir = dir;
         spikeInterval = itv;
+        animalName = "<unknown>";
         setFilter(filter);
     }
     
