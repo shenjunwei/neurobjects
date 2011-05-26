@@ -265,7 +265,7 @@ public class TextSpikeTrain extends SpikeTrain {
             return filepath;
 
         String newName = filepath.substring(pathPos+1, dotPos);
-        return newName.toLowerCase();
+        return newName;
     }
     
     protected static boolean isSorted(List<Double> list) {

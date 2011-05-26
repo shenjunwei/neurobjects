@@ -66,6 +66,12 @@ public class TextSpikeTrainTest extends TextSpikeTrain {
 
         assertEquals(6, st.getNumberOfSpikes());
         assertTrue(interval.contains(st.getInterval()));
+        
+        SpikeTrain emptySt = new TextSpikeTrain(
+                spikeTestPath, spikeTestName, Interval.EMPTY);
+        
+        assertEquals(0, emptySt.getNumberOfSpikes());
+        assertTrue(emptySt.getInterval().isEmpty());
     }
 
     /**
@@ -135,6 +141,7 @@ public class TextSpikeTrainTest extends TextSpikeTrain {
     public void testParseFileName() {
         assertEquals("name", parseFileName("name"));
         assertEquals("name2", parseFileName("p/p1/p2/p3/name2.spk"));
+        assertEquals("NAME3", parseFileName("path/path2/NAME3.spk"));
     }
 
     @Test(expected = MissingDataFileException.class)
