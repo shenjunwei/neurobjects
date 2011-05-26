@@ -42,6 +42,17 @@ for (SpikeTrain spikeTrain : spikeHandler.getAllSpikes()) {
 == Complete example ==
 
 {{{
+package app;
+
+import static java.lang.System.out;
+
+import nda.data.Interval;
+import nda.data.SpikeHandlerI;
+import nda.data.SpikeTrain;
+import nda.data.text.TextSpikeHandler;
+import static nda.util.ArrayUtils.*;
+
+
 public class ReadTextDataApp {
 	public static void main(String[] args) throws Exception {
 	        // Path to a directory with spike files
