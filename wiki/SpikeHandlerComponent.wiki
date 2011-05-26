@@ -4,7 +4,7 @@
 
 == Introduction ==
 
-This document gives an overview of the *SpikeHandler* *component*. It shows how to use the TextSpikeHandler implementation of SpikeHandlerI to open a set of text files containing spike train data.
+This document gives an overview of the {{{SpikeHandler}}} component. It shows how to use the TextSpikeHandler implementation of SpikeHandlerI to open a set of text files containing spike train data.
 
 The component SpikeHandler is a source-independent representation of a set of spike trains. It abstracts the origin of the data, presenting the user with a unified interface named `SpikeHandlerI`.
 
