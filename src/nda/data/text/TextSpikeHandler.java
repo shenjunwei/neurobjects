@@ -132,11 +132,13 @@ public class TextSpikeHandler implements SpikeHandlerI {
         double last = Double.NEGATIVE_INFINITY;
         
         for (SpikeTrain spikeTrain : neurons) {
-            first = Math.min(first, spikeTrain.getFirst());
-            last = Math.max(last, spikeTrain.getLast());
+            if (!spikeTrain.isEmpty()) {
+                first = Math.min(first, spikeTrain.getFirst());
+                last = Math.max(last, spikeTrain.getLast());
+            }
         }
         
-        return Interval.make(first, last);
+        return new Interval(first, last);
     }
 
     protected void readSpikes(String dataDir, String spikeFilter, Interval spikeInterval)
