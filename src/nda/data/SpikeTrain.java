@@ -100,7 +100,7 @@ public abstract class SpikeTrain {
      * @return a Interval representing the time interval containing all spikes.
      */
     public Interval getInterval() {
-        return Interval.make(first, last);
+        return new Interval(first, last);
     }
     
     /**

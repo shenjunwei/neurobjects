@@ -27,7 +27,7 @@ public class Interval {
         }
     }
     
-    protected Interval(double start, double end) {
+    public Interval(double start, double end) {
         this.start = start;
         this.end = end;
     }
