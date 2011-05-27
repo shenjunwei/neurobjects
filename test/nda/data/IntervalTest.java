@@ -96,6 +96,8 @@ public class IntervalTest {
     public void testPreDefined() {
         assertTrue(Interval.EMPTY.isEmpty());
         assertFalse(Interval.EMPTY.isValid());
+        assertFalse(Interval.INF.isEmpty());
+        assertTrue(Interval.INF.isValid());
         assertTrue(Interval.INF.contains(neg_i));
         assertFalse(norm_i.contains(Interval.INF));
     }
