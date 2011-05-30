@@ -7,185 +7,164 @@ import nda.data.text.InvalidDataFileException;
 
 
 /**
- * \brief Handles spikes information from a given animal.
+ * Handle a set of spike trains loaded from a given data source.
  * 
- * This component should provide the interface between the spike trains data and
- * the application. The spike trains data is modeled as set of a crescent time
- * series, one crescent time series for each neuron. Besides return the spike
- * trains information, this component provides basic operation as, for example,
- * filters to select neuron names patterns; with these filters it is possible
- * handle spikes from specific areas/electrodes
+ * This component should provide the interface between the spike trains data and the
+ * application. The spike trains data is modeled as set of ascending time series, one
+ * for each neuron, as seen on the documentation for the SpikeTrain class. Besides
+ * returning the spike train information, this component provides basic managing
+ * operations. For instance, filters to select neuron names patterns. With
+ * these filters it is possible to easily access only the spikes from a specific
+ * area/electrode.
  * 
- * This interface can be implemented for each mode in which the spike trains
- * data is found: text file, sql database, matlab file.
+ * This interface is implemented for each data source type in which the spike trains
+ * data is found. Example: text files, relational databases, Matlab files, etc.
  * 
  * @author Nivaldo Vasconcelos
- * @date 17 May 2010
- * 
- **/
+ * @see Wiki page: SpikeHandlerComponent.
+ */
 public interface SpikeHandlerI {
     /**
-     * \brief Returns the type of data source
+     * Return the type of the data source.
      * 
-     * This component should be implemented for each mode in which the spike
-     * trains data is found: text file, sql database, matlab file. This method
-     * returns the current type of the data source.
+     * Provides a succint string description that uniquely identifies the type of the
+     * data source this SpikeHandlerI represents. Some examples include: "txt" for text
+     * files, "sql" for a generic SQL relational database, "mat" for a .MAT Matlab file.
      * 
-     * @return the current type of the data source. These values can be: - \c
-     *         txt : when the spike trains used are stored in text files; - \c
-     *         sql : when the spike trains used are stored in a SQL database; -
-     *         \c mat : when the spike trains used are stored in matlab files; -
-     *         \c null string if there is no type of data source defined.
-     * 
-     * */
+     * @return A string representing the type of the data source. Return null if the
+     * type of the data source can't be determined.
+     */
     public String getSourceType();
 
-    /**
-     * \brief Returns the data source animal name.
-     * 
-     * Each one instance of these components should be implemented to handle
-     * spikes from only one animal per time, the name of the current handled
-     * animal is returned by this method.
-     * 
-     * @return the data source animal name, \b or a \c null string if there is
-     *         no animal name defined.
-     * 
-     * */
-    public String getAnimalName();
-    
-    /**
-     * \brief Returns a spike train as a time series given its name.
-     * 
-     * Given a neuron name, this method returns a set of spike times from that
-     * neuron as a time series. This neuron name is under filter definition,
-     * therefore the given neuron name is seek from a list under filter
-     * selection, if it is not found, this method returns a \c null value as
-     * result.
-     * 
-     * @return the spike train. If the neuron name is not found under filter
-     *         selection returns a \c null value.
-     * 
-     *         \sa setFilter, getFilter
-     * */
-    public SpikeTrain getSpikeTrain(String name);
-    
-    public SpikeTrain getSpikeTrain(int i);
-    
-    public int getNumberOfSpikeTrains();
-    
-    /**
-     * \brief Set the selection filter to neuron names patterns.
-     * 
-     * Given a string pattern, uses this pattern to select neuron names
-     * generating a list of neurons which match with the given string pattern.
-     * After defined this selection all get spike operations under the component
-     * will be stay under this selection. This method is useful, for example, to
-     * select a set of neurons from a same anatomic area/electrode.
-     * 
-     * \code c.setFilter("S1*"); \endcode
-     * 
-     * selects all spike trains whose their names begins with S1. \n
-     * 
-     * \code c.setFilter("S1_01*"); \endcode
-     * 
-     * selects all spike trains whose their names begins with S1_01, and
-     * therefore select all spike trains from a same electrode (S1_01).
-     * 
-     * \code c.setFilter("S1_01a"); \endcode
-     * 
-     * selects the spike train from the neuron S1_01a.
-     * @throws InvalidDataDirectoryException 
-     * @throws InvalidDataFileException 
-     */
-    public void setFilter(String filter)
-        throws InvalidDataFileException, InvalidDataDirectoryException;
 
     /**
-     * \brief Returns current selection filter to neuron names patterns.
+     * Return the animal name for this set of spikes.
      * 
-     * This a useful to use in UI interfaces to show the current selection
-     * filter.
+     * The set of spike trains that this SpikeHandlerI holds should represent a single
+     * test subject. This method should return a string identifying the animal.
      * 
-     * @return the string pattern used to be the current filter \b or a \c null
-     *         string if there is no selected filter.
+     * @return The data source animal name, or a null string if there is no animal name
+     * defined.
+     */
+    public String getAnimalName();
+
+
+    /**
+     * Return a SpikeTrain in this set, referenced by its name.
      * 
-     *         \sa setFilter.
+     * Given a neuron name, this method returns the set of spike times from that
+     * neuron as a SpikeTrain.
      * 
+     * @param name Name of the desired spike train.
+     * @return The spike train with the corresponding name. If the neuron name is not
+     * found under the current filter selection, return null.
+     */
+    public SpikeTrain getSpikeTrain(String name);
+
+
+    /**
+     * Return a SpikeTrain in this set, referenced by its position.
+     * 
+     * A SpikeHandlerI organizes the SpikeTrain's sorted by name, alphabetically,
+     * from 0 to <tt>getNumberOfSpikeTrains()-1</tt>. This method returns the ith
+     * SpikeTrain.
+     * 
+     * @param i Position of the desired spike train. Must be between 0 and
+     * <tt>getNumberOfSpikeTrains()-1</tt>.
+     * @return The ith SpikeTrain.
+     */
+    public SpikeTrain getSpikeTrain(int i);
+
+
+    /**
+     * Return the number of spike trains in this set.
+     * 
+     * @return Number of SpikeTrain's currently loaded.
+     */
+    public int getNumberOfSpikeTrains();
+
+
+    /**
+     * Set the selection filter used to choose the neurons.
+     * 
+     * Given a string pattern, uses this pattern to select neuron names generating a
+     * list of neurons which match the given filter. This method is useful, for example,
+     * to select a set of neurons from the same anatomic area, or from the same electrode.
+     * A filter selects neuron names based on prefix matching. Some examples:
+     * 
+     * @code
+     * // Select all spike trains from neuron S1. Ex: S1_01a.spk, S1_11b.spk.
+     * handler.setFilter("S1");
+     * 
+     * // Select all measurements of an electrode V1_02. Ex: V1_02a.spk, V1_02b.spk.
+     * handler.setFilter("V1_02");
+     * @endcode
+     * 
+     * Initially, the empty filter "" is used, which matches all neuron names. Every
+     * time the selection filter is modified, all the matching spike trains are reloaded.
+     * 
+     * @throws InvalidDataFileException If one of the matching files is invalid.
+     */
+    public void setFilter(String filter)
+    throws InvalidDataFileException, InvalidDataDirectoryException;
+
+
+    /**
+     * Get the current selection filter. See setFilter for an explanation of the
+     * selection filter.
+     * 
+     * @return The current selection filter used by this SpikeHandlerI.
      */
     public String getFilter();
 
+
     /**
-     * \brief Returns current list of neuron names.
+     * Get the list of neuron names currently loaded.
      * 
-     * This a useful to use in UI interfaces to show the current selected
-     * neurons from the selection filter.
-     * 
-     * \sa setFilter.
-     * 
-     * @return a list of neuron names \b or a \c null string if there is no
-     *         selected filter.
+     * @return A list of spike train names currently loaded in this SpikeHandlerI.
      */
     public List<String> getNeuronNames();
 
+
     /**
-     * \brief Returns a list of all spike trains.
+     * Get all spike trains currently loaded.
      * 
-     * Following the current filter selection, returns all spike trains for each
-     * neuron as a list of spike trains. Each spike train is modeled as 1D
-     * vector.
+     * Following the current filter selection, return all spike trains for each
+     * neuron as a list of SpikeTrains's.
      * 
-     * @return a list of 1D vector, each one as a neuron
-     * 
-     *         \sa setFilter
+     * @return The list of SpikeTrain's contained in this SpikeHandlerI.
      */
     public List<SpikeTrain> getAllSpikeTrains();
 
+
     /**
-     * \brief Returns a list of all spike trains into a given time interval.
+     * Return a given time window of every spike train in this SpikeHandlerI.
      * 
-     * Following the current filter selection, returns all spike trains for each
-     * neuron as a list of spike trains into a given interval.
+     * Following the current filter selection, return a list of new spike trains
+     * containing a time window views of the original spike trains.
      * 
-     * @return There are the following cases: \n
+     * This method only returns spike trains from which there is at least one activation
+     * time in \c interval. No empty SpikeTrain's are returned. If no spike train in this
+     * SpikeHandlerI has an activation time in \c interval, the empty List is returned.
      * 
-     *         - the given interval I=[a;b] is contained into the current spike
-     *         time interval,in this case this method returns list of spike
-     *         trains.
+     * @param interval Chosen time window
+     * @return List of SpikeTrain's, each corresponding to a time window of an original
+     * spike train contained in this SpikeHandlerI, according to the rules mentioned
+     * above.
      * 
-     *         - the given interval I=[a;b] is not contained into the current
-     *         spike time interval, but there is a intersection between them,
-     *         this method returns list of spike trains from that intersection.
-     * 
-     *         - the given interval I=[a;b] that has no intersection between
-     *         with time interval of spike times, this method returns a \c null
-     *         word.
-     * 
-     * 
-     *         \sa setFilter
+     * @see SpikeTrain.extractInterval
      */
     public List<SpikeTrain> getAllSpikeTrains(Interval interval);
 
-    public Interval getGlobalSpikeInterval();
-    
-    /**
-     * \brief Returns the first spike time from filter selected spike trains
-     * 
-     * Considering each one of spike times, from each one spike train, this
-     * method returns the smallest spike time.
-     * 
-     * @return the smallest spike time considering all spike times \b or \c NaN
-     *         if the current content is not valid.
-     */
-    //public double firstSpike();
 
     /**
-     * \brief Returns the last spike time from the filter selected spike trains.
+     * Return the time interval for all the spike trains in this SpikeHandlerI.
      * 
-     * Considering each one of spike times, from each one spike train, this
-     * method returns the biggest spike time.
+     * Return an interval <tt>I = [a,b]</tt> where \c a is the smallest activation time
+     * of all spike trains currently loaded, and \c b is the greatest.
      * 
-     * @return the biggest spike time considering all spike times \b or \c NaN
-     *         if the current content is not valid.
+     * @return Return the smallest Interval \c I such that, for every SpikeTrain \c st in
+     * this handler, <tt>I.contains(st.getInterval()) == true</tt>.
      */
-    //public double lastSpike();
+    public Interval getGlobalSpikeInterval();
 }

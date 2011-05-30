@@ -1,195 +1,159 @@
 package nda.data.text;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import nda.data.Interval;
 import nda.data.SpikeTrain;
-import nda.util.FileUtils;
 import nda.util.ArrayUtils;
+import nda.util.FileUtils;
 
 
 /**
- * \page TextSpikeTrainTests Tests on TextSpikeTrain
- *
- *  The following tests were performed (in tests.utils_TxtSpikeTrainTests): \n
- *   1- Testing the constructor in normal situation:
- *      new TextSpikeTrain(filePath);  \n
- *   2- Testing the constructor in normal situation:
- *      new TextSpikeTrain(filePath, "neuron_S1_02a"); \n
- *   3- Testing the constructor in normal situation:
- *      new TextSpikeTrain(filePath, "neuron_S1_02a", 0, 100); \n
- *   4- Testing the constructor in normal situation with a negative firsTime parameter:
- *      new TextSpikeTrain(filePath, "neuron_S1_02a", -10, 100.00000000000000000009); \n
- *   5- Testing in an erroneous situation with firstTime > lastTime:
- *      new TextSpikeTrain(filePath, "neuron_S1_02a", 100.00000000000000000009, 0); \n
- *   6- Testing in normal situation with equals parameters 'firstTime' and 'LastTime':
- *      new TextSpikeTrain(filePath, "neuron_S1_02a", 0, 0); \n
- *   7- Testing in an abnormal situation with a sourceFile that isn't a neuronFile
- *      but an Gif binary image file:
- *      new TextSpikeTrain("/tmp/talesmileto01.gif", "neuron_S1_02a", 0, 500); \n
- *   8- Testing in an abnormal situation with a sourceFile that don't exist:
- *      new TextSpikeTrain("/tmp/huiahsuihsi", "neuron_S1_02a", 0, 200); \n
- *   9- Testing in an abnormal situation with a source file that comes from /dev/random:
- *      new TextSpikeTrain("/dev/random", "neuron_S1_02a", 0, 100); \n
- *   10- Testing in an abnormal situation which the 'firstime' and 'lastTime' parameter
- *      is much larger than the existing in source file:
- *      new TextSpikeTrain(filePath, "neuron_S1_02a", Double.NEGATIVE_INFINITY,
- *           Double.POSITIVE_INFINITY); \n
- *    \n
- *   In all performed tests were made the follow commands: \n
- *    TextSpikeTrain spkTrain_1 = new TextSpikeTrain(filePath); \n
- *    DoubleMatrix1D spikes_1 = spkTrain_1.getTimes(); \n
- *    System.out.println("spikes size: "+spkTrain_1.getNumberOfSpikes()); \n \n
- */
-
-/**
- * \brief Models the spike train information as a time series read from a text
- * file.
+ * A spike train read from a text data file.
  * 
- * This implementation considers that the set of spike, a spike train, s=[t1 t2
- * ... tN], is placed one spike time per line.
+ * Implementation of SpikeTrain used internally by TextSpikeHandler. Represents a
+ * spike train that was read from a text data file.
  * 
  * @author Nivaldo Vasconcelos
  * @date 18 Mai 2010
- * 
- *       \TODO Verify if the spike file have a correct format (one double number
- *       per line), if not: throws an specific exception.
+ * @see Wiki page: SpikeDataFileFormat.
  */
-public class TextSpikeTrain extends SpikeTrain {
-    protected int numberOfSpikes = 0;
-
+class TextSpikeTrain extends SpikeTrain {
     /**
-     * \brief Constructor of a Spike Train given a 1D vector and a name.
+     * Construct a spike train from a 1D vector of activation times.
      * 
-     * This constructor receive a 1D vector in which should be the spike time in
-     * a crescent order, internally a copy of this 1D vector is built. Moreover
-     * receives the name of spike train. Normally it is the name of neuron.
+     * This constructor is only used internally by TextSpikeTrain. The user can only
+     * get a TextSpikeTrain by using the higher level methods that read a text file. It
+     * receives a 1D vector containing the spike times in ascending order and a string
+     * containing the name of this spike train.
      * 
-     * @param time_v
-     *            1D vector with spike times to be stored;
-     * @param name
-     *            String with name of spike train name.
-     * @throws InvalidDataFileException
-     * */
-    public TextSpikeTrain(double[] time_v, String name) {
-        times = time_v;
-        numberOfSpikes = time_v.length;
+     * @param times Vector with spike times to be stored. Note that this TextSpikeTrain
+     * will actually hold the reference to time_v.
+     * @param name String with the name of the spike train.
+     */
+    protected TextSpikeTrain(double[] times, String name) {
+        spikeTimes = times;
         setInitialValues(name);
     }
 
+
     /**
-     * \brief Constructor of a Spike Train given a filename in which there is
-     * the spike train.
+     * Construct a SpikeTrain from the times in a text data file.
      * 
-     * This constructor receives a filename (with full path) in which there is a
-     * spike train, one time per row.
+     * This constructor receives the path of a text data file containing activation
+     * times. It will read them to create the corresponding TextSpikeTrain.
      * 
-     * @param filepath
-     *            full path and file name in which are stored the spike times
-     * @throws InvalidDataFileException
+     * @param filepath Full path to a text data file containing spike times
      * 
-     * */
+     * @throws MissingDataFileException If filepath doesn't exist
+     * @throws InvalidDataFileException If filepath can't be read or isn't a valid spike
+     * train text data file.
+     */
     public TextSpikeTrain(String filepath)
-            throws MissingDataFileException, InvalidDataFileException {
-        
+    throws MissingDataFileException, InvalidDataFileException {
+
         this(filepath, filepath, Interval.INF);
     }
 
+
     /**
-     * \brief Constructor of a Spike Train given a filename in which there is
-     * the spike train and a time interval.
+     * Construct a SpikeTrain from a time window of the activation times in a text data
+     * file.
      * 
-     * This constructor receive a filename (with full path) in which there is a
-     * spike train, one time per row and a time interval I=[a;b] and build spike
-     * that stores those spike times into I interval.
+     * This constructor receives the path of a text data file containing activation
+     * times. It will read a time window of these times, same as
+     * SpikeTrain.extractInterval. The name of the TextSpikeTrain will be the name of the
+     * file in \c filepath, minus the ".spk" extension.
      * 
-     * @param filepath
-     *            full path and file name in which are stored the spike times
-     * @param interval
-     *            time interval;
-     * @throws InvertedParameterException
-     * @throws IOException
-     * @throws FileNotFoundException
+     * @param filepath Full path to a text data file containing spike times
+     * @param interval Desired time window to be read
      * 
-     * 
-     * */
+     * @throws MissingDataFileException If filepath doesn't exist
+     * @throws InvalidDataFileException If filepath can't be read or isn't a valid spike
+     * train text data file.
+     */
     public TextSpikeTrain(String filepath, Interval interval)
-            throws MissingDataFileException, InvalidDataFileException {
-        
+    throws MissingDataFileException, InvalidDataFileException {
+
         this(filepath, filepath, interval);
     }
 
+
     /**
-     * \brief Constructor of a Spike Train given a filename in which there is
-     * the spike train and the name of spike train.
+     * Construct a SpikeTrain from the times in a text data file, with a custom name.
      * 
-     * This constructor receive a filename (with full path) in which should be
-     * there is a spike train, one time per row.
+     * This constructor receives the path of a text data file containing activation
+     * times. It will read these times and use a custom name to represent them.
      * 
-     * @param filepath
-     *            full path and file name in which are stored the spike times
-     * @param spikeName
-     *            name to be used by the spike train
-     * @throws InvalidDataFileException
-     * @throws MissingDataFileException
+     * @param filepath Full path to a text data file containing spike times
+     * @param spikeName Name to be used by this TextSpikeTrain
      * 
-     * */
+     * @throws MissingDataFileException If filepath doesn't exist
+     * @throws InvalidDataFileException If filepath can't be read or isn't a valid spike
+     * train text data file.
+     */
     public TextSpikeTrain(String filepath, String spikeName)
-            throws MissingDataFileException, InvalidDataFileException {
-        
+    throws MissingDataFileException, InvalidDataFileException {
+
         this(filepath, spikeName, Interval.INF);
     }
 
+
     /**
-     * \brief Constructor of a named Spike Train given a filename in which there
-     * is the spike train and a time interval.
+     * Construct a SpikeTrain from a time window of the activation times in a text data
+     * file, with a custom name.
      * 
-     * This constructor receive a filename (with full path) in which should be
-     * there is a spike train, one time per row and a time interval I=[a;b] and
-     * build spike that stores those spike times into I interval.
+     * This constructor receives the path of a text data file containing activation
+     * times. It will read a time window of these times, same as
+     * SpikeTrain.extractInterval. The resulting TextSpikeTrain will have a custom name.
      * 
-     * @param filepath
-     *            full path and file name in which are stored the spike times;
-     * @param spikeName
-     *            name to be used by spike train;
-     * @param interval
-     *            time interval;
-     * @throws InvertedParameterException
-     * @throws IOException
-     * @throws FileNotFoundException
+     * @param filepath Full path to a text data file containing spike times
+     * @param spikeName Name to be used by this TextSpikeTrain
+     * @param interval Desired time window to be read
      * 
-     * 
-     * */
+     * @throws MissingDataFileException If filepath doesn't exist
+     * @throws InvalidDataFileException If filepath can't be read or isn't a valid spike
+     * train text data file.
+     */
     public TextSpikeTrain(String filepath, String spikeName, Interval interval)
-            throws MissingDataFileException, InvalidDataFileException {
-        
+    throws MissingDataFileException, InvalidDataFileException {
+
         fillFromFile(filepath, interval);
         setInitialValues(spikeName);
     }
 
-    protected void fillFromFile(String filename, Interval interval)
-            throws MissingDataFileException, InvalidDataFileException {
-        
+
+    /**
+     * Load the spike train data from a text file into this TextSpikeTrain.
+     * 
+     * Read the text file and load only those spikes that occur in the given interval.
+     * 
+     * @param filepath Path to text  file
+     * @param interval Time interval to be considered
+     * @throws MissingDataFileException If filepath doesn't exist
+     * @throws InvalidDataFileException If filepath isn't a valid spike train data file
+     */
+    protected void fillFromFile(String filepath, Interval interval)
+    throws MissingDataFileException, InvalidDataFileException {
+
         ArrayList<Double> timesList = new ArrayList<Double>(500);
-        
+
         try {
-            BufferedReader in = new BufferedReader(new FileReader(filename));
+            BufferedReader in = new BufferedReader(new FileReader(filepath));
             String str;
             double spikeTime = 0;
 
             while (((str = in.readLine()) != null) && (spikeTime < interval.end())) {
                 if (str.trim().isEmpty())
                     continue;
-                
+
                 spikeTime = Double.parseDouble(str);
-                
+
                 if (interval.contains(spikeTime))
                     timesList.add(spikeTime);
             }
@@ -205,57 +169,33 @@ public class TextSpikeTrain extends SpikeTrain {
         catch (IOException e) {
             throw new InvalidDataFileException(e);
         }
-        
+
         if (!ArrayUtils.isSorted(timesList)) {
             throw new InvalidDataFileException(
-                    filename + ": times aren't in ascending order.");
+                    filepath + ": times aren't in ascending order.");
         }
-        
-        times = new double[timesList.size()];
-        for (int i = 0; i < times.length; ++i)
-            times[i] = timesList.get(i);
-        
-        numberOfSpikes = times.length;
-        if (numberOfSpikes == 0) {
-            System.out.println(
-                    "TextSpikeTrain::fillFromFile: " + filename +
-                    " has no spikes in " + interval
-            );
-        }
+
+        spikeTimes = new double[timesList.size()];
+        for (int i = 0; i < spikeTimes.length; ++i)
+            spikeTimes[i] = timesList.get(i);
     }
 
-    /**
-     * \brief Set initial values like: if the spike trains is valid, first time
-     * and last time, neuron name
-     */
+
     protected void setInitialValues(String spikeStr) {
-        name = FileUtils.parseFileName(spikeStr);
-        
-        if (times.length > 0) {
-            first = times[0];
-            last = times[times.length-1];
-        }
-        else {
-            first = Double.NaN;
-            last = Double.NaN;
-        }
+        neuronName = FileUtils.parseFileName(spikeStr);
     }
 
-    @Override
-    public int getNumberOfSpikes() {
-        return numberOfSpikes;
-    }
-    
+
     @Override
     public SpikeTrain extractInterval(Interval interval) {
-        int i = Arrays.binarySearch(times, interval.start());
+        int i = Arrays.binarySearch(spikeTimes, interval.start());
         if (i < 0) i = -i - 1; // see binarySearch docs
-        
-        int j = Arrays.binarySearch(times, i, times.length, interval.end());
+
+        int j = Arrays.binarySearch(spikeTimes, i, spikeTimes.length, interval.end());
         if (j < 0) j = -j - 1;
         else j = j + 1;
-        
-        double[] new_times = Arrays.copyOfRange(times, i, j);
-        return new TextSpikeTrain(new_times, name + '@' + interval);
+
+        double[] new_times = Arrays.copyOfRange(spikeTimes, i, j);
+        return new TextSpikeTrain(new_times, neuronName + '@' + interval);
     }
 }

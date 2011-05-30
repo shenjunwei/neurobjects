@@ -1,13 +1,15 @@
 package nda.util;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 
 /**
  * Tests for the FileUtils class.
  * 
- * @author giulianoxt
+ * @author Giuliano Vilela
+ * @ingroup UnitTests
  */
 public class FileUtilsTest {
 
