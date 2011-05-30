@@ -4,21 +4,21 @@ package nda.data;
 /**
  * Represents a time interval (window).
  *
- * An Interval is a closed range <tt>[a, b]</tt>, represented by two double variables,
+ * An Interval is a closed range <tt>[a,b]</tt>, represented by two double variables,
  * that model a time window in a determined experiment.
  *
  * @author Giuliano Vilela
  */
 public class Interval {
-    /** Start time of the interval (a) */
+    /** Start time of the interval (\c a) */
     protected double start;
-    /** End time of the interval (b) */
+    /** End time of the interval (\c b) */
     protected double end;
 
     /**
      * Pre-defined empty Interval. It represents an invalid range.
      *
-     * Note that, for every <tt>T</tt>: @code Interval.EMPTY.contains(T) == false @endcode
+     * Note that, for every \c T: @code Interval.EMPTY.contains(T) == false @endcode
      */
     public final static Interval EMPTY = new Interval(
             Double.NaN, Double.NaN
@@ -27,7 +27,7 @@ public class Interval {
     /**
      * Pre-defined infinite Interval. It represents the entire history of an experiment.
      *
-     * Note that, for every T @code Interval.INF.contains(T) == true @endcode
+     * Note that, for every \c T @code Interval.INF.contains(T) == true @endcode
      */
     public final static Interval INF = new Interval(
             Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY
@@ -83,7 +83,7 @@ public class Interval {
     /**
      * Start time of this interval.
      *
-     * @return If the interval is valid, return the smallest <tt>T</tt> such that
+     * @return If the interval is valid, return the smallest \c T such that
      * <tt>this.contains(T)</tt>. If the interval is invalid, the return value is
      * undefined.
      */
@@ -95,7 +95,7 @@ public class Interval {
     /**
      * End time of this interval.
      *
-     * @return If the interval is valid, return the greatest <tt>T</tt> such that
+     * @return If the interval is valid, return the greatest \c T such that
      * <tt>this.contains(T)</tt>. If the interval is invalid, the return value is
      * undefined.
      */

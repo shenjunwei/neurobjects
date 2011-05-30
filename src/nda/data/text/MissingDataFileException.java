@@ -1,7 +1,9 @@
 package nda.data.text;
 
 /**
- * @author giulianoxt
+ * Thrown to indicate that a method tried to open an inexistent file.
+ * 
+ * @author Giuliano Vilela
  */
 public class MissingDataFileException extends Exception {
     private static final long serialVersionUID = -3909662700445854547L;

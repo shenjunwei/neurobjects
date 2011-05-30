@@ -1,13 +1,21 @@
 package nda.data;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
+
+
+/**
+ * \defgroup UnitTests Unit Tests
+ */
 
 /**
  * Test the Interval class.
  * 
- * @author giulianoxt
+ * @author Giuliano Vilela
+ * @ingroup UnitTests
  */
 public class IntervalTest {
     final Interval norm_i = Interval.make(0, 10);
@@ -15,7 +23,7 @@ public class IntervalTest {
     final Interval neg_i = Interval.make(-5, 15);
     final Interval out_i = Interval.make(20, 30);
     final double EPS = 1e-8;
-    
+
     /**
      * Test method for {@link nda.data.Interval#make(double, double)}.
      */
@@ -78,7 +86,7 @@ public class IntervalTest {
         assertFalse(norm_i.intersection(out_i).isValid());
         assertEquals(0, norm_i.intersection(point_i).duration(), EPS);
     }
-    
+
     /**
      * Test method for {@link nda.data.Interval#isEmpty()}.
      */
@@ -88,7 +96,7 @@ public class IntervalTest {
         assertFalse(neg_i.isEmpty());
         assertTrue(norm_i.intersection(out_i).isEmpty());
     }
-    
+
     /**
      * Test pre-defined intervals
      */

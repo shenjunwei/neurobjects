@@ -1,8 +1,12 @@
 package nda.data.text;
 
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import nda.data.Interval;
 import nda.data.SpikeTrain;
@@ -11,22 +15,23 @@ import nda.data.SpikeTrain;
 /**
  * Tests for the TextSpikeTrain class.
  * 
- * @author giulianoxt
+ * @author Giuliano Vilela
+ * @ingroup UnitTests
  */
 public class TextSpikeTrainTest {
     private TextSpikeTrain spikeTest;
     private String spikeTestName = "Test";
     private String spikeTestPath = "setup/test_spikes/test.spk";
-    
+
     private TextSpikeTrain spikeHP02a;
-    private String spikeHP02aName = "HP_02a"; 
+    private String spikeHP02aName = "HP_02a";
     private String spikeHP02aPath = "setup/spikes/HP_02a.spk";
-    
+
     private String missingSpikePath = "setup/test_spikes/MISSING.spk";
     private String invalidSpikePath = "setup/test_spikes/invalid.spk";
     private String unsortedSpikePath = "setup/test_spikes/unsorted.spk";
-    
-    
+
+
     @Before
     public void setUp() throws Exception {
         spikeTest = new TextSpikeTrain(spikeTestPath, spikeTestName);
@@ -40,7 +45,7 @@ public class TextSpikeTrainTest {
     public void testTextSpikeTrainDoubleArrayString() {
         double[] times = new double[] { 0, 1, 2, 3, 4, 5 };
         String name = "testDoubleArray";
-        
+
         SpikeTrain test = new TextSpikeTrain(times, name);
         assertEquals(6, test.getNumberOfSpikes());
         assertTrue(Interval.make(0, 5).contains(test.getInterval()));
@@ -66,10 +71,10 @@ public class TextSpikeTrainTest {
 
         assertEquals(6, st.getNumberOfSpikes());
         assertTrue(interval.contains(st.getInterval()));
-        
+
         SpikeTrain emptySt = new TextSpikeTrain(
                 spikeTestPath, spikeTestName, Interval.EMPTY);
-        
+
         assertEquals(0, emptySt.getNumberOfSpikes());
         assertTrue(emptySt.getInterval().isEmpty());
     }
@@ -90,7 +95,7 @@ public class TextSpikeTrainTest {
     @Test
     public void testGetTimes() {
         double[] times = spikeHP02a.getTimes();
-        
+
         assertEquals(times.length, spikeHP02a.getNumberOfSpikes());
         assertEquals(5811.772725, times[0], 1e-8);
         assertEquals(5850.647000, times[times.length-2], 1e-8);
@@ -104,7 +109,7 @@ public class TextSpikeTrainTest {
         double[] test_isi = spikeTest.getInterspikeInterval();
         double[] hp_isi = spikeHP02a.getInterspikeInterval();
         double[] hp_times = spikeHP02a.getTimes();
-        
+
         assertArrayEquals(new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1 }, test_isi, 1e-8);
         assertEquals(hp_times[13]-hp_times[12], hp_isi[12], 1e-8);
     }
@@ -116,18 +121,18 @@ public class TextSpikeTrainTest {
     public void testExtractInterval() {
         Interval it1 = Interval.make(0.5, 5);
         Interval it2 = Interval.make(5, 5);
-        
+
         SpikeTrain st1 = spikeTest.extractInterval(it1);
         assertEquals(5, st1.getNumberOfSpikes());
         assertTrue(it1.contains(st1.getInterval()));
-        
+
         SpikeTrain st2 = spikeTest.extractInterval(it2);
         assertEquals(1, st2.getNumberOfSpikes());
         assertEquals(5, st2.getSpike(0), 1e-8);
-        
+
         SpikeTrain st3 = spikeHP02a.extractInterval(it1);
         assertTrue(st3.isEmpty());
-        
+
         SpikeTrain st4 = st1.extractInterval(Interval.EMPTY);
         SpikeTrain st5 = st1.extractInterval(Interval.INF);
         assertTrue(st4.isEmpty());
@@ -136,14 +141,14 @@ public class TextSpikeTrainTest {
 
     @Test(expected = MissingDataFileException.class)
     public void testMissingFile() throws Exception {
-        new TextSpikeTrain(missingSpikePath); 
+        new TextSpikeTrain(missingSpikePath);
     }
-    
+
     @Test(expected = InvalidDataFileException.class)
     public void testInvalidFile() throws Exception {
         new TextSpikeTrain(invalidSpikePath);
     }
-    
+
     @Test(expected = InvalidDataFileException.class)
     public void testUnsortedFile() throws Exception {
         new TextSpikeTrain(unsortedSpikePath);
