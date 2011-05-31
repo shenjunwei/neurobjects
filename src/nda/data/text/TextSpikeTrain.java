@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import nda.data.Interval;
 import nda.data.SpikeTrain;
@@ -128,6 +127,15 @@ class TextSpikeTrain extends SpikeTrain {
     }
 
 
+    @Override
+    public SpikeTrain extractInterval(Interval interval) {
+        double[] new_times = ArrayUtils.extractInterval(
+                spikeTimes, interval.start(), interval.end());
+
+        return new TextSpikeTrain(new_times, neuronName + "@" + interval);
+    }
+
+
     /**
      * Load the spike train data from a text file into this TextSpikeTrain.
      * 
@@ -183,19 +191,5 @@ class TextSpikeTrain extends SpikeTrain {
 
     protected void setInitialValues(String spikeStr) {
         neuronName = FileUtils.parseFileName(spikeStr);
-    }
-
-
-    @Override
-    public SpikeTrain extractInterval(Interval interval) {
-        int i = Arrays.binarySearch(spikeTimes, interval.start());
-        if (i < 0) i = -i - 1; // see binarySearch docs
-
-        int j = Arrays.binarySearch(spikeTimes, i, spikeTimes.length, interval.end());
-        if (j < 0) j = -j - 1;
-        else j = j + 1;
-
-        double[] new_times = Arrays.copyOfRange(spikeTimes, i, j);
-        return new TextSpikeTrain(new_times, neuronName + '@' + interval);
     }
 }

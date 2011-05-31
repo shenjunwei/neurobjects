@@ -80,6 +80,18 @@ public class Interval {
     }
 
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Interval) {
+            Interval interval = (Interval)obj;
+            return Double.compare(start, interval.start()) == 0 &&
+            Double.compare(end, interval.end()) == 0;
+        } else {
+            return false;
+        }
+    }
+
+
     /**
      * Start time of this interval.
      *
