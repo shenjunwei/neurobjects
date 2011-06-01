@@ -126,6 +126,9 @@ public class Histogram {
         try {
             String line;
             while ((line = in.readLine()) != null) {
+                if (line.isEmpty())
+                    continue;
+
                 double value = Double.parseDouble(line);
 
                 if (value >= interval.start()) {

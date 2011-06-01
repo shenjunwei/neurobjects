@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import nda.data.text.TextSpikeHandler;
+import nda.util.FileUtils;
 
 
 /**
@@ -30,6 +31,8 @@ public class HistogramTest {
 
     private final String spikeDir = "setup/spikes/";
     private final String spikePath = "setup/spikes/HP_02a.spk";
+    private final String bigPath = "setup/test_spikes/big.spk";
+    private final String bigCRPath = "setup/test_spikes/big_cr_1000_4000_0643.txt";
 
 
     @Before
@@ -242,5 +245,17 @@ public class HistogramTest {
         hist_hp.saveBinCounts(save);
 
         assertTrue(Arrays.equals(counts, save));
+    }
+
+
+    @Test
+    public void testRealDataFromMatlab() throws Exception {
+        Histogram hist = new Histogram(Interval.make(1000, 4000), 0.643);
+        hist.load(bigPath);
+
+        int[] java_cr = hist.getBinCounts();
+        int[] mat_cr = FileUtils.readIntArray(bigCRPath);
+
+        assertTrue(Arrays.equals(mat_cr, java_cr));
     }
 }
