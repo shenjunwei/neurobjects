@@ -82,8 +82,7 @@ public class Histogram {
      * 
      */
     public void reset() {
-        for (int i = 0; i < histogram.length; ++i)
-            histogram[i] = 0;
+        Arrays.fill(histogram, 0);
     }
 
 
@@ -100,21 +99,20 @@ public class Histogram {
      *            buffer with all spikeTimes to consider on histogram.
      */
     public void load(double[] sample) {
-        double first = interval.start();
+        reset();
+        double start = interval.start();
 
-        int i = Arrays.binarySearch(sample, first);
+        int i = Arrays.binarySearch(sample, start);
         if (i < 0) i = -i - 1;
 
-        while (i > 0 && sample[i-1] == first)
-            ++i;
-
-        while (i < sample.length && sample[i] < interval.end())
+        while (i < sample.length && sample[i] <= interval.end())
             addFast(sample[i++]);
     }
 
 
     public void load(String filepath)
     throws MissingDataFileException, InvalidDataFileException {
+        reset();
         BufferedReader in;
 
         try {
@@ -132,7 +130,7 @@ public class Histogram {
                 double value = Double.parseDouble(line);
 
                 if (value >= interval.start()) {
-                    if (value < interval.end())
+                    if (value <= interval.end())
                         addFast(value);
                     else
                         break;
@@ -152,10 +150,15 @@ public class Histogram {
 
 
     protected void addFast(double value) {
-        double offs = value - interval.start();
+        if (value != interval.end()) {
+            double offs = value - interval.start();
 
-        int bin = (int) Math.floor(offs / binSize);
-        ++histogram[bin];
+            int bin = (int) Math.floor(offs / binSize);
+            ++histogram[bin];
+        }
+        else {
+            ++histogram[histogram.length-1];
+        }
     }
 
 
@@ -197,8 +200,13 @@ public class Histogram {
             "value lies outside the histogram interval");
         }
 
-        double offs = value - interval.start();
-        return (int) Math.floor(offs / binSize);
+        if (value != interval.end()) {
+            double offs = value - interval.start();
+            return (int) Math.floor(offs / binSize);
+        }
+        else {
+            return getNumberBins()-1;
+        }
     }
 
 

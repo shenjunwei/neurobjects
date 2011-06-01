@@ -21,7 +21,7 @@ import nda.util.FileUtils;
 public class HistogramTest {
     private final double[] v1 = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     private final double[] v2 = { 5, 6, 1, 3, 8, 7, 4, 0, 9, 2 };
-    private final double[] v3 = { 6 };
+    private final double[] v4 = { 6 };
     private final double EPS = 1e-10;
 
     private final Interval i1 = Interval.make(0, 10);
@@ -152,7 +152,7 @@ public class HistogramTest {
         assertEquals(2, hist.getBinCount(1));
 
         hist = new Histogram(i1, 5);
-        hist.load(v3);
+        hist.load(v4);
 
         assertEquals(0, hist.getBinCount(0));
         assertEquals(0, hist.getBinCount(2));
@@ -202,7 +202,7 @@ public class HistogramTest {
         int sum = 0;
         for (int x : counts) sum += x;
 
-        assertEquals(st_hp.getNumberOfSpikes()-1, sum);
+        assertEquals(st_hp.getNumberOfSpikes(), sum);
     }
 
 
@@ -257,5 +257,18 @@ public class HistogramTest {
         int[] mat_cr = FileUtils.readIntArray(bigCRPath);
 
         assertTrue(Arrays.equals(mat_cr, java_cr));
+    }
+
+
+    @Test
+    public void testOutlier() {
+        double[] v3 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        Histogram hist = new Histogram(Interval.make(1, 100), 2.0);
+        hist.load(v3);
+
+        assertEquals(2.0, hist.getBinSize(), EPS);
+        assertEquals(2, hist.getBinCount(0));
+        assertEquals(2, hist.getBinCount(1));
+        assertEquals(2, hist.getBinCount(4));
     }
 }
