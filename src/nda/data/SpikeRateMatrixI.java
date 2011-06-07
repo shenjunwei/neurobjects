@@ -122,6 +122,10 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
      */
     public int getWindowWidth();
 
+    public void setStep(int _step);
+
+    public int getStep();
+
 
     public int getCurrentColumn();
 

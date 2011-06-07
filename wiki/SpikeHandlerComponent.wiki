@@ -4,21 +4,29 @@
 
 == Introduction ==
 
-This document gives an overview of the `SpikeHandler` component. It shows how to use the `TextSpikeHandler` implementation of `SpikeHandlerI` to open a set of text files containing spike train data.
+This document gives an overview of the `SpikeHandler` component. It shows how to use the
+`TextSpikeHandler` implementation of `SpikeHandlerI` to open a set of text files
+containing spike train data.
 
-The component `SpikeHandler` is a source-independent representation of a set of spike trains. It abstracts the origin of the data, presenting the user with a unified interface named `SpikeHandlerI`.
+The component `SpikeHandler` is a source-independent representation of a set of spike
+trains. It abstracts the origin of the data, presenting the user with a unified interface
+named `SpikeHandlerI`.
 
 
 == Loading the spikes ==
 
-To explain the use of the `SpikeHandlerI` interface we'll show how to use the `TextSpikeHandler` implementation to open a set of text data files describing spike trains.
+To explain the use of the `SpikeHandlerI` interface we'll show how to use the
+`TextSpikeHandler` implementation to open a set of text data files describing spike
+trains.
 
 To open a set of spike train data files we first need to provide:
   * Path to a directory of text files: `String path = "path/to/dir/;"`
   * Filter to identify chosen neurons: `String filter = "V1";`. The filter will match all spike files beginning with `"V1"` and ending with the `".spk"` extension.
   * Desired interval of spike times: `Interval i = Interval.make(0, 500);`. In Neurobjects, a time window in an experiment is represented by the _Interval_ class, which holds two `double` values that represent a closed range `[a, b]`. In this example. we'll only load the spike times occurring between `t = 0s` and `t = 500s`, inclusive.
 
-Next, we create a `TextSpikeHandler` with these parameters. It's the component that reads the spike train raw data and implements the access interface `SpikeHandlerI`. To instantiate a `TextSpikeHandler`, we use:
+Next, we create a `TextSpikeHandler` with these parameters. It's the component that reads
+the spike train raw data and implements the access interface `SpikeHandlerI`. To
+instantiate a `TextSpikeHandler`, we use:
 
 {{{
 SpikeHandlerI spikeHandler = new TextSpikeHandler(path, filter, i);
@@ -36,7 +44,8 @@ for (SpikeTrain spikeTrain : spikeHandler.getAllSpikes()) {
 }
 }}}
 
-(_There are other ways to get spike trains from a `SpikeHandlerI`, see the source for details_)
+(_There are other ways to get spike trains from a `SpikeHandlerI`, see the source for
+details_)
 
 
 == Complete example ==

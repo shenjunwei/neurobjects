@@ -11,7 +11,7 @@ import nda.data.SpikeTrain;
 import nda.data.text.TextSpikeHandler;
 
 /**
- * @defgroup TestApps Test Applications
+ * @defgroup ExampleApps Application examples
  */
 
 
@@ -42,8 +42,7 @@ import nda.data.text.TextSpikeHandler;
  * activation, etc.
  *
  * @author Giuliano Vilela.
- * @date May 19, 2011.
- * @ingroup TestApps
+ * @ingroup ExampleApps
  */
 public class ReadTextDataApp {
     public static void main(String[] args) throws Exception {
