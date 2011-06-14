@@ -21,7 +21,7 @@ import nda.data.text.TextSpikeHandler;
  * @author Giuliano Vilela
  * @ingroup ExampleApps
  */
-public class WriteRateMatrixApp {
+public class ShowRateMatrixApp {
     // Path to a directory with real spike files
     private static final String spikeDir = "setup/spikes";
 
