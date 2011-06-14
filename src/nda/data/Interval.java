@@ -1,5 +1,7 @@
 package nda.data;
 
+import java.util.Comparator;
+
 
 /**
  * Represents a time interval (window).
@@ -32,6 +34,28 @@ public class Interval {
     public final static Interval INF = new Interval(
             Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY
     );
+
+
+    public static class ElementComparator implements Comparator<Interval> {
+        private int element;
+
+        public ElementComparator() {
+            this(0);
+        }
+
+        public ElementComparator(int el) {
+            element = el;
+        }
+
+        @Override
+        public int compare(Interval a, Interval b) {
+            if (element == 0)
+                return Double.compare(a.start, b.start);
+            else
+                return Double.compare(a.end, b.end);
+        }
+    }
+
 
 
     /**
@@ -194,5 +218,18 @@ public class Interval {
         double a = Math.max(start, interval.start());
         double b = Math.min(end, interval.end());
         return new Interval(a, b);
+    }
+
+
+    /**
+     * Create a new interval such that the resulting interval is the smallest interval
+     * that contains both this interval and a given interval.
+     * 
+     * @param interval The given interval to be enclosed
+     * @return The resulting enclosing interval
+     */
+    public Interval enclose(Interval interval) {
+        return Interval.make(Math.min(start, interval.start),
+                Math.max(end, interval.end));
     }
 }
