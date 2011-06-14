@@ -18,9 +18,6 @@ separated by commas. A value representation can't contain a comma.
   * `<S>`: a string. Leading and trailing spaces are ignored.
   * `<A>`, `<B>`: string representation of floating point numbers as described [http://download.oracle.com/javase/6/docs/api/java/lang/Double.html#valueOf(java.lang.String) in this format], where `Double.valueOf(<B>) < Double.valueOf(<C>)`.
 
-If `<Ax>` and `<Bx>` are the values of `<A>` and `<B>` at line `x` then, for every `i`
-and `j`, where `i < j`, `Double.valueOf(<Bi>) < Double.valueOf(<Aj>)`.
-
 
 == Meaning ==
 
