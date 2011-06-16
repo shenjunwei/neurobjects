@@ -35,7 +35,7 @@ Use `SpikeTrain.getInterSpikeInterval()` to easily calculate the ISI.
 
 Currently we use the spike rate count (see the `CountMatrix` component). Our plan is to implement other methods, all of them implementing the `SpikeRateMatrixI` interface.
 
-=== Which constructor should I use when creating a CountMatrix? ===
+=== Which constructor should I use when creating a `CountMatrix`? ===
 
 It depends. You have to decide if you want to specify the number of bins used or the time size of each bin. There is a constructor for each method.
 
