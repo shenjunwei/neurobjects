@@ -1,0 +1,64 @@
+#summary Explains the use of the PatternHandler component
+
+= `PatternHandler` =
+
+== Introduction ==
+
+This document gives an overview of the `PatternHandler` component. This component provides
+an useful abstraction of a set of spike rate _patterns_, as described in
+CountMatrixComponent.
+
+
+== Spike rate patterns relation ==
+
+The `PatternHandler` component has a concept of the _spike rate patterns relation_ in the
+sense that every `PatternHandler` is a thin layer for a relation of this kind. Each
+pattern, probabily extracted from a `SpikeRateMatrixI`, is an instance of this relation.
+
+
+== Objective ==
+
+Having a standard abstraction for this kind of relation allows us to extract patterns from
+a `SpikeRateMatrixI` and use various machine learning techniques to reason about its
+properties. For instance, with a `PatternHandler` relation and a suitable classifier, one
+can ask questions such as _"Considering a given set of time intervals and the observed
+spike rate function, which ones correspond to a given stimulus?"_. 
+
+
+== Creating a `PatternHandler` ==
+
+To create a `PatternHandler`, we need:
+
+  - A `String` corresponding to the relation name
+  - A `List<String>` of all the considered neuron names
+  - The `windowWidth` of the patterns (see CountMatrixComponent for a better description)
+  - A `Set<String>` of labels. I.e., the possible values for the class attribute of this
+    relation.
+    
+Alternatively, one can use the `PatternHandler(String, SpikeRateMatrixI, Set<String>)`
+constructor and use the neuron names and the window width of the `SpikeRateMatrixI`.
+
+
+== Populating the relation ==
+
+To add instances to the corresponding Weka relation the `PatternHandler.addPattern`
+method is used. The given pattern, a `double[]`, should have one value for each non
+class attribute (there are `W-1` attributes of this type). Alongside the pattern itself,
+the user gives a `String` as the class value for the instance. Example:
+
+{{{
+// Setup the SpikeRateMatrixI before extracting patterns from it
+Interval interval = matrixA.getInterval();
+matrixA.setCurrentTime(interval.start());
+matrixA.setWindowWidth(30);
+
+for (double[] pattern : matrixA)
+    relation.addPattern(pattern, "food"); 
+}}}
+
+
+== Integrating with the Weka software suite ==
+
+The method `PatternHandler.toWekaFormat()` returns a String with the contents of a 
+ARFF file describing the given Weka relation. One can use this output to generate a
+separate text file that can easily be opened and analysed using the Weka GUI.
