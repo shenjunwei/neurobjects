@@ -27,6 +27,7 @@ public class CountMatrixTest {
 
     private CountMatrix cm_v1;
     private CountMatrix cm_test;
+    private CountMatrix cm_v1b;
 
 
     @BeforeClass
@@ -40,6 +41,7 @@ public class CountMatrixTest {
     public void setUp() {
         cm_v1 = new CountMatrix(handler_v1, 0.250);
         cm_test = new CountMatrix(handler_test, 2.0);
+        cm_v1b = new CountMatrix(handler_v1, 50000);
     }
 
 
@@ -201,6 +203,17 @@ public class CountMatrixTest {
     }
 
 
+    @Test
+    public void testBugFix() {
+        cm_v1b.setWindowWidth(49999);
+        assertEquals(1, cm_v1b.numPatterns(cm_v1b.getWindowWidth()));
+
+        int count = 0;
+        for (double[] pattern : cm_v1b) count += 1;
+        assertEquals(1, count);
+    }
+
+
     @Test(expected = UnsupportedOperationException.class)
     public void testRemove() {
         cm_v1.getPattern(40);
@@ -217,6 +230,13 @@ public class CountMatrixTest {
     public void testContainsWindowInterval() {
         assertTrue(cm_test.containsWindow(Interval.make(5, 80)));
         assertFalse(cm_test.containsWindow(Interval.make(1, 101)));
+    }
+
+
+    @Test
+    public void checkInvalidTimes() {
+        assertFalse(cm_v1.setCurrentTime(-1));
+        assertFalse(cm_test.setCurrentTime(230948920));
     }
 
 
