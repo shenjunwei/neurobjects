@@ -14,15 +14,19 @@ The project is independent of the chosen unit for measurement, but usually we us
 
 === How should I name my spike data files? ===
 
-Our convention is `"<neuron_area>_<experiment_id><electrode>.spk"`. Ex: `HP_02a.spk` meaning hippocampus "2", electrode "a".
+Our convention is `"<neuron_area>_<experiment_id><electrode>.spk"`. Ex: `HP_02a.spk`
+meaning hippocampus "2", electrode "a".
 
 === How do I open a spike data file and access the spike times? ===
 
-Create a `TextSpikeHandler` specifying the directory of your file and the name of the desired file as a label. Use `SpikeHandlerI.getSpikeTrain` to get a `SpikeTrain` instance and then use `SpikeTrain.getTimes` to access the times directly.
+Create a `TextSpikeHandler` specifying the directory of your file and the name of the
+desired file as a label. Use `SpikeHandlerI.getSpikeTrain` to get a `SpikeTrain` instance
+and then use `SpikeTrain.getTimes` to access the times directly.
 
 === The spike file is too big and I only want to look at a small section of it. What can I do? ===
 
-Use `SpikeTrain.extractInterval` to extract a given time window of a particular spike train.
+Use `SpikeTrain.extractInterval` to extract a given time window of a particular spike
+train.
 
 === How do I calculate the inter spike intervals for a given spike train? ===
 
@@ -33,15 +37,19 @@ Use `SpikeTrain.getInterSpikeInterval()` to easily calculate the ISI.
 
 === How do you estimate the spike rate function? ===
 
-Currently we use the spike rate count (see the `CountMatrix` component). Our plan is to implement other methods, all of them implementing the `SpikeRateMatrixI` interface.
+Currently we use the spike rate count (see the `CountMatrix` component). Our plan is to
+implement other methods, all of them implementing the `SpikeRateMatrixI` interface.
 
 === Which constructor should I use when creating a `CountMatrix`? ===
 
-It depends. You have to decide if you want to specify the number of bins used or the time size of each bin. There is a constructor for each method.
+It depends. You have to decide if you want to specify the number of bins used or the time
+size of each bin. There is a constructor for each method.
 
 === How do I access the spike rate count? ===
 
-Create a `CountMatrix` for your `SpikeHandler`. If you want to access the individual counts for each bin, use `CountMatrix.get`. Alternatively, you can access a pattern of the `CountMatrix` using the `getPattern` interface methods of `SpikeRateMatrixI`.
+Create a `CountMatrix` for your `SpikeHandler`. If you want to access the individual
+counts for each bin, use `CountMatrix.get`. Alternatively, you can access a pattern of
+the `CountMatrix` using the `getPattern` interface methods of `SpikeRateMatrixI`.
 
 
 == Behavior ==
@@ -52,4 +60,5 @@ Our convention is `"<experiment_id>_contacts.txt"`. Ex: `ge4_contacts.txt`.
 
 === Do the timestamps have to be ascending? ===
 
-No. In the process of creating a `BehaviorHandler` instance, we sort the timestamps for you according to their starting times. We only assume non-overlapping intervals.
+No. In the process of creating a `BehaviorHandler` instance, we sort the timestamps for
+you according to their starting times. We only assume non-overlapping intervals.
