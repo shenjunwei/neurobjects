@@ -29,11 +29,10 @@ spike rate function, which ones correspond to a given stimulus?"_.
 
 To create a `PatternHandler`, we need:
 
-  - A `String` corresponding to the relation name
-  - A `List<String>` of all the considered neuron names
-  - The `windowWidth` of the patterns (see CountMatrixComponent for a better description)
-  - A `Set<String>` of labels. I.e., the possible values for the class attribute of this
-    relation.
+  * A `String` corresponding to the relation name
+  * A `List<String>` of all the considered neuron names
+  * The `windowWidth` of the patterns (see CountMatrixComponent for a better description)
+  * A `Set<String>` of labels. I.e., the possible values for the class attribute of this relation.
     
 Alternatively, one can use the `PatternHandler(String, SpikeRateMatrixI, Set<String>)`
 constructor and use the neuron names and the window width of the `SpikeRateMatrixI`.
@@ -52,6 +51,7 @@ Interval interval = matrixA.getInterval();
 matrixA.setCurrentTime(interval.start());
 matrixA.setWindowWidth(30);
 
+// Add the patterns
 for (double[] pattern : matrixA)
     relation.addPattern(pattern, "food"); 
 }}}
