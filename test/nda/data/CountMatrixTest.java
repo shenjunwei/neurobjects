@@ -206,11 +206,11 @@ public class CountMatrixTest {
     @Test
     public void testBugFix() {
         cm_v1b.setWindowWidth(49999);
-        assertEquals(1, cm_v1b.numPatterns(cm_v1b.getWindowWidth()));
+        assertEquals(2, cm_v1b.numPatterns(cm_v1b.getWindowWidth()));
 
         int count = 0;
         for (double[] pattern : cm_v1b) count += 1;
-        assertEquals(1, count);
+        assertEquals(2, count);
     }
 
 
