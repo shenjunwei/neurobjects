@@ -233,7 +233,10 @@ public class CountMatrix implements SpikeRateMatrixI {
 
     @Override
     public int numPatterns(int width) {
-        return Math.max(0, numColumns()-cursor_pos-width);
+        if (cursor_pos + width <= numColumns())
+            return numColumns()-cursor_pos-width+1;
+        else
+            return 0;
     }
 
 
