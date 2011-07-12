@@ -19,6 +19,7 @@ import nda.data.text.TextSpikeHandler;
  * matrix.
  * 
  * @author Giuliano Vilela
+ * @ingroup ExampleApps
  */
 public class ExtractPatternsApp {
     private static final String spikeDir = "setup/spikes";
