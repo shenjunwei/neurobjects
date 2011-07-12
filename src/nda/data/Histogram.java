@@ -210,6 +210,11 @@ public class Histogram {
     }
 
 
+    public double getTimeForBin(int bin) {
+        return interval.start() + bin*binSize;
+    }
+
+
     public void saveBinCounts(int[] counts) {
         assert counts.length == getNumberBins();
 
