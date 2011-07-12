@@ -129,6 +129,8 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
 
     public int getCurrentColumn();
 
+    public double getCurrentTime();
+
 
     /** Sets the title of the rate matrix
      * 

@@ -220,6 +220,12 @@ public class CountMatrix implements SpikeRateMatrixI {
 
 
     @Override
+    public double getCurrentTime() {
+        return histogram.getTimeForBin(cursor_pos);
+    }
+
+
+    @Override
     public void setTitle(String _title) {
         title = _title;
     }
