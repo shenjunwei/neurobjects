@@ -80,10 +80,11 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
      */
     public double[] getPattern(int width);
 
-
     public double[] getPattern(double startTime, int width);
 
     public double[] getPattern(int column, int width);
+
+    public List<double[]> getPatterns(Interval interval);
 
 
     /**

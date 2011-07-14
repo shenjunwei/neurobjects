@@ -150,6 +150,20 @@ public class PatternHandler {
     }
 
 
+    /**
+     * Returns a pattern from the internal Weka relation
+     * 
+     * @param i Pattern index
+     */
+    public double[] getPattern(int i) {
+        Instance instance = relation.instance(i);
+        double[] values = instance.toDoubleArray();
+
+        double[] pattern = Arrays.copyOfRange(values, 0, values.length-1);
+        return pattern;
+    }
+
+
     public Set<String> getLabelSet() {
         Set<String> labels = new HashSet<String>();
         Attribute label_attr = relation.classAttribute();
