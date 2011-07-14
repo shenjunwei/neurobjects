@@ -20,8 +20,8 @@ import nda.data.Interval;
  * @ingroup UnitTests
  */
 public class TextBehaviorHandlerTest {
-    private final static String filepath1 = "setup/behaviors/ge4_contacts.txt";
-    private final static String filepath2 = "setup/behaviors/ge5_contacts.txt";
+    private final static String filepath1 = "data/test/behaviors/ge4_contacts.txt";
+    private final static String filepath2 = "data/test/behaviors/ge5_contacts.txt";
 
     private BehaviorHandlerI b1;
     private BehaviorHandlerI b2;

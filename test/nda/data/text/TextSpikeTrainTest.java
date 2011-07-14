@@ -21,15 +21,15 @@ import nda.data.SpikeTrain;
 public class TextSpikeTrainTest {
     private TextSpikeTrain spikeTest;
     private String spikeTestName = "Test";
-    private String spikeTestPath = "setup/test_spikes/test.spk";
+    private String spikeTestPath = "data/test/test_spikes/test.spk";
 
     private TextSpikeTrain spikeHP02a;
     private String spikeHP02aName = "HP_02a";
-    private String spikeHP02aPath = "setup/spikes/HP_02a.spk";
+    private String spikeHP02aPath = "data/test/spikes/HP_02a.spk";
 
-    private String missingSpikePath = "setup/test_spikes/MISSING.spk";
-    private String invalidSpikePath = "setup/test_spikes/invalid.spk";
-    private String unsortedSpikePath = "setup/test_spikes/unsorted.spk";
+    private String missingSpikePath = "data/test/test_spikes/MISSING.spk";
+    private String invalidSpikePath = "data/test/test_spikes/invalid.spk";
+    private String unsortedSpikePath = "data/test/test_spikes/unsorted.spk";
 
 
     @Before

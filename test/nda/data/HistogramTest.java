@@ -29,10 +29,10 @@ public class HistogramTest {
     private SpikeTrain st_hp;
     private Histogram hist_hp;
 
-    private final String spikeDir = "setup/spikes/";
-    private final String spikePath = "setup/spikes/HP_02a.spk";
-    private final String bigPath = "setup/test_spikes/big.spk";
-    private final String bigCRPath = "setup/test_spikes/big_cr_1000_4000_0643.txt";
+    private final String spikeDir = "data/test/spikes/";
+    private final String spikePath = "data/test/spikes/HP_02a.spk";
+    private final String bigPath = "data/test/test_spikes/big.spk";
+    private final String bigCRPath = "data/test/test_spikes/big_cr_1000_4000_0643.txt";
 
 
     @Before

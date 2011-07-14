@@ -22,7 +22,7 @@ import nda.data.text.TextSpikeHandler;
  * @ingroup ExampleApps
  */
 public class ExtractPatternsApp {
-    private static final String spikeDir = "setup/spikes";
+    private static final String spikeDir = "data/test/spikes";
 
     public static void main(String[] args) throws Exception {
         // Create a SpikeHandlerI containing the desired neurons

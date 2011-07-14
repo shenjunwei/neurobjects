@@ -17,7 +17,7 @@ import nda.data.text.TextBehaviorHandler;
 public class ShowBehaviorFileApp {
     public static void main(String[] args) throws Exception {
         // Path to the behavior data file
-        String filepath = "setup/behaviors/ge4_contacts.txt";
+        String filepath = "data/test/behaviors/ge4_contacts.txt";
 
         // Load the data file into memory using a BehaviorHandlerI
         BehaviorHandlerI handler = new TextBehaviorHandler(filepath);

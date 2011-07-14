@@ -22,8 +22,8 @@ import nda.data.SpikeTrain;
  * @ingroup UnitTests
  */
 public class TextSpikeHandlerTest {
-    private String spikeDirPath = "setup/spikes/";
-    private String invalidDirPath = "setup/_INVALID_";
+    private String spikeDirPath = "data/test/spikes/";
+    private String invalidDirPath = "data/test/_INVALID_";
 
     private String filterHP = "HP";
     private SpikeHandlerI hpNeurons;

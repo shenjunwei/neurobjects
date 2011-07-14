@@ -47,7 +47,7 @@ import nda.data.text.TextSpikeHandler;
 public class ReadTextDataApp {
     public static void main(String[] args) throws Exception {
         // Path to a directory with spike files
-        String path = "setup/spikes";
+        String path = "data/test/spikes";
 
         // Only open neurons whose names begin with "V1"
         String filter = "V1";

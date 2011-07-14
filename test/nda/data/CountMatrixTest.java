@@ -19,8 +19,8 @@ import nda.data.text.TextSpikeHandler;
  */
 public class CountMatrixTest {
     private static final double EPS = 1e-10;
-    private static final String spikeDir = "setup/spikes/";
-    private static final String testDir = "setup/test_spikes/";
+    private static final String spikeDir = "data/test/spikes/";
+    private static final String testDir = "data/test/test_spikes/";
 
     private static SpikeHandlerI handler_v1;
     private static SpikeHandlerI handler_test;
@@ -204,6 +204,7 @@ public class CountMatrixTest {
 
 
     @Test
+    @SuppressWarnings("unused")
     public void testBugFix() {
         cm_v1b.setWindowWidth(49999);
         assertEquals(2, cm_v1b.numPatterns(cm_v1b.getWindowWidth()));
