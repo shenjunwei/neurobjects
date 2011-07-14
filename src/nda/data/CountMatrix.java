@@ -1,5 +1,6 @@
 package nda.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -167,6 +168,22 @@ public class CountMatrix implements SpikeRateMatrixI {
         }
 
         return getRawPattern(column, column+width-1);
+    }
+
+
+    @Override
+    public List<double[]> getPatterns(Interval interval) {
+        setCurrentTime(interval.start());
+        int estimate = numPatterns(cursor_width);
+
+        List<double[]> patterns = new ArrayList<double[]>(estimate);
+
+        for (double[] pattern : this) {
+            if (getCurrentTime() > interval.end()) break;
+            patterns.add(pattern);
+        }
+
+        return patterns;
     }
 
 
