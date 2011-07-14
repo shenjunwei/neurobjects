@@ -37,7 +37,7 @@ public class PatternHandlerTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        spikeHandler = new TextSpikeHandler("setup/spikes");
+        spikeHandler = new TextSpikeHandler("data/test/spikes");
 
         spikeHandler.setFilter("HP");
         matrixA = new CountMatrix(spikeHandler, 0.250);

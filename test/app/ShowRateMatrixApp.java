@@ -23,7 +23,7 @@ import nda.data.text.TextSpikeHandler;
  */
 public class ShowRateMatrixApp {
     // Path to a directory with real spike files
-    private static final String spikeDir = "setup/spikes";
+    private static final String spikeDir = "data/test/spikes";
 
     public static void main(String[] args) throws Exception {
         Scanner in = new Scanner(System.in);
