@@ -12,10 +12,10 @@ import org.apache.commons.math.random.RandomDataImpl;
 import weka.core.AttributeStats;
 import weka.core.Instances;
 
+import nda.analysis.PatternHandler;
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;
-import nda.data.PatternHandler;
 import nda.data.SpikeHandlerI;
 import nda.data.SpikeRateMatrixI;
 import nda.data.text.TextBehaviorHandler;
@@ -29,8 +29,8 @@ import nda.data.text.TextSpikeHandler;
  * @ingroup ExampleApps
  */
 public class PatternsWithBehaviorApp {
-    private static String spikeDir = "setup/ge4/spikes/01";
-    private static String defaultBehavior = "setup/ge4/ge4_contacts.txt";
+    private static String spikeDir = "data/real/ge4/spikes/01";
+    private static String defaultBehavior = "data/real/ge4/ge4_contacts.txt";
 
     public static void main(String[] args) throws Exception {
         Scanner in = new Scanner(System.in);
@@ -57,6 +57,7 @@ public class PatternsWithBehaviorApp {
         String outputFilepath = in.next();
 
         // Load the spike data
+        System.out.println("Loading the spike data...");
         SpikeHandlerI spikeHandler = new TextSpikeHandler(spikeDir, neuronFilter);
 
         // Calculate the spike rate function

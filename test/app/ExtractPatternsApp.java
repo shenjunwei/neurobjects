@@ -3,9 +3,9 @@ package app;
 import java.util.HashSet;
 import java.util.Set;
 
+import nda.analysis.PatternHandler;
 import nda.data.CountMatrix;
 import nda.data.Interval;
-import nda.data.PatternHandler;
 import nda.data.SpikeHandlerI;
 import nda.data.SpikeRateMatrixI;
 import nda.data.text.TextSpikeHandler;
