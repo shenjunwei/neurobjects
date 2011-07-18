@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import weka.core.Instances;
 
-import nda.analysis.PatternHandler;
 import nda.data.CountMatrix;
 import nda.data.SpikeHandlerI;
 import nda.data.SpikeRateMatrixI;
@@ -27,6 +26,7 @@ import nda.data.text.TextSpikeHandler;
  * Tests for the PatternHandler class
  * 
  * @author Giuliano Vilela
+ * @ingroup UnitTests
  */
 public class PatternHandlerTest {
     private static Set<String> labels;
