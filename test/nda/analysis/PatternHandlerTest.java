@@ -1,4 +1,4 @@
-package nda.data;
+package nda.analysis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +16,10 @@ import org.junit.Test;
 
 import weka.core.Instances;
 
+import nda.analysis.PatternHandler;
+import nda.data.CountMatrix;
+import nda.data.SpikeHandlerI;
+import nda.data.SpikeRateMatrixI;
 import nda.data.text.TextSpikeHandler;
 
 
@@ -75,7 +79,7 @@ public class PatternHandlerTest {
 
 
     /**
-     * Test method for {@link nda.data.PatternHandler#toString()}.
+     * Test method for {@link nda.analysis.PatternHandler#toString()}.
      */
     @Test
     public void testToString() {
@@ -88,7 +92,7 @@ public class PatternHandlerTest {
 
 
     /**
-     * Test method for {@link nda.data.PatternHandler#toWekaFormat()}.
+     * Test method for {@link nda.analysis.PatternHandler#toWekaFormat()}.
      */
     @Test
     public void testToWekaFormat() throws Exception {
@@ -103,7 +107,7 @@ public class PatternHandlerTest {
 
 
     /**
-     * Test method for {@link nda.data.PatternHandler#addPattern(double[], java.lang.String)}.
+     * Test method for {@link nda.analysis.PatternHandler#addPattern(double[], java.lang.String)}.
      */
     @Test
     public void testAddPattern() {
@@ -141,7 +145,7 @@ public class PatternHandlerTest {
 
 
     /**
-     * Test method for {@link nda.data.PatternHandler#getDimension()}.
+     * Test method for {@link nda.analysis.PatternHandler#getDimension()}.
      */
     @Test
     public void testGetDimension() {
@@ -151,7 +155,7 @@ public class PatternHandlerTest {
 
 
     /**
-     * Test method for {@link nda.data.PatternHandler#getPatterns(java.lang.String)}.
+     * Test method for {@link nda.analysis.PatternHandler#getPatterns(java.lang.String)}.
      */
     @Test
     public void testGetPatterns() {
@@ -177,7 +181,7 @@ public class PatternHandlerTest {
 
 
     /**
-     * Test method for {@link nda.data.PatternHandler#getLabelSet()}.
+     * Test method for {@link nda.analysis.PatternHandler#getLabelSet()}.
      */
     @Test
     public void testGetLabelSet() {

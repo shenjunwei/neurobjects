@@ -1,4 +1,4 @@
-package nda.data;
+package nda.analysis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,6 +6,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import nda.data.SpikeRateMatrixI;
 
 import weka.core.Attribute;
 import weka.core.FastVector;
