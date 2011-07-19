@@ -1,6 +1,7 @@
 package nda.analysis;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
@@ -41,6 +42,21 @@ public class SetupTest {
     @Test(expected = InvalidSetupFileException.class)
     public void testInvalidFile() throws Exception {
         new Setup(invalidFilepath);
+    }
+
+
+    /**
+     * Test method for {@link nda.analysis.Setup#toString()}.
+     */
+    @Test
+    public void testToString() {
+        assertFalse(ge4_setup.toString().isEmpty());
+
+        for (Setup.Dataset dataset : ge4_setup.getDatasets()) {
+            assertFalse(dataset.toString().isEmpty());
+            for (Setup.Class class_attr : dataset.getClasses())
+                assertFalse(class_attr.toString().isEmpty());
+        }
     }
 
 
