@@ -138,6 +138,12 @@ public class Setup {
             parseClasses();
         }
 
+        @Override
+        public String toString() {
+            return String.format("Datasetmap: %s\nGlobalParams: %s\nClasses: %s",
+                    datasetMap, globalParams, classes);
+        }
+
         public String getName() {
             return (String) datasetMap.get("name");
         }
@@ -225,6 +231,12 @@ public class Setup {
             labels = label_l;
             trainSamples = train_s;
             testSamples = test_s;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s: {labels: %s, train: %d, test: %d}",
+                    name, labels, trainSamples, testSamples);
         }
 
         public String getName() {
