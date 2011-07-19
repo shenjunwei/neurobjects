@@ -186,6 +186,22 @@ public class CountMatrixTest {
 
 
     /**
+     * Test method for {@link nda.data.CountMatrix#getPatterns(nda.data.Interval)}.
+     */
+    @Test
+    public void testGetPatternsInterval() {
+        Interval interval = cm_v1.getInterval();
+        double st = interval.start();
+        double end = interval.end();
+        double bsz = cm_v1.getBinSize();
+
+        assertEquals(1, cm_v1.getPatterns(Interval.make(st, st+bsz)).size());
+        assertEquals(133, cm_v1.getPatterns(Interval.make(st, st+133*bsz)).size());
+        assertEquals(555, cm_v1.getPatterns(Interval.make(end-555*bsz, end)).size());
+    }
+
+
+    /**
      * Test method for {@link nda.data.CountMatrix#next()}.
      */
     @Test
