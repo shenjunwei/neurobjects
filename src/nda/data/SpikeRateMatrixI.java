@@ -170,6 +170,9 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
     public int numPatterns(double startTime, int width);
 
 
+    public int numPatterns(Interval interval);
+
+
     /** Increments the time cursor in the rate matrix
      * 
      * 
