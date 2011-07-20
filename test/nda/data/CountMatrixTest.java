@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -194,10 +196,11 @@ public class CountMatrixTest {
         double st = interval.start();
         double end = interval.end();
         double bsz = cm_v1.getBinSize();
+        double step = 0.9 * bsz;
 
-        assertEquals(1, cm_v1.getPatterns(Interval.make(st, st+bsz)).size());
-        assertEquals(133, cm_v1.getPatterns(Interval.make(st, st+133*bsz)).size());
-        assertEquals(555, cm_v1.getPatterns(Interval.make(end-555*bsz, end)).size());
+        assertEquals(1, cm_v1.getPatterns(Interval.make(st, st+step)).size());
+        assertEquals(133, cm_v1.getPatterns(Interval.make(st, st+133*bsz-step)).size());
+        assertEquals(555, cm_v1.getPatterns(Interval.make(end-555*bsz+step, end)).size());
     }
 
 
@@ -254,6 +257,30 @@ public class CountMatrixTest {
     public void checkInvalidTimes() {
         assertFalse(cm_v1.setCurrentTime(-1));
         assertFalse(cm_test.setCurrentTime(230948920));
+    }
+
+
+    /**
+     * Test method for {@link nda.data.CountMatrix#numPatterns(nda.data.Interval)}.
+     */
+    @Test
+    public void testNumPatterns() {
+        Interval interval_v1 = cm_v1.getInterval();
+        double st = interval_v1.start();
+        double end = interval_v1.end();
+
+        double step = interval_v1.duration() * 0.03;
+        for (int i = 0; i < 30; ++i) {
+            if (i % 2 == 0)
+                st += step;
+            else
+                end -= step;
+
+            Interval interval_test = Interval.make(st, end);
+
+            List<double[]> patterns = cm_v1.getPatterns(interval_test);
+            assertEquals(patterns.size(), cm_v1.numPatterns(interval_test));
+        }
     }
 
 
