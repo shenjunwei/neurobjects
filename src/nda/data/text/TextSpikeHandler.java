@@ -93,9 +93,12 @@ public class TextSpikeHandler implements SpikeHandlerI {
     @Override
     public void setFilter(String filter)
     throws InvalidDataFileException, InvalidDataDirectoryException {
+        String newFilter = filter.toLowerCase();
 
-        spikeFilter = filter.toLowerCase();
-        readSpikes(dataDir, spikeFilter, spikeInterval);
+        if (!newFilter.equals(spikeFilter)) {
+            spikeFilter = filter.toLowerCase();
+            readSpikes(dataDir, spikeFilter, spikeInterval);
+        }
     }
 
     @Override
@@ -188,8 +191,21 @@ public class TextSpikeHandler implements SpikeHandlerI {
         return files;
     }
 
-    protected final boolean filterMatch(String name, String filter) {
+    protected final boolean filterMatch(String name, String filter_str) {
         name = name.toLowerCase();
-        return name.startsWith(filter) && name.endsWith(SPIKE_FILE_EXT);
+
+        if (!name.endsWith(SPIKE_FILE_EXT))
+            return false;
+
+        String[] filters = filter_str.split(",");
+
+        for (String filter : filters) {
+            filter = filter.toLowerCase().trim();
+
+            if (name.startsWith(filter))
+                return true;
+        }
+
+        return false;
     }
 }

@@ -1,6 +1,7 @@
 package nda.data.text;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -43,6 +44,7 @@ public class TextSpikeHandlerTest {
         s1Neurons = new TextSpikeHandler(spikeDirPath, filterS1, intervalS1);
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#TextSpikeHandler(java.lang.String)}.
      */
@@ -57,6 +59,7 @@ public class TextSpikeHandlerTest {
         assertTrue(neuronNames.contains("V1_16a"));
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#TextSpikeHandler(java.lang.String, java.lang.String)}.
      */
@@ -69,6 +72,7 @@ public class TextSpikeHandlerTest {
         assertTrue(neuronNames.contains("HP_02a"));
         assertTrue(neuronNames.contains("HP_12b"));
     }
+
 
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#TextSpikeHandler(java.lang.String, java.lang.String, nda.data.Interval)}.
@@ -92,6 +96,7 @@ public class TextSpikeHandlerTest {
         assertTrue(emptyHandler.getGlobalSpikeInterval().isEmpty());
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#toString()}.
      */
@@ -102,6 +107,7 @@ public class TextSpikeHandlerTest {
             assertTrue(str.contains(neuronName));
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getSourceType()}.
      */
@@ -109,6 +115,7 @@ public class TextSpikeHandlerTest {
     public void testGetSourceType() {
         assertEquals("txt", s1Neurons.getSourceType());
     }
+
 
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getAnimalName()}.
@@ -119,6 +126,7 @@ public class TextSpikeHandlerTest {
         assertEquals("<unknown>", v1Neurons.getAnimalName());
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getSpikeTrain(int)}.
      */
@@ -127,6 +135,7 @@ public class TextSpikeHandlerTest {
         assertEquals("V1_04a", v1Neurons.getSpikeTrain(0).getName());
         assertEquals("V1_09a", v1Neurons.getSpikeTrain(1).getName());
     }
+
 
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getSpikeTrain(java.lang.String)}.
@@ -139,6 +148,7 @@ public class TextSpikeHandlerTest {
         assertNull(hpNeurons.getSpikeTrain("HP_12b_missing"));
         assertNull(v1Neurons.getSpikeTrain("V1_12a"));
     }
+
 
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#setFilter(java.lang.String)}.
@@ -157,6 +167,7 @@ public class TextSpikeHandlerTest {
         assertEquals(10, hpNeurons.getNumberOfSpikeTrains());
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getFilter()}.
      */
@@ -164,6 +175,7 @@ public class TextSpikeHandlerTest {
     public void testGetFilter() {
         assertEquals("hp", hpNeurons.getFilter());
     }
+
 
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getNeuronNames()}.
@@ -179,6 +191,7 @@ public class TextSpikeHandlerTest {
         assertTrue(v1Names.contains("V1_09a"));
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getAllSpikeTrains()}.
      */
@@ -191,6 +204,7 @@ public class TextSpikeHandlerTest {
         assertEquals("HP_12a", hp12a.getName());
         assertTrue(hpNeurons.getGlobalSpikeInterval().contains(hp12a.getInterval()));
     }
+
 
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getAllSpikeTrains(nda.data.Interval)}.
@@ -206,6 +220,7 @@ public class TextSpikeHandlerTest {
         assertEquals(1, trains.get(1).getNumberOfSpikes());
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextSpikeHandler#getGlobalSpikeInterval()}.
      */
@@ -218,8 +233,21 @@ public class TextSpikeHandlerTest {
             assertTrue(globalInterval.contains(st.getInterval()));
     }
 
+
     @Test(expected = InvalidDataDirectoryException.class)
     public void testInvalidDirectory() throws Exception {
         new TextSpikeHandler(invalidDirPath);
+    }
+
+
+    @Test
+    public void testCompositeFilter() throws Exception {
+        SpikeHandlerI handler = new TextSpikeHandler(spikeDirPath, "HP , S1");
+
+        assertEquals(6, handler.getAllSpikeTrains().size());
+        assertTrue(handler.getNeuronNames().contains("HP_02a"));
+        assertTrue(handler.getNeuronNames().contains("S1_07a"));
+        assertFalse(handler.getNeuronNames().contains("V1_04a"));
+        assertFalse(handler.getNeuronNames().contains("V1_16a"));
     }
 }
