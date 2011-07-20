@@ -1,0 +1,42 @@
+name: test_data
+
+
+# or just specify:
+#  data_dir: data/real/ge4 
+spikes_dir: data/test/spikes/
+contacts_file: data/test/behaviors/test_contacts.txt
+
+
+# Where the generated files are going to be saved
+output_dir: data/test/datasets/test_data/
+
+
+# CountMatrix related params
+# in this scope, it becomes global
+# can be shadowed by a dataset-local "params" definition
+params:
+  neurons: [HP, V]
+  bin_size: 0.250
+  window_width: 5
+  window_step: 1
+
+
+# a dataset is a collection of weka files
+# from the same neuron set and with the same parameters
+datasets:
+
+    # this is also the default name template
+    # auto includes the .arff extension
+  - name: ge4
+
+    # Random trials
+    rounds: 1
+    train_ratio: 0.8
+
+    # ge4_ball_01_train.arff, ge4_ball_01_test.arff,
+    # ge4_ball_02_train.arff, ge4_ball_02_test.arff
+    # brush, food, urchin, ...
+    1_vs_n:
+      labels: [ball, brush, food, urchin]
+      class_ratio: 2
+      total_positives: 3

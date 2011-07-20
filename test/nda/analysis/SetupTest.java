@@ -19,17 +19,17 @@ import org.junit.Test;
  * @ingroup UnitTests
  */
 public class SetupTest {
-    private Setup ge4_setup;
     private Setup ge5_setup;
+    private Setup test_setup;
     private static String invalidFilepath = "data/test/invalid.yml";
-    private static String ge4SetupFilepath = "data/test/ge4_setup.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
+    private static String testSetupFilepath = "data/test/test_setup.yml";
 
 
     @Before
     public void setUp() throws Exception {
-        ge4_setup = new Setup(ge4SetupFilepath);
         ge5_setup = new Setup(ge5SetupFilepath);
+        test_setup = new Setup(testSetupFilepath);
     }
 
 
@@ -50,9 +50,9 @@ public class SetupTest {
      */
     @Test
     public void testToString() {
-        assertFalse(ge4_setup.toString().isEmpty());
+        assertFalse(test_setup.toString().isEmpty());
 
-        for (Setup.Dataset dataset : ge4_setup.getDatasets()) {
+        for (Setup.Dataset dataset : test_setup.getDatasets()) {
             assertFalse(dataset.toString().isEmpty());
             for (Setup.Class class_attr : dataset.getClasses())
                 assertFalse(class_attr.toString().isEmpty());
@@ -65,7 +65,7 @@ public class SetupTest {
      */
     @Test
     public void testGetName() {
-        assertEquals("ge4", ge4_setup.getName());
+        assertEquals("test_data", test_setup.getName());
         assertEquals("ge5", ge5_setup.getName());
     }
 
@@ -75,8 +75,8 @@ public class SetupTest {
      */
     @Test
     public void testGetSpikesDirectory() {
-        assertEquals("data/real/ge4/spikes", ge4_setup.getSpikesDirectory());
-        assertEquals("data/real/ge5/spikes", ge5_setup.getSpikesDirectory());
+        assertEquals("data/test/spikes", test_setup.getSpikesDirectory());
+        assertEquals("data/real/ge5/spikes/01", ge5_setup.getSpikesDirectory());
     }
 
 
@@ -85,7 +85,7 @@ public class SetupTest {
      */
     @Test
     public void testGetContactsFilepath() {
-        assertEquals("data/real/ge4/ge4_contacts.txt", ge4_setup.getContactsFilepath());
+        assertEquals("data/test/behaviors/test_contacts.txt", test_setup.getContactsFilepath());
         assertEquals("data/real/ge5/ge5_contacts.txt", ge5_setup.getContactsFilepath());
     }
 
@@ -95,7 +95,7 @@ public class SetupTest {
      */
     @Test
     public void testGetOutputDirectory() {
-        assertEquals("data/real/ge4/datasets", ge4_setup.getOutputDirectory());
+        assertEquals("data/test/datasets/test_data", test_setup.getOutputDirectory());
         assertEquals("data/real/ge5/datasets", ge5_setup.getOutputDirectory());
     }
 
@@ -105,38 +105,38 @@ public class SetupTest {
      */
     @Test
     public void testGetDatasets() {
-        assertEquals(2, ge4_setup.getDatasets().size());
+        assertEquals(4, test_setup.getDatasets().size());
+        assertEquals(5, ge5_setup.getDatasets().size());
     }
 
 
     @Test
     public void testMinimalDataset() {
-        Setup.Dataset dataset = ge4_setup.getDatasets().get(0);
+        List<Setup.Dataset> datasets = test_setup.getDatasets();
 
-        assertEquals("ge4_a", dataset.getName());
-        assertEquals(3, dataset.getNumberRounds());
-        assertEquals(0.8, dataset.getTrainRatio(), 1e-8);
-        assertEquals(2, dataset.getClasses().size());
-        assertEquals("hp_", dataset.getParameter("neurons"));
-        assertEquals(0.250, (Double)dataset.getParameter("bin_size"), 1e-8);
-        assertEquals(2, ((Integer)dataset.getParameter("window_width")).intValue());
-    }
+        Setup.Dataset ds_ball = datasets.get(0);
+        assertEquals("ge4_ball", ds_ball.getName());
+        assertEquals(1, ds_ball.getNumberRounds());
+        assertEquals(0.8, ds_ball.getTrainRatio(), 1e-8);
+        assertEquals(2, ds_ball.getClasses().size());
+        assertEquals("[HP, V]", ds_ball.getParameter("neurons").toString());
+        assertEquals(0.250, (Double)ds_ball.getParameter("bin_size"), 1e-8);
+        assertEquals(5, ((Integer)ds_ball.getParameter("window_width")).intValue());
 
-
-    @Test
-    public void testSecondDataset() {
-        Setup.Dataset dataset = ge4_setup.getDatasets().get(1);
-
-        assertEquals("ge4_b", dataset.getName());
-        assertEquals(5, dataset.getNumberRounds());
-        assertEquals(0.5, (Double)dataset.getParameter("bin_size"), 1e-8);
-        assertEquals("hp_", dataset.getParameter("neurons"));
+        Setup.Dataset ds_food = datasets.get(2);
+        assertEquals("ge4_food", ds_food.getName());
+        assertEquals(1, ds_food.getNumberRounds());
+        assertEquals(0.8, ds_food.getTrainRatio(), 1e-8);
+        assertEquals(2, ds_food.getClasses().size());
+        assertEquals("[HP, V]", ds_food.getParameter("neurons").toString());
+        assertEquals(0.250, (Double)ds_food.getParameter("bin_size"), 1e-8);
+        assertEquals(5, ((Integer)ds_food.getParameter("window_width")).intValue());
     }
 
 
     @Test
     public void testClassesA() {
-        Setup.Dataset dataset = ge4_setup.getDatasets().get(0);
+        Setup.Dataset dataset = test_setup.getDatasets().get(0);
 
         List<Setup.Class> classes = dataset.getClasses();
         assertEquals(2, classes.size());
@@ -147,14 +147,14 @@ public class SetupTest {
         assertEquals("yes", posClass.getName());
         assertEquals("no", negClass.getName());
 
-        assertEquals(2, posClass.getLabels().size());
+        assertEquals(1, posClass.getLabels().size());
         assertTrue(posClass.getLabels().contains("ball"));
-        assertTrue(posClass.getLabels().contains("brush"));
         assertEquals(3, posClass.getNumberSamples());
         assertEquals(2, posClass.getNumberTrainSamples());
         assertEquals(1, posClass.getNumberTestSamples());
 
-        assertEquals(2, negClass.getLabels().size());
+        assertEquals(3, negClass.getLabels().size());
+        assertTrue(negClass.getLabels().contains("brush"));
         assertTrue(negClass.getLabels().contains("food"));
         assertTrue(negClass.getLabels().contains("urchin"));
         assertEquals(6, negClass.getNumberSamples());

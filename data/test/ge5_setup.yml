@@ -1,39 +1,34 @@
 name: ge5
-
-
-# or just specify:
 data_dir: data/real/ge5
 
-
-# CountMatrix related params
-# in this scope, it becomes global
-# can be shadowed by a dataset-local "params" definition
 params:
-  neurons: hp_
-  bin_size: 0.250  # or num_bins: x
+  neurons: [S1, HP, V]
+  bin_size: 0.250
+  window_step: 1
   window_width: 2
 
-
-# a dataset is a collection of weka files
-# from the same neuron set and with the same parameters
 datasets:
 
-    # this is also the default name template
-    # auto includes the .arff extension
-  - name: ge4_a
-
-    # Randomly select test set
-    # ex: ge4_a01.arff, ge4_a02.arff, ge4_a03.arff
-    rounds: 3    
+  - name: custom_name
+    rounds: 2
     train_ratio: 0.8
 
-    # implicit mode
-    positives: [ball, brush]
-    class_ratio: 2 # negative / positive
-    total_positives: 3   
+    # ge5_ball_01_train.arff, ge5_ball_01_test.arff,
+    # ge5_ball_02_train.arff, ge5_ball_02_test.arff
+    # brush, food, urchin, ...
+    
+    1_vs_n:
+      labels: [ball, brush, food]
+      class_ratio: 2
+      total_positives: 3
 
-    # # explicit mode (can customize class names)
-    # classes:
-      # # class_name: label_list, relative_size
-      # yes: [ball, brush], 2
-      # no: [food, urchin], 3
+    params:
+      neurons: v1
+
+  - rounds: 1
+    train_ratio: 0.9
+    
+    1_vs_n:
+      labels: [ball, food]
+      class_ratio: 2
+      total_positives: 3
