@@ -275,12 +275,7 @@ public class DatasetGeneratorTest {
                         double[] pB = testRel.instance(j).toDoubleArray();
 
                         assertEquals(pA.length, pB.length);
-
-                        boolean diff = false;
-                        for (int k = 0; k < pA.length && !diff; ++k)
-                            diff |= Double.compare(pA[k], pB[k]) != 0;
-
-                        assertTrue(diff);
+                        assertNotEquals(pA, pB);
                     }
                 }
             }
@@ -292,8 +287,40 @@ public class DatasetGeneratorTest {
      * Test method for {@link nda.analysis.DatasetGenerator#buildDatasetSingleRound(nda.analysis.Setup.Dataset, int)}.
      */
     @Test
-    public void testBuildDatasetSingleRound() {
-        //fail("Not yet implemented");
+    public void testBuildDatasetSingleRound() throws Exception {
+        generator.loadSpikeHandlerI();
+        generator.loadBehaviorHandlerI();
+
+        for (Setup.Dataset dataset : generator.setup.getDatasets()) {
+            Set<String> setNames = new HashSet<String>();
+
+            for (int round = 0; round < 10; ++round) {
+                List<PatternHandler> sets = generator.buildDatasetSingleRound(
+                        dataset, round);
+
+                assertEquals(2, sets.size());
+                PatternHandler trainSet = sets.get(0);
+                PatternHandler testSet = sets.get(1);
+
+                setNames.add(trainSet.getRelation().relationName());
+                setNames.add(testSet.getRelation().relationName());
+
+                for (Setup.Class class_attr : dataset.getClasses()) {
+                    String class_label = class_attr.getName();
+
+                    List<double[]> trainPatterns = trainSet.getPatterns(class_label);
+                    List<double[]> testPatterns = testSet.getPatterns(class_label);
+
+                    assertEquals(class_attr.getNumberTrainSamples(), trainPatterns.size());
+                    assertEquals(class_attr.getNumberTestSamples(), testPatterns.size());
+
+                    assertEquals(trainSet.getLabelSet(), testSet.getLabelSet());
+                    assertEquals(trainSet.getDimension(), testSet.getDimension());
+                }
+            }
+
+            assertEquals(20, setNames.size());
+        }
     }
 
 
@@ -301,8 +328,47 @@ public class DatasetGeneratorTest {
      * Test method for {@link nda.analysis.DatasetGenerator#buildDatasetAll(nda.analysis.Setup.Dataset)}.
      */
     @Test
-    public void testBuildDatasetAll() {
-        //fail("Not yet implemented");
+    public void testBuildDatasetAll() throws Exception {
+        generator.loadSpikeHandlerI();
+        generator.loadBehaviorHandlerI();
+
+        for (Setup.Dataset dataset : generator.setup.getDatasets()) {
+            Set<String> setNames = new HashSet<String>();
+
+            List<PatternHandler> sets = generator.buildDatasetAll(dataset);
+            assertEquals(2 * dataset.getNumberRounds(), sets.size());
+
+            for (int i = 0; i < sets.size()-1; i += 2) {
+                PatternHandler trainSet = sets.get(i);
+                PatternHandler testSet = sets.get(i+1);
+
+                String  trainSetName = trainSet.getRelation().relationName();
+                String testSetName = testSet.getRelation().relationName();
+
+                assertTrue(trainSetName.contains("train"));
+                assertTrue(testSetName.contains("test"));
+                assertTrue(trainSetName.contains(dataset.getName()));
+                assertTrue(testSetName.contains(dataset.getName()));
+
+                setNames.add(trainSetName);
+                setNames.add(testSetName);
+
+                for (Setup.Class class_attr : dataset.getClasses()) {
+                    String class_label = class_attr.getName();
+
+                    List<double[]> trainPatterns = trainSet.getPatterns(class_label);
+                    List<double[]> testPatterns = testSet.getPatterns(class_label);
+
+                    assertEquals(class_attr.getNumberTrainSamples(), trainPatterns.size());
+                    assertEquals(class_attr.getNumberTestSamples(), testPatterns.size());
+
+                    assertEquals(trainSet.getLabelSet(), testSet.getLabelSet());
+                    assertEquals(trainSet.getDimension(), testSet.getDimension());
+                }
+            }
+
+            assertEquals(sets.size(), setNames.size());
+        }
     }
 
 
@@ -355,5 +421,17 @@ public class DatasetGeneratorTest {
             for (Integer j : all)
                 assertTrue(j >= 0 && j < n);
         }
+    }
+
+
+    private void assertNotEquals(double[] a, double[] b) {
+        if (a.length != b.length)
+            return;
+
+        boolean diff = false;
+        for (int i = 0; i < a.length && !diff; ++i)
+            diff = Double.compare(a[i], b[i]) != 0;
+
+        assertTrue(diff);
     }
 }
