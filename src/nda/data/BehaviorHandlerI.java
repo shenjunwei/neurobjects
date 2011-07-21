@@ -42,6 +42,7 @@ public interface BehaviorHandlerI {
      */
     public List<Interval> getIntervals(String label);
 
+
     /**
      * \brief Returns a big interval in which the animal execute a set of given
      * behavior
@@ -64,6 +65,10 @@ public interface BehaviorHandlerI {
      * @author Nivaldo Vasconcelos
      * */
     public Interval getEnclosingInterval(List<String> labels);
+
+
+    public String getLabel(double time);
+
 
     public Set<String> getLabelSet();
 }
