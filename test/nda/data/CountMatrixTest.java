@@ -201,6 +201,11 @@ public class CountMatrixTest {
         assertEquals(1, cm_v1.getPatterns(Interval.make(st, st+step)).size());
         assertEquals(133, cm_v1.getPatterns(Interval.make(st, st+133*bsz-step)).size());
         assertEquals(555, cm_v1.getPatterns(Interval.make(end-555*bsz+step, end)).size());
+
+        int total = cm_v1.numPatterns(cm_v1.getInterval());
+        assertEquals(total, cm_v1.getPatterns(Interval.make(st-step, end+step)).size());
+        assertEquals(total, cm_v1.getPatterns(Interval.make(st-3*step, end)).size());
+        assertEquals(total, cm_v1.getPatterns(Interval.make(st, end+3*step)).size());
     }
 
 
@@ -281,6 +286,13 @@ public class CountMatrixTest {
             List<double[]> patterns = cm_v1.getPatterns(interval_test);
             assertEquals(patterns.size(), cm_v1.numPatterns(interval_test));
         }
+
+        assertEquals(cm_v1.numColumns()-cm_v1.getWindowWidth()+1,
+                cm_v1.numPatterns(interval_v1));
+        assertEquals(cm_v1b.numColumns()-cm_v1b.getWindowWidth()+1,
+                cm_v1b.numPatterns(cm_v1b.getInterval()));
+        assertEquals(cm_test.numColumns()-cm_test.getWindowWidth()+1,
+                cm_test.numPatterns(cm_test.getInterval()));
     }
 
 

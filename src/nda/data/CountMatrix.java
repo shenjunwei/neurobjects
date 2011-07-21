@@ -173,6 +173,23 @@ public class CountMatrix implements SpikeRateMatrixI {
 
     @Override
     public List<double[]> getPatterns(Interval interval) {
+        interval = interval.intersection(getInterval());
+        setCurrentTime(interval.start());
+
+        int numPatterns = numPatterns(interval);
+        List<double[]> patterns = new ArrayList<double[]>(numPatterns);
+
+        for (double[] pattern : this) {
+            if (patterns.size() == numPatterns)
+                break;
+            else
+                patterns.add(pattern);
+        }
+
+        return patterns;
+
+        /*
+        interval = interval.intersection(histogram.getInterval());
         setCurrentTime(interval.start());
 
         int estimate = numPatterns(cursor_width);
@@ -191,16 +208,26 @@ public class CountMatrix implements SpikeRateMatrixI {
         }
 
         return patterns;
+         */
     }
 
 
     @Override
     public int numPatterns(Interval interval) {
+        interval = interval.intersection(getInterval());
+
+        int st_bin = histogram.getBinFor(interval.start());
+        int end_bin = histogram.getBinFor(interval.end());
+
+        return end_bin - st_bin - cursor_width + 2;
+
+        /*
         int count = 0;
         int bin = histogram.getBinFor(interval.start());
+        int width = getWindowWidth();
 
-        while (containsWindow(bin, getWindowWidth())) {
-            if (histogram.getTimeForBin(bin) > interval.end())
+        while (containsWindow(bin, width)) {
+            if (histogram.getTimeForBin(bin+width-1) > interval.end())
                 break;
 
             ++count;
@@ -208,6 +235,7 @@ public class CountMatrix implements SpikeRateMatrixI {
         }
 
         return count;
+         */
     }
 
 
