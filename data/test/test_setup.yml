@@ -39,3 +39,23 @@ datasets:
       labels: [ball, brush, food, urchin]
       class_ratio: 2
       total_positives: 3
+
+
+  - name: ds_b
+    rounds: 3
+    train_ratio: 0.5
+
+    1_vs_n:
+      labels: [ball, urchin]
+      class_ratio: 2
+      total_positives: 6
+
+
+  - name: ds_c
+    rounds: 5
+    train_ratio: 0.9
+
+    1_vs_n:
+      labels: [ball, brush, urchin]
+      class_ratio: 3
+      total_positives: 5
