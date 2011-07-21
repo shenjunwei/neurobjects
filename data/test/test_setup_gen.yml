@@ -1,0 +1,41 @@
+name: test_data_gen
+
+spikes_dir: data/test/spikes/
+contacts_file: data/test/behaviors/test_contacts.txt
+output_dir: data/test/datasets/test_data_gen/
+
+params:
+  neurons: [HP, V, S]
+  bin_size: 0.250
+  window_width: 5
+
+
+
+datasets:
+  - name: ds_a
+    rounds: 3
+    train_ratio: 0.8
+
+    1_vs_n:
+      labels: [ball, food, brush, urchin]
+      class_ratio: 2
+      total_positives: 5
+
+  - name: ds_b
+    rounds: 3
+    train_ratio: 0.5
+
+    1_vs_n:
+      labels: [ball, urchin]
+      class_ratio: 2
+      total_positives: 6
+
+
+  - name: ds_c
+    rounds: 3
+    train_ratio: 0.9
+
+    1_vs_n:
+      labels: [ball, brush, urchin]
+      class_ratio: 3
+      total_positives: 5
