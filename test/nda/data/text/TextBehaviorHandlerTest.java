@@ -1,6 +1,7 @@
 package nda.data.text;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -51,6 +52,7 @@ public class TextBehaviorHandlerTest {
         assertTrue(b2.getIntervals("ball").contains(Interval.make(3630, 3631)));
     }
 
+
     /**
      * Test method for {@link nda.data.text.TextBehaviorHandler#getEnclosingInterval(java.util.List)}.
      */
@@ -60,6 +62,23 @@ public class TextBehaviorHandlerTest {
         List<String> l2 = Arrays.asList("brush", "food");
 
         assertEquals(Interval.make(5808, 5837), b1.getEnclosingInterval(l1));
-        assertEquals(Interval.make(5811, 6293), b1.getEnclosingInterval(l2));
+        assertEquals(Interval.make(5813, 6293), b1.getEnclosingInterval(l2));
+    }
+
+
+    /**
+     * Test method for {@link nda.data.text.TextBehaviorHandler#getlabel(double)}.
+     */
+    @Test
+    public void testGetLabel() {
+        assertNull(b1.getLabel(0));
+        assertNull(b1.getLabel(5807));
+        assertNull(b1.getLabel(5812.5));
+        assertNull(b1.getLabel(6294));
+        assertEquals("ball", b1.getLabel(5808));
+        assertEquals("ball", b1.getLabel(5809));
+        assertEquals("food", b1.getLabel(5815));
+        assertEquals("urchin", b1.getLabel(5828));
+        assertEquals("brush", b1.getLabel(6293));
     }
 }

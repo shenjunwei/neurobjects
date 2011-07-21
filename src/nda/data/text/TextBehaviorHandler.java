@@ -185,6 +185,20 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
 
 
     @Override
+    public String getLabel(double time) {
+        for (Map.Entry<String,List<Interval>> entry : behavior.entrySet()) {
+            String label = entry.getKey();
+
+            for (Interval interval : entry.getValue())
+                if (interval.contains(time))
+                    return label;
+        }
+
+        return null;
+    }
+
+
+    @Override
     public Set<String> getLabelSet() {
         return behavior.keySet();
     }

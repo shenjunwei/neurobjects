@@ -206,6 +206,8 @@ public class DatasetGeneratorTest {
                     rateMatrix.setCurrentColumn(column);
 
                     double columnTime = rateMatrix.getCurrentTime();
+                    assertBelongsToLabel(usedLabel, columnTime, rateMatrix.getBinSize());
+
                     boolean found = false;
 
                     for (Interval interval : behaviorHandler.getIntervals(usedLabel)) {
@@ -221,6 +223,10 @@ public class DatasetGeneratorTest {
                             rateMatrix.setCurrentColumn(column+width-1);
                             double endColumnTime = rateMatrix.getCurrentTime();
                             assertTrue(test_interval.contains(endColumnTime));
+
+                            assertBelongsToLabel(
+                                    usedLabel, endColumnTime,
+                                    rateMatrix.getBinSize());
                         }
                     }
 
@@ -433,5 +439,17 @@ public class DatasetGeneratorTest {
             diff = Double.compare(a[i], b[i]) != 0;
 
         assertTrue(diff);
+    }
+
+
+    private void assertBelongsToLabel(String label, double time, double binSize) {
+        boolean any = false;
+
+        for (int i = -1; i <= 1 && !any; ++i) {
+            double test_time = time + i * binSize;
+            any = label.equals(generator.behaviorHandler.getLabel(test_time));
+        }
+
+        assertTrue(any);
     }
 }
