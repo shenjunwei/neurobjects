@@ -16,9 +16,8 @@ output_dir: data/test/datasets/test_data/
 # can be shadowed by a dataset-local "params" definition
 params:
   neurons: [HP, V]
-  bin_size: 0.250
+  bin_size: 0.250  # must not be an integer
   window_width: 5
-  window_step: 1
 
 
 # a dataset is a collection of weka files
