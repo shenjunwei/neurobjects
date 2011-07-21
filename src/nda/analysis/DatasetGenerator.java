@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
@@ -120,17 +121,27 @@ public abstract class DatasetGenerator {
     protected void addInstancesFromClass(
             Setup.Class class_attr,
             SpikeRateMatrixI rateMatrix,
-            PatternHandler trainSet, PatternHandler testSet) {
+            PatternHandler trainSet, PatternHandler testSet)
+    throws DatasetGenerationException {
 
         int totalPatterns = 0;
         for (String label : class_attr.getLabels())
             for (Interval interval : behaviorHandler.getIntervals(label))
                 totalPatterns += rateMatrix.numPatterns(interval);
 
-        int[][] inds = sampleTrainTest(totalPatterns,
-                class_attr.getNumberTrainSamples(),
-                class_attr.getNumberTestSamples());
+        int numTrain = class_attr.getNumberTrainSamples();
+        int numTest = class_attr.getNumberTestSamples();
 
+        if (numTrain + numTest > totalPatterns) {
+            throw new DatasetGenerationException(String.format(
+                    "Can't sample %d train patterns and %d test patterns from " +
+                    "class %s (%d patterns from labels %s) of dataset %s",
+                    numTrain, numTest, class_attr.getName(), totalPatterns,
+                    ArrayUtils.toString(class_attr.getLabels().toArray()),
+                    class_attr.getDataset().getName()));
+        }
+
+        int[][] inds = sampleTrainTest(totalPatterns, numTrain, numTest);
         int[] trainInds = inds[0];
         int[] testInds = inds[1];
 
@@ -251,7 +262,6 @@ public abstract class DatasetGenerator {
         String neuronFilter = StringUtils.join(filterList, ", ");
 
         double binSize = (Double) dataset.getParameter("bin_size");
-        int window_step = (Integer) dataset.getParameter("window_step");
         int window_width = (Integer) dataset.getParameter("window_width");
 
         try {
@@ -261,7 +271,6 @@ public abstract class DatasetGenerator {
         }
 
         SpikeRateMatrixI rateMatrix = new CountMatrix(spikeHandler, binSize);
-        rateMatrix.setStep(window_step);
         rateMatrix.setWindowWidth(window_width);
 
         return rateMatrix;
@@ -315,8 +324,7 @@ public abstract class DatasetGenerator {
 
         rateMatrix.setCurrentTime(interval.start());
         int cur_pos = rateMatrix.getCurrentColumn();
-        int step = rateMatrix.getStep();
-        int column = cur_pos + ind * step;
+        int column = cur_pos + ind;
 
         rateMatrix.setCurrentColumn(old_column);
         return column;

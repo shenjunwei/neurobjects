@@ -54,13 +54,18 @@ public class DatasetGeneratorTest {
 
 
     private MockDatasetGenerator generator;
+    private MockDatasetGenerator short_gen;
     private static String setupFilepath = "data/test/test_setup.yml";
+    private static String shortSetupFilepath = "data/test/short_setup.yml";
 
 
     @Before
     public void setUp() throws Exception {
         Setup setup = new Setup(setupFilepath);
         generator = new MockDatasetGenerator(setup);
+
+        Setup short_setup = new Setup(shortSetupFilepath);
+        short_gen = new MockDatasetGenerator(short_setup);
     }
 
 
@@ -427,6 +432,13 @@ public class DatasetGeneratorTest {
             for (Integer j : all)
                 assertTrue(j >= 0 && j < n);
         }
+    }
+
+
+    @Test(expected = DatasetGenerationException.class)
+    public void testPatternsSizeError() throws Exception {
+        for (Setup.Dataset dataset : short_gen.setup.getDatasets())
+            short_gen.buildDatasetAll(dataset);
     }
 
 

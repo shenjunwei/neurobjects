@@ -1,0 +1,21 @@
+name: test_data
+
+spikes_dir: data/test/spikes/
+contacts_file: data/test/behaviors/test_contacts.txt
+output_dir: data/test/datasets/test_data/
+
+params:
+  neurons: [HP, V, S]
+  bin_size: 1.0
+  window_width: 1
+
+
+datasets:
+  - name: ge4
+    rounds: 1
+    train_ratio: 0.8
+
+    1_vs_n:
+      labels: [ball, brush, food, urchin]
+      class_ratio: 2
+      total_positives: 500

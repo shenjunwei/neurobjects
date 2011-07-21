@@ -171,7 +171,7 @@ public class Setup {
                 int pos_test_s = total_positives - pos_train_s;
 
                 Class positiveClass = new Class(
-                        "yes", pos_label, pos_train_s, pos_test_s);
+                        "yes", dataset, pos_label, pos_train_s, pos_test_s);
 
 
                 // Create the negative class
@@ -182,7 +182,7 @@ public class Setup {
                 int neg_test_s = (int) Math.floor(pos_test_s * class_ratio);
 
                 Class negativeClass = new Class(
-                        "no", neg_labels, neg_train_s, neg_test_s);
+                        "no", dataset, neg_labels, neg_train_s, neg_test_s);
 
 
                 // Add the classes to the dataset
@@ -239,15 +239,17 @@ public class Setup {
 
     public static class Class {
         private String name;
+        private Dataset dataset;
         private List<String> labels;
         private int trainSamples, testSamples;
 
-        private Class(String c_name, String label, int train_s, int test_s) {
-            this(c_name, Arrays.asList(label), train_s, test_s);
+        private Class(String c_name, Dataset ds, String label, int train_s, int test_s) {
+            this(c_name, ds, Arrays.asList(label), train_s, test_s);
         }
 
-        private Class(String c_name, List<String> label_l, int train_s, int test_s) {
+        private Class(String c_name, Dataset ds, List<String> label_l, int train_s, int test_s) {
             name = c_name;
+            dataset = ds;
             labels = label_l;
             trainSamples = train_s;
             testSamples = test_s;
@@ -277,6 +279,10 @@ public class Setup {
 
         public int getNumberTestSamples() {
             return testSamples;
+        }
+
+        public Dataset getDataset() {
+            return dataset;
         }
     }
 }
