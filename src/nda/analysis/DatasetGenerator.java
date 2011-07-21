@@ -308,7 +308,7 @@ public abstract class DatasetGenerator {
     }
 
 
-    private static int getPatternColumn(
+    protected static int getPatternColumn(
             SpikeRateMatrixI rateMatrix, Interval interval, int ind) {
 
         int old_column = rateMatrix.getCurrentColumn();
