@@ -296,6 +296,17 @@ public class CountMatrixTest {
     }
 
 
+    @Test
+    public void testBugfix() throws Exception {
+        handler_v1.setFilter("");
+        CountMatrix cm = new CountMatrix(handler_v1, 1.0);
+        cm.setWindowWidth(1);
+
+        Interval interval = Interval.make(5808, 5812);
+        assertEquals(5, cm.numPatterns(interval));
+    }
+
+
     private void checkPattern(double[] pattern, CountMatrix m, int start_c, int end_c) {
         int exp_l = m.numRows() * (end_c-start_c+1);
         assertEquals(exp_l, pattern.length);

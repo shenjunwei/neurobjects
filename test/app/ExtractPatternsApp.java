@@ -48,7 +48,6 @@ public class ExtractPatternsApp {
         Interval interval = rateMatrix.getInterval();
         rateMatrix.setCurrentTime(interval.start());
         rateMatrix.setWindowWidth(3);
-        rateMatrix.setStep(1);
 
         // Each pattern will have one of the following labels
         Set<String> labels = new HashSet<String>();
