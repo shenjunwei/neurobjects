@@ -26,6 +26,7 @@ import nda.data.SpikeRateMatrixI;
  * Tests for the DatasetGenerator abstract class.
  * 
  * @author Giuliano Vilela
+ * @ingroup UnitTests
  */
 public class DatasetGeneratorTest {
 

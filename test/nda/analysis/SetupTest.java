@@ -105,7 +105,7 @@ public class SetupTest {
      */
     @Test
     public void testGetDatasets() {
-        assertEquals(4, test_setup.getDatasets().size());
+        assertEquals(9, test_setup.getDatasets().size());
         assertEquals(5, ge5_setup.getDatasets().size());
     }
 
