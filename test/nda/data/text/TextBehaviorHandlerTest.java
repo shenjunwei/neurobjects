@@ -20,7 +20,7 @@ import nda.data.Interval;
  * @ingroup UnitTests
  */
 public class TextBehaviorHandlerTest {
-    private final static String filepath1 = "data/test/behaviors/ge4_contacts.txt";
+    private final static String filepath1 = "data/test/behaviors/test_contacts.txt";
     private final static String filepath2 = "data/test/behaviors/ge5_contacts.txt";
 
     private BehaviorHandlerI b1;
@@ -44,7 +44,7 @@ public class TextBehaviorHandlerTest {
         assertEquals(6, b2.getIntervals("ball").size());
         assertEquals(9, b2.getIntervals("brush").size());
 
-        assertTrue(b1.getIntervals("ball").contains(Interval.make(5801, 5805)));
+        assertTrue(b1.getIntervals("ball").contains(Interval.make(5808, 5812)));
         assertTrue(b1.getIntervals("urchin").contains(Interval.make(5827, 5832)));
         assertTrue(b2.getIntervals("brush").contains(Interval.make(3642, 3648)));
         assertTrue(b2.getIntervals("food").contains(Interval.make(4712, 4754)));
@@ -59,7 +59,7 @@ public class TextBehaviorHandlerTest {
         List<String> l1 = Arrays.asList("ball", "urchin");
         List<String> l2 = Arrays.asList("brush", "food");
 
-        assertEquals(Interval.make(5801, 5837), b1.getEnclosingInterval(l1));
+        assertEquals(Interval.make(5808, 5837), b1.getEnclosingInterval(l1));
         assertEquals(Interval.make(5811, 6293), b1.getEnclosingInterval(l2));
     }
 }
