@@ -1,7 +1,6 @@
 package nda.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,7 +20,6 @@ public class CountMatrix implements SpikeRateMatrixI {
     private int[][] matrix;
 
     private int cursor_pos;
-    private int cursor_step;
     private int cursor_width;
 
     private String title;
@@ -55,7 +53,6 @@ public class CountMatrix implements SpikeRateMatrixI {
         }
 
         cursor_pos = 0;
-        cursor_step = 1;
         cursor_width = 1;
 
         title = "CountMatrix";
@@ -117,7 +114,9 @@ public class CountMatrix implements SpikeRateMatrixI {
         return title +
         " cursor:" + cursor_pos +
         " width:" + cursor_width +
-        " matrix:" + Arrays.toString(matrix);
+        " binSize: " + histogram.getBinSize() +
+        " numColumns: " + numColumns() +
+        " neurons: " + getNeuronNames();
     }
 
 
@@ -141,9 +140,7 @@ public class CountMatrix implements SpikeRateMatrixI {
             "there is no pattern starting from cursor with the desired width");
         }
 
-        int startBin = cursor_pos;
-        cursor_pos += cursor_step;
-
+        int startBin = cursor_pos++;
         return getRawPattern(startBin, startBin+width-1);
     }
 
@@ -266,7 +263,7 @@ public class CountMatrix implements SpikeRateMatrixI {
 
     @Override
     public void setWindowWidth(int width) {
-        if (width >= numColumns())
+        if (width > numColumns())
             throw new IllegalArgumentException("width exceeds the matrix dimensions");
 
         cursor_width = width;
@@ -362,20 +359,5 @@ public class CountMatrix implements SpikeRateMatrixI {
 
     protected boolean containsWindow(int column, int width) {
         return column + width <= numColumns();
-    }
-
-
-    @Override
-    public void setStep(int step) {
-        if (step <= 0)
-            throw new IllegalArgumentException("step must be positive");
-
-        cursor_step = step;
-    }
-
-
-    @Override
-    public int getStep() {
-        return cursor_step;
     }
 }

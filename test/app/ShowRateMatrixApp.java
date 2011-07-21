@@ -46,11 +46,6 @@ public class ShowRateMatrixApp {
         System.out.print("Window width: ");
         int width = in.nextInt();
 
-        // Read the cursor step: size of the increment used to gather patterns
-        // see the SpikeRateMatrixI docs
-        System.out.print("Cursor step: ");
-        int cursorStep = in.nextInt();
-
         // Create a SpikeHandlerI containing the desired neurons
         SpikeHandlerI spikeHandler = new TextSpikeHandler(spikeDir, filter);
 
@@ -58,7 +53,6 @@ public class ShowRateMatrixApp {
         CountMatrix rateMatrix = new CountMatrix(spikeHandler, binSize);
         rateMatrix.setCurrentTime(startTime);
         rateMatrix.setWindowWidth(width);
-        rateMatrix.setStep(cursorStep);
 
 
         // Open a file to write the complete count matrix.
@@ -79,8 +73,8 @@ public class ShowRateMatrixApp {
 
         // Open a file to write all the patterns extracted from the CountMatrix
         // Ex: pattern_HP_0,25_5820_00_50_1.mat
-        String patternFilename = String.format("pattern_%s_%.02f_%.02f_%d_%d.mat",
-                filter, binSize, startTime, width, cursorStep);
+        String patternFilename = String.format("pattern_%s_%.02f_%.02f_%d.mat",
+                filter, binSize, startTime, width);
         BufferedWriter patternOut = new BufferedWriter(new FileWriter(patternFilename));
 
         // Loop over all the patterns in the current configuration of the rateMatrix

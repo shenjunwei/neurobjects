@@ -42,7 +42,6 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
     public List<String> getNeuronNames();
 
 
-
     /**
      * Returns a double vector which is the activity population pattern in a
      * given interval. The pattern is built concatenating piece of rows (from the collumn
@@ -123,12 +122,9 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
      */
     public int getWindowWidth();
 
-    public void setStep(int _step);
-
-    public int getStep();
-
 
     public int getCurrentColumn();
+
 
     public double getCurrentTime();
 
