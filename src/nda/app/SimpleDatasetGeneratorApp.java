@@ -12,7 +12,7 @@ import nda.analysis.SimpleDatasetGenerator;
  * 
  * @author Giuliano Vilela
  */
-public class DatasetGeneratorApp {
+public class SimpleDatasetGeneratorApp {
     public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("Usage: java -jar dataset-generator.jar [-q] setup_files...");
