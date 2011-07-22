@@ -84,8 +84,6 @@ public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
 
             showMessage("");
         }
-
-        showMessage("Done. Exiting!");
     }
 
 
