@@ -43,12 +43,10 @@ public class PatternHandlerTest {
     public static void setUpClass() throws Exception {
         spikeHandler = new TextSpikeHandler("data/test/spikes");
 
-        spikeHandler.setFilter("HP");
-        matrixA = new CountMatrix(spikeHandler, 0.250);
+        matrixA = new CountMatrix(spikeHandler.withFilter("HP"), 0.250);
         matrixA.setWindowWidth(100);
 
-        spikeHandler.setFilter("V1");
-        matrixB = new CountMatrix(spikeHandler, 500);
+        matrixB = new CountMatrix(spikeHandler.withFilter("V1"), 500);
         matrixB.setWindowWidth(499);
 
         labels = new HashSet<String>(Arrays.asList(

@@ -20,13 +20,9 @@ public class TextSpikeHandler implements SpikeHandlerI {
     protected String spikeFilter;
     protected String dataDir;
     protected Interval spikeInterval;
+    protected List<SpikeTrain> neurons;
 
     protected final static String DEFAULT_FILTER = "";
-
-    /** The file extension of spike text data files */
-    protected final static String SPIKE_FILE_EXT = ".spk";
-
-    protected List<SpikeTrain> neurons;
 
 
     public TextSpikeHandler(String dir)
@@ -46,8 +42,12 @@ public class TextSpikeHandler implements SpikeHandlerI {
         dataDir = dir;
         spikeInterval = itv;
         animalName = "<unknown>";
-        setFilter(filter);
+        spikeFilter = filter.toLowerCase();
+        readSpikes(dataDir, filter, spikeInterval);
     }
+
+
+    private TextSpikeHandler() { }
 
 
     @Override
@@ -91,20 +91,37 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
 
     @Override
-    public void setFilter(String filter)
-    throws InvalidDataFileException, InvalidDataDirectoryException {
+    public SpikeHandlerI withFilter(String filter) {
         String newFilter = filter.toLowerCase();
 
-        if (!newFilter.equals(spikeFilter)) {
-            spikeFilter = filter.toLowerCase();
-            readSpikes(dataDir, spikeFilter, spikeInterval);
+        if (newFilter.equals(spikeFilter))
+            return this;
+
+        List<SpikeTrain> newNeurons = new ArrayList<SpikeTrain>();
+
+        for (SpikeTrain spikeTrain : neurons) {
+            String spikeName = spikeTrain.getName();
+
+            if (filterMatch(spikeName, newFilter))
+                newNeurons.add(spikeTrain);
         }
+
+        TextSpikeHandler newHandler = new TextSpikeHandler();
+        newHandler.animalName = animalName;
+        newHandler.spikeFilter = newFilter;
+        newHandler.dataDir = dataDir;
+        newHandler.spikeInterval = spikeInterval;
+        newHandler.neurons = newNeurons;
+
+        return newHandler;
     }
+
 
     @Override
     public String getFilter() {
         return spikeFilter;
     }
+
 
     @Override
     public List<String> getNeuronNames() {
@@ -116,10 +133,12 @@ public class TextSpikeHandler implements SpikeHandlerI {
         return names;
     }
 
+
     @Override
     public List<SpikeTrain> getAllSpikeTrains() {
         return neurons;
     }
+
 
     @Override
     public List<SpikeTrain> getAllSpikeTrains(Interval interval) {
@@ -133,6 +152,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
         return trains;
     }
+
 
     @Override
     public Interval getGlobalSpikeInterval() {
@@ -151,6 +171,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
         return new Interval(first, last);
     }
+
 
     protected void readSpikes(String dataDir, String spikeFilter, Interval spikeInterval)
     throws InvalidDataDirectoryException, InvalidDataFileException {
@@ -179,6 +200,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
         }
     }
 
+
     protected static String[] listDirectory(String dirpath)
     throws InvalidDataDirectoryException {
 
@@ -191,12 +213,9 @@ public class TextSpikeHandler implements SpikeHandlerI {
         return files;
     }
 
+
     protected final boolean filterMatch(String name, String filter_str) {
         name = name.toLowerCase();
-
-        if (!name.endsWith(SPIKE_FILE_EXT))
-            return false;
-
         String[] filters = filter_str.split(",");
 
         for (String filter : filters) {

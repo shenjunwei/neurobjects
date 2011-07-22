@@ -2,7 +2,6 @@ package nda.data;
 
 import java.util.List;
 
-import nda.data.text.InvalidDataDirectoryException;
 import nda.data.text.InvalidDataFileException;
 
 
@@ -104,9 +103,10 @@ public interface SpikeHandlerI {
      * time the selection filter is modified, all the matching spike trains are reloaded.
      * 
      * @throws InvalidDataFileException If one of the matching files is invalid.
+     * 
+     * TODO Document the new convention
      */
-    public void setFilter(String filter)
-    throws InvalidDataFileException, InvalidDataDirectoryException;
+    public SpikeHandlerI withFilter(String filter);
 
 
     /**
