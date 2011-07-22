@@ -1,5 +1,6 @@
 package nda.analysis;
 
+
 /**
  * Thrown to indicate that an exceptional error ocurred when
  * generating datasets from a DatasetGenerator.

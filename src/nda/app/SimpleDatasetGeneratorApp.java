@@ -51,5 +51,7 @@ public class SimpleDatasetGeneratorApp {
                 System.out.println(e.getMessage());
             }
         }
+
+        System.out.println("Done! Exiting...");
     }
 }
