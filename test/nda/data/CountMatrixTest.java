@@ -298,8 +298,8 @@ public class CountMatrixTest {
 
     @Test
     public void testBugfix() throws Exception {
-        handler_v1.setFilter("");
-        CountMatrix cm = new CountMatrix(handler_v1, 1.0);
+        SpikeHandlerI handlerAll = new TextSpikeHandler(spikeDir);
+        CountMatrix cm = new CountMatrix(handlerAll, 1.0);
         cm.setWindowWidth(1);
 
         Interval interval = Interval.make(5808, 5812);

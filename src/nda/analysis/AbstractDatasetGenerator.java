@@ -33,7 +33,7 @@ import nda.data.text.TextSpikeHandler;
  */
 public abstract class AbstractDatasetGenerator {
     protected Setup setup;
-    protected SpikeHandlerI spikeHandler;
+    protected SpikeHandlerI globalSpikeHandler;
     protected BehaviorHandlerI behaviorHandler;
     protected RandomData randomData;
 
@@ -238,7 +238,7 @@ public abstract class AbstractDatasetGenerator {
     protected void loadSpikeHandlerI() throws DatasetGenerationException {
         try {
             String spikeDir = setup.getSpikesDirectory();
-            spikeHandler = new TextSpikeHandler(spikeDir);
+            globalSpikeHandler = new TextSpikeHandler(spikeDir);
         } catch (Exception e) {
             throw new DatasetGenerationException(e);
         }
@@ -261,18 +261,13 @@ public abstract class AbstractDatasetGenerator {
         List<String> filterList = (List<String>) dataset.getParameter("neurons");
         String neuronFilter = StringUtils.join(filterList, ", ");
 
+        SpikeHandlerI datasetHandler = globalSpikeHandler.withFilter(neuronFilter);
+
         double binSize = (Double) dataset.getParameter("bin_size");
         int window_width = (Integer) dataset.getParameter("window_width");
 
-        try {
-            spikeHandler.setFilter(neuronFilter);
-        } catch (Exception e) {
-            throw new DatasetGenerationException(e);
-        }
-
-        SpikeRateMatrixI rateMatrix = new CountMatrix(spikeHandler, binSize);
+        SpikeRateMatrixI rateMatrix = new CountMatrix(datasetHandler, binSize);
         rateMatrix.setWindowWidth(window_width);
-
         return rateMatrix;
     }
 

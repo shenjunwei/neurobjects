@@ -76,8 +76,8 @@ public class DatasetGeneratorTest {
     @Test
     public void testLoadSpikeHandlerI() throws Exception {
         generator.loadSpikeHandlerI();
-        assertNotNull(generator.spikeHandler);
-        assertEquals(10, generator.spikeHandler.getNumberOfSpikeTrains());
+        assertNotNull(generator.globalSpikeHandler);
+        assertEquals(10, generator.globalSpikeHandler.getNumberOfSpikeTrains());
     }
 
 
