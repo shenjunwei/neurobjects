@@ -235,6 +235,22 @@ public class Setup {
         public List<Class> getClasses() {
             return classes;
         }
+
+        public List<String> getGeneratedFileNames() {
+            int numRounds = getNumberRounds();
+            List<String> files = new ArrayList<String>();
+
+            for (int round = 1; round <= numRounds; ++round) {
+                for (String set : new String[] { "train", "test" }) {
+                    String name = String.format("%s_%02d_%s.arff",
+                            getName(), round, set);
+
+                    files.add(name);
+                }
+            }
+
+            return files;
+        }
     }
 
     public static class Class {
