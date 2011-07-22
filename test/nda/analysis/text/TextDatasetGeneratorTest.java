@@ -46,7 +46,7 @@ public class TextDatasetGeneratorTest {
         outputDir = new File(setup.getOutputDirectory());
 
         generator = new TextDatasetGenerator(setup);
-        generator.setVerbose(true);
+        generator.setVerbose(false);
     }
 
 
