@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import nda.analysis.DatasetGenerationException;
-import nda.analysis.DatasetGenerator;
+import nda.analysis.AbstractDatasetGenerator;
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.PatternHandler;
 import nda.analysis.Setup;
@@ -18,7 +18,7 @@ import nda.analysis.Setup;
  * 
  * @author Giuliano Vilela
  */
-public class TextDatasetGenerator extends DatasetGenerator {
+public class TextDatasetGenerator extends AbstractDatasetGenerator {
     private boolean verbose;
 
     /**
@@ -53,7 +53,7 @@ public class TextDatasetGenerator extends DatasetGenerator {
     /**
      * Create Weka ARFF files in the output directory.
      * 
-     * @see nda.analysis.DatasetGenerator#generate()
+     * @see nda.analysis.AbstractDatasetGenerator#generate()
      */
     @Override
     public void generate() throws DatasetGenerationException {
