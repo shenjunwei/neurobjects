@@ -41,7 +41,7 @@ public class DatasetGeneratorTest {
 
 
     // Needed in order to test an abstract class with concrete private methods
-    private static class MockDatasetGenerator extends DatasetGenerator {
+    private static class MockDatasetGenerator extends AbstractDatasetGenerator {
         private MockDatasetGenerator(Setup setup) {
             super(setup);
 
@@ -71,7 +71,7 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.DatasetGenerator#loadSpikeHandlerI()}.
+     * Test method for {@link nda.analysis.AbstractDatasetGenerator#loadSpikeHandlerI()}.
      */
     @Test
     public void testLoadSpikeHandlerI() throws Exception {
@@ -82,7 +82,7 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.DatasetGenerator#loadBehaviorHandlerI()}.
+     * Test method for {@link nda.analysis.AbstractDatasetGenerator#loadBehaviorHandlerI()}.
      */
     @Test
     public void testLoadBehaviorHandlerI() throws Exception {
@@ -151,7 +151,7 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.DatasetGenerator#sampleInstances(nda.data.SpikeRateMatrixI, nda.analysis.Setup.Class, int)}.
+     * Test method for {@link nda.analysis.AbstractDatasetGenerator#sampleInstances(nda.data.SpikeRateMatrixI, nda.analysis.Setup.Class, int)}.
      */
     @Test
     public void testSampleInstances1vsN() throws Exception {
@@ -248,7 +248,7 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.DatasetGenerator#addInstancesFromClass(nda.analysis.PatternHandler, nda.data.SpikeRateMatrixI, nda.analysis.Setup.Class, int)}.
+     * Test method for {@link nda.analysis.AbstractDatasetGenerator#addInstancesFromClass(nda.analysis.PatternHandler, nda.data.SpikeRateMatrixI, nda.analysis.Setup.Class, int)}.
      */
     @Test
     public void testAddInstancesFromClass() throws Exception {
@@ -296,7 +296,7 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.DatasetGenerator#buildDatasetSingleRound(nda.analysis.Setup.Dataset, int)}.
+     * Test method for {@link nda.analysis.AbstractDatasetGenerator#buildDatasetSingleRound(nda.analysis.Setup.Dataset, int)}.
      */
     @Test
     public void testBuildDatasetSingleRound() throws Exception {
@@ -337,7 +337,7 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.DatasetGenerator#buildDatasetAll(nda.analysis.Setup.Dataset)}.
+     * Test method for {@link nda.analysis.AbstractDatasetGenerator#buildDatasetAll(nda.analysis.Setup.Dataset)}.
      */
     @Test
     public void testBuildDatasetAll() throws Exception {
@@ -401,7 +401,7 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.DatasetGenerator#sampleTrainTest(int, int)}.
+     * Test method for {@link nda.analysis.AbstractDatasetGenerator#sampleTrainTest(int, int)}.
      */
     @Test
     public void testSampleTrainTest() {

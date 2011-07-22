@@ -31,20 +31,20 @@ import nda.data.text.TextSpikeHandler;
  * 
  * @author Giuliano Vilela
  */
-public abstract class DatasetGenerator {
+public abstract class AbstractDatasetGenerator {
     protected Setup setup;
     protected SpikeHandlerI spikeHandler;
     protected BehaviorHandlerI behaviorHandler;
     protected RandomData randomData;
 
 
-    public DatasetGenerator(String setupFilepath)
+    public AbstractDatasetGenerator(String setupFilepath)
     throws FileNotFoundException, InvalidSetupFileException {
         this(new Setup(setupFilepath));
     }
 
 
-    public DatasetGenerator(Setup _setup) {
+    public AbstractDatasetGenerator(Setup _setup) {
         setup = _setup;
         randomData = new RandomDataImpl();
     }
