@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 
 import nda.analysis.DatasetGenerationException;
 import nda.analysis.InvalidSetupFileException;
-import nda.analysis.text.TextDatasetGenerator;
+import nda.analysis.SimpleDatasetGenerator;
 
 
 /**
@@ -31,7 +31,7 @@ public class DatasetGeneratorApp {
             String setupFilepath = args[i];
 
             try {
-                TextDatasetGenerator generator = new TextDatasetGenerator(setupFilepath);
+                SimpleDatasetGenerator generator = new SimpleDatasetGenerator(setupFilepath);
                 generator.setVerbose(verbose);
                 generator.generate();
             }

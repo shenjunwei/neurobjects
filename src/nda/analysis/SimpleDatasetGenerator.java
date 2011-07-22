@@ -1,4 +1,4 @@
-package nda.analysis.text;
+package nda.analysis;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,18 +7,13 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import nda.analysis.DatasetGenerationException;
-import nda.analysis.AbstractDatasetGenerator;
-import nda.analysis.InvalidSetupFileException;
-import nda.analysis.PatternHandler;
-import nda.analysis.Setup;
 
 
 /**
  * 
  * @author Giuliano Vilela
  */
-public class TextDatasetGenerator extends AbstractDatasetGenerator {
+public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
     private boolean verbose;
 
     /**
@@ -26,7 +21,7 @@ public class TextDatasetGenerator extends AbstractDatasetGenerator {
      * @throws FileNotFoundException
      * @throws InvalidSetupFileException
      */
-    public TextDatasetGenerator(String setupFilepath)
+    public SimpleDatasetGenerator(String setupFilepath)
     throws FileNotFoundException, InvalidSetupFileException {
         super(setupFilepath);
         setVerbose(false);
@@ -36,7 +31,7 @@ public class TextDatasetGenerator extends AbstractDatasetGenerator {
     /**
      * @param _setup
      */
-    public TextDatasetGenerator(Setup setup) {
+    public SimpleDatasetGenerator(Setup setup) {
         super(setup);
         setVerbose(false);
     }
