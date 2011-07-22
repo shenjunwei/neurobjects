@@ -1,4 +1,4 @@
-package nda.analysis.text;
+package nda.analysis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nda.analysis.Setup;
+import nda.analysis.SimpleDatasetGenerator;
 
 
 /**
@@ -18,9 +19,9 @@ import nda.analysis.Setup;
  * @author Giuliano Vilela
  * @ingroup UnitTests
  */
-public class TextDatasetGeneratorTest {
+public class SimpleDatasetGeneratorTest {
     private File outputDir;
-    private TextDatasetGenerator generator;
+    private SimpleDatasetGenerator generator;
     private static String setupFilepath = "data/test/test_setup_gen.yml";
 
 
@@ -45,13 +46,13 @@ public class TextDatasetGeneratorTest {
         Setup setup = new Setup(setupFilepath);
         outputDir = new File(setup.getOutputDirectory());
 
-        generator = new TextDatasetGenerator(setup);
+        generator = new SimpleDatasetGenerator(setup);
         generator.setVerbose(false);
     }
 
 
     /**
-     * Test method for {@link nda.analysis.text.TextDatasetGenerator#generate()}.
+     * Test method for {@link nda.analysis.SimpleDatasetGenerator#generate()}.
      */
     @Test
     public void testGenerate() throws Exception {
