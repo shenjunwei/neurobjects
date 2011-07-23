@@ -21,6 +21,7 @@ import nda.data.SpikeHandlerI;
 import nda.data.SpikeRateMatrixI;
 import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
+import nda.util.Verbose;
 
 
 /**
@@ -31,11 +32,12 @@ import nda.data.text.TextSpikeHandler;
  * 
  * @author Giuliano Vilela
  */
-public abstract class AbstractDatasetGenerator {
+public abstract class AbstractDatasetGenerator implements Verbose {
     protected Setup setup;
     protected SpikeHandlerI globalSpikeHandler;
     protected BehaviorHandlerI behaviorHandler;
     protected RandomData randomData;
+    protected boolean verbose;
 
 
     public AbstractDatasetGenerator(String setupFilepath)
@@ -59,12 +61,8 @@ public abstract class AbstractDatasetGenerator {
      * This method generates dataset.getNumberRounds() * 2 PatternHandler's.
      * Each round has a train relation and a test relation.
      */
-    protected List<PatternHandler> buildDatasetAll(Setup.Dataset dataset)
+    protected List<PatternHandler> buildDataset(Setup.Dataset dataset)
     throws DatasetGenerationException {
-
-        loadSpikeHandlerI();
-        loadBehaviorHandlerI();
-
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
@@ -235,18 +233,11 @@ public abstract class AbstractDatasetGenerator {
     }
 
 
-    protected void loadSpikeHandlerI() throws DatasetGenerationException {
+    protected void loadHandlers() throws DatasetGenerationException {
         try {
             String spikeDir = setup.getSpikesDirectory();
             globalSpikeHandler = new TextSpikeHandler(spikeDir);
-        } catch (Exception e) {
-            throw new DatasetGenerationException(e);
-        }
-    }
 
-
-    protected void loadBehaviorHandlerI() throws DatasetGenerationException {
-        try {
             String behaviorFilepath = setup.getContactsFilepath();
             behaviorHandler = new TextBehaviorHandler(behaviorFilepath);
         } catch (Exception e) {
@@ -323,5 +314,17 @@ public abstract class AbstractDatasetGenerator {
 
         rateMatrix.setCurrentColumn(old_column);
         return column;
+    }
+
+
+    @Override
+    public void setVerbose(boolean _verbose) {
+        verbose = _verbose;
+    }
+
+
+    @Override
+    public boolean getVerbose() {
+        return verbose;
     }
 }
