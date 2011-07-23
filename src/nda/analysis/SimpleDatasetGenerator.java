@@ -14,13 +14,7 @@ import java.util.List;
  * @author Giuliano Vilela
  */
 public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
-    private boolean verbose;
 
-    /**
-     * @param setupFilepath
-     * @throws FileNotFoundException
-     * @throws InvalidSetupFileException
-     */
     public SimpleDatasetGenerator(String setupFilepath)
     throws FileNotFoundException, InvalidSetupFileException {
         super(setupFilepath);
@@ -28,20 +22,9 @@ public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
     }
 
 
-    /**
-     * @param _setup
-     */
     public SimpleDatasetGenerator(Setup setup) {
         super(setup);
         setVerbose(false);
-    }
-
-
-    /**
-     * Print information about generation progress to stdout
-     */
-    public void setVerbose(boolean _verbose) {
-        verbose = _verbose;
     }
 
 
@@ -54,6 +37,9 @@ public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
     public void generate() throws DatasetGenerationException {
         showMessage("Generating datasets...\n");
 
+        showMessage("Reading spike data and behavior file...");
+        loadHandlers();
+
         File outputDir = new File(setup.getOutputDirectory());
         if (!outputDir.exists() && !outputDir.mkdir()) {
             throw new DatasetGenerationException("Cant create dir: " + outputDir);
@@ -63,7 +49,7 @@ public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
             showMessage("Building dataset " + dataset.getName() + " ...");
 
             showMessage(" - extracting patterns...");
-            List<PatternHandler> list = buildDatasetAll(dataset);
+            List<PatternHandler> list = buildDataset(dataset);
 
             for (PatternHandler patternHandler : list) {
                 String weka_str = patternHandler.toWekaFormat();
