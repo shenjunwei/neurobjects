@@ -19,11 +19,11 @@ import nda.analysis.Setup;
  * 
  * @author Giuliano Vilela
  */
-public abstract class AbstractEvaluator {
+public abstract class DatasetEvaluator {
     protected List<Classifier> models;
 
 
-    protected AbstractEvaluator() {
+    protected DatasetEvaluator() {
         loadDefaultModels();
     }
 

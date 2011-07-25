@@ -16,16 +16,16 @@ import nda.analysis.Setup;
  * 
  * @author Giuliano Vilela
  */
-public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
+public class SimpleGenerator extends DatasetGenerator {
 
-    public SimpleDatasetGenerator(String setupFilepath)
+    public SimpleGenerator(String setupFilepath)
     throws FileNotFoundException, InvalidSetupFileException {
         super(setupFilepath);
         setVerbose(false);
     }
 
 
-    public SimpleDatasetGenerator(Setup setup) {
+    public SimpleGenerator(Setup setup) {
         super(setup);
         setVerbose(false);
     }
@@ -34,10 +34,10 @@ public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
     /**
      * Create Weka ARFF files in the output directory.
      * 
-     * @see nda.analysis.generation.AbstractDatasetGenerator#generate()
+     * @see nda.analysis.generation.DatasetGenerator#generate()
      */
     @Override
-    public void generate() throws DatasetGenerationException {
+    public void generate() throws GenerationException {
         showMessage("Generating datasets...\n");
 
         showMessage("Reading spike data and behavior file...");
@@ -45,7 +45,7 @@ public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
 
         File outputDir = new File(setup.getOutputDirectory());
         if (!outputDir.exists() && !outputDir.mkdir()) {
-            throw new DatasetGenerationException("Cant create dir: " + outputDir);
+            throw new GenerationException("Cant create dir: " + outputDir);
         }
 
         for (Setup.Dataset dataset : setup.getDatasets()) {
@@ -67,7 +67,7 @@ public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
                     out.write(file_str);
                     out.close();
                 } catch (IOException e) {
-                    throw new DatasetGenerationException(e);
+                    throw new GenerationException(e);
                 }
             }
 

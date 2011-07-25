@@ -7,20 +7,20 @@ package nda.analysis.generation;
  * 
  * @author Giuliano Vilela
  */
-public class DatasetGenerationException extends Exception {
+public class GenerationException extends Exception {
     private static final long serialVersionUID = -3481591819591142338L;
 
-    public DatasetGenerationException() { }
+    public GenerationException() { }
 
-    public DatasetGenerationException(String message) {
+    public GenerationException(String message) {
         super(message);
     }
 
-    public DatasetGenerationException(Throwable cause) {
+    public GenerationException(Throwable cause) {
         super(cause);
     }
 
-    public DatasetGenerationException(String message, Throwable cause) {
+    public GenerationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

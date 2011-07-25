@@ -18,7 +18,7 @@ import nda.analysis.Setup;
  * 
  * @author Giuliano Vilela
  */
-public class SimpleEvaluator extends AbstractEvaluator {
+public class SimpleEvaluator extends DatasetEvaluator {
     private Setup setup;
     private boolean verbose;
 

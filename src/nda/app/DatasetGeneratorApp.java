@@ -13,10 +13,10 @@ import org.apache.commons.cli.ParseException;
 
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.Setup;
-import nda.analysis.generation.AbstractDatasetGenerator;
-import nda.analysis.generation.DatasetGenerationException;
-import nda.analysis.generation.SimpleDatasetGenerator;
-import nda.analysis.generation.SimpleParallelDatasetGenerator;
+import nda.analysis.generation.DatasetGenerator;
+import nda.analysis.generation.GenerationException;
+import nda.analysis.generation.SimpleGenerator;
+import nda.analysis.generation.SimpleParallelGenerator;
 
 
 /**
@@ -48,13 +48,13 @@ public class DatasetGeneratorApp {
     }
 
 
-    private static AbstractDatasetGenerator getGenerator(Setup setup, CommandLine cml) {
-        AbstractDatasetGenerator generator;
+    private static DatasetGenerator getGenerator(Setup setup, CommandLine cml) {
+        DatasetGenerator generator;
 
         if (cml.hasOption("parallel"))
-            generator = new SimpleParallelDatasetGenerator(setup);
+            generator = new SimpleParallelGenerator(setup);
         else
-            generator = new SimpleDatasetGenerator(setup);
+            generator = new SimpleGenerator(setup);
 
         if (cml.hasOption("verbose"))
             generator.setVerbose(true);
@@ -82,7 +82,7 @@ public class DatasetGeneratorApp {
         for (String setupFilepath : cml.getArgs()) {
             try {
                 Setup setup = new Setup(setupFilepath);
-                AbstractDatasetGenerator generator = getGenerator(setup, cml);
+                DatasetGenerator generator = getGenerator(setup, cml);
                 generator.generate();
             }
             catch (FileNotFoundException e) {
@@ -93,7 +93,7 @@ public class DatasetGeneratorApp {
                 System.out.println("The setup file " + setupFilepath + " is invalid.");
                 System.out.println(e.getMessage());
             }
-            catch (DatasetGenerationException e) {
+            catch (GenerationException e) {
                 System.out.println(
                         "An error ocurred when generating the dataset files"
                         + " for file " + setupFilepath + " (some files may "
