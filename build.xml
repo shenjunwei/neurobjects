@@ -1,31 +1,74 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <project name="neurobjects" default="runnable-jars">
+  <property name="verbose" value="true"/>
   <property name="doxygen-cmd" value="doxygen"/>
-  
   <property name="jar-loader-class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
   <property name="jar-libs" value="commons-math-2.2.jar junit-4.8.2.jar weka.jar snakeyaml-1.8.jar commons-lang3-3.0.jar commons-cli-1.2.jar"/>
 
-  <target name="all" depends="clean,docs,runnable-jars">
-  </target>
+  <path id="base.classpath">
+    <fileset dir="."/>
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+
+  <target name="all" depends="docs,runnable-jars"/>
+
 
   <target name="init">
     <tstamp/>
     <mkdir dir="dist"/>
+    <mkdir dir="doc"/>
   </target>
-  
-  <target name="clean">
+
+
+  <target name="clean" depends="init">
     <delete includeEmptyDirs="true">
+      <fileset dir="build" includes="**/*"/>
       <fileset dir="dist" includes="**/*"/>
       <fileset dir="doc" includes="**/*"/>
     </delete>
   </target>
+
+
+  <target name="compile" depends="compile-src,compile-tests"/>
+
+
+  <target name="compile-src" depends="init">
+    <javac srcdir="src" destdir="dist" listfiles="${verbose}">
+      <classpath refid="base.classpath"/>
+    </javac>
+  </target>
   
-  <target name="docs">
-    <exec executable="${doxygen-cmd}"/>
+
+  <target name="compile-tests" depends="init">
+    <javac srcdir="test" destdir="dist" listfiles="${verbose}">
+      <classpath refid="base.classpath"/>
+    </javac>
   </target>
 
-  <target name="runnable-jars" depends="init">
+ 
+  <target name="docs">
+    <exec executable="${doxygen-cmd}" spawn="true"/>
+  </target>
+
+
+  <target name="test" depends="compile-tests">
+	<junit printsummary="withOutAndErr" fork="true" forkmode="perBatch">
+        <formatter type="plain" usefile="false"/>
+	    <classpath refid="base.classpath"/>
+		<batchtest>
+			<fileset dir="build">
+				<include name="**/*Test.class"/>
+			</fileset>
+		</batchtest>
+	</junit>
+  </target>
+
+
+  <target name="runnable-jars" depends="compile-src">
     <jar destfile="dist/dataset-generator.jar">
       <manifest>
         <attribute name="Main-Class" value="${jar-loader-class}"/>
