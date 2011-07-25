@@ -1,0 +1,29 @@
+#
+# Evaluator setup file
+#
+
+report: csv
+file: data/real/results.csv
+
+classifiers:
+  - class: weka.classifiers.bayes.NaiveBayes
+
+  - class: bayes.NaiveBayes
+    options: -K
+
+  - id: Arvore
+    class: trees.J48
+    options:
+      C: [0.25, 0.5, 0.75]
+      M: 2 -> 5 @ 1
+
+  - class: bayes.NaiveBayes
+    options:
+      K:
+
+  - class: functions.RBFNetwork
+    options:
+      B: [2, 5]
+      S: 1 -> 10 @ 3
+      W: 0.1
+
