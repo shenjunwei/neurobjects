@@ -1,3 +1,6 @@
 /build/
 /.externalToolBuilders
 /*.jar
+doc/
+dist/
+
