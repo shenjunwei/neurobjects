@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project name="neurobjects" default="runnable-jars">
+  <property name="doxygen-cmd" value="doxygen"/>
+  
+  <property name="jar-loader-class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+  <property name="jar-libs" value="commons-math-2.2.jar junit-4.8.2.jar weka.jar snakeyaml-1.8.jar commons-lang3-3.0.jar commons-cli-1.2.jar"/>
+
+  <target name="all" depends="clean,docs,runnable-jars">
+  </target>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="dist"/>
+  </target>
+  
+  <target name="clean">
+    <delete includeEmptyDirs="true">
+      <fileset dir="dist" includes="**/*"/>
+      <fileset dir="doc" includes="**/*"/>
+    </delete>
+  </target>
+  
+  <target name="docs">
+    <exec executable="${doxygen-cmd}"/>
+  </target>
+
+  <target name="runnable-jars" depends="init">
+    <jar destfile="dist/dataset-generator.jar">
+      <manifest>
+        <attribute name="Main-Class" value="${jar-loader-class}"/>
+        <attribute name="Rsrc-Main-Class" value="nda.app.DatasetGeneratorApp"/>
+        <attribute name="Class-Path" value="."/>
+        <attribute name="Rsrc-Class-Path" value="./ ${jar-libs}"/>
+      </manifest>
+      
+      <zipfileset src="lib/jar-in-jar-loader.zip"/>
+      <fileset dir="build"/>
+      <zipfileset dir="lib" includes="commons-math-2.2.jar"/>
+      <zipfileset dir="lib" includes="junit-4.8.2.jar"/>
+      <zipfileset dir="lib" includes="weka.jar"/>
+      <zipfileset dir="lib" includes="snakeyaml-1.8.jar"/>
+      <zipfileset dir="lib" includes="commons-lang3-3.0.jar"/>
+      <zipfileset dir="lib" includes="commons-cli-1.2.jar"/>
+    </jar>
+        
+    <jar destfile="dist/dataset-evaluator.jar">
+      <manifest>
+        <attribute name="Main-Class" value="${jar-loader-class}"/>
+        <attribute name="Rsrc-Main-Class" value="nda.app.SimpleEvaluatorApp"/>
+        <attribute name="Class-Path" value="."/>
+        <attribute name="Rsrc-Class-Path" value="./ ${jar-libs}"/>
+      </manifest>
+      
+      <zipfileset src="lib/jar-in-jar-loader.zip"/>
+      <fileset dir="build"/>
+      <zipfileset dir="lib" includes="commons-math-2.2.jar"/>
+      <zipfileset dir="lib" includes="junit-4.8.2.jar"/>
+      <zipfileset dir="lib" includes="weka.jar"/>
+      <zipfileset dir="lib" includes="snakeyaml-1.8.jar"/>
+      <zipfileset dir="lib" includes="commons-lang3-3.0.jar"/>
+      <zipfileset dir="lib" includes="commons-cli-1.2.jar"/>
+    </jar>
+  </target>
+
+</project>
