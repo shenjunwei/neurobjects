@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.generation;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -14,6 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 
+import nda.analysis.InvalidSetupFileException;
+import nda.analysis.PatternHandler;
+import nda.analysis.Setup;
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;

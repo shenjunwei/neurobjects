@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.generation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,6 +8,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import nda.analysis.InvalidSetupFileException;
+import nda.analysis.PatternHandler;
+import nda.analysis.Setup;
 
 
 /**

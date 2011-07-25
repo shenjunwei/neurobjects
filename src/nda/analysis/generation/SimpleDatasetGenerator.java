@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.generation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import nda.analysis.InvalidSetupFileException;
+import nda.analysis.PatternHandler;
+import nda.analysis.Setup;
 
 
 /**
@@ -31,7 +34,7 @@ public class SimpleDatasetGenerator extends AbstractDatasetGenerator {
     /**
      * Create Weka ARFF files in the output directory.
      * 
-     * @see nda.analysis.AbstractDatasetGenerator#generate()
+     * @see nda.analysis.generation.AbstractDatasetGenerator#generate()
      */
     @Override
     public void generate() throws DatasetGenerationException {

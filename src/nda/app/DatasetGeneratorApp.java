@@ -11,12 +11,12 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import nda.analysis.AbstractDatasetGenerator;
-import nda.analysis.DatasetGenerationException;
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.Setup;
-import nda.analysis.SimpleDatasetGenerator;
-import nda.analysis.SimpleParallelDatasetGenerator;
+import nda.analysis.generation.AbstractDatasetGenerator;
+import nda.analysis.generation.DatasetGenerationException;
+import nda.analysis.generation.SimpleDatasetGenerator;
+import nda.analysis.generation.SimpleParallelDatasetGenerator;
 
 
 /**
