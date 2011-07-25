@@ -18,17 +18,17 @@ import nda.analysis.Setup;
  * 
  * @author Giuliano Vilela
  */
-public abstract class AbstractParallelDatasetGenerator extends AbstractDatasetGenerator {
+public abstract class ParallelGenerator extends DatasetGenerator {
     private ExecutorService executor;
 
-    public AbstractParallelDatasetGenerator(String setupFilepath)
+    public ParallelGenerator(String setupFilepath)
     throws FileNotFoundException, InvalidSetupFileException {
         super(setupFilepath);
         init();
     }
 
 
-    public AbstractParallelDatasetGenerator(Setup _setup) {
+    public ParallelGenerator(Setup _setup) {
         super(_setup);
         init();
     }
@@ -55,7 +55,7 @@ public abstract class AbstractParallelDatasetGenerator extends AbstractDatasetGe
 
 
     protected List<Future<List<PatternHandler>>> buildAll(Setup setup)
-    throws DatasetGenerationException {
+    throws GenerationException {
         ExecutorService executor = getExecutor();
 
         List<Future<List<PatternHandler>>> results =
@@ -98,7 +98,7 @@ public abstract class AbstractParallelDatasetGenerator extends AbstractDatasetGe
         }
 
         @Override
-        public List<PatternHandler> call() throws DatasetGenerationException {
+        public List<PatternHandler> call() throws GenerationException {
             return buildDatasetSingleRound(dataset, round);
         }
     }

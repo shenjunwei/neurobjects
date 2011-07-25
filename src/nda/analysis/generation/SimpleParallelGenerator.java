@@ -19,20 +19,20 @@ import nda.analysis.Setup;
  * 
  * @author Giuliano Vilela
  */
-public class SimpleParallelDatasetGenerator extends AbstractParallelDatasetGenerator {
+public class SimpleParallelGenerator extends ParallelGenerator {
     private static final int TASK_POLLING_RATE = 200; // milliseconds
 
     private boolean verbose;
 
 
-    public SimpleParallelDatasetGenerator(String setupFilepath)
+    public SimpleParallelGenerator(String setupFilepath)
     throws FileNotFoundException, InvalidSetupFileException {
         super(setupFilepath);
         setVerbose(false);
     }
 
 
-    public SimpleParallelDatasetGenerator(Setup _setup) {
+    public SimpleParallelGenerator(Setup _setup) {
         super(_setup);
         setVerbose(false);
     }
@@ -45,7 +45,7 @@ public class SimpleParallelDatasetGenerator extends AbstractParallelDatasetGener
 
 
     @Override
-    public void generate() throws DatasetGenerationException {
+    public void generate() throws GenerationException {
         showMessage("Generating datasets...\n");
 
         showMessage("Reading spike data and behavior file...");
@@ -53,7 +53,7 @@ public class SimpleParallelDatasetGenerator extends AbstractParallelDatasetGener
 
         File outputDir = new File(setup.getOutputDirectory());
         if (!outputDir.exists() && !outputDir.mkdir()) {
-            throw new DatasetGenerationException("Cant create dir: " + outputDir);
+            throw new GenerationException("Cant create dir: " + outputDir);
         }
 
         showMessage("Firing generation tasks...");
@@ -81,14 +81,14 @@ public class SimpleParallelDatasetGenerator extends AbstractParallelDatasetGener
             }
             catch (InterruptedException e) { }
             catch (ExecutionException e) {
-                throw new DatasetGenerationException(e.getCause());
+                throw new GenerationException(e.getCause());
             }
         }
     }
 
 
     protected void writeFile(PatternHandler data, File outputDir)
-    throws DatasetGenerationException {
+    throws GenerationException {
 
         String weka_str = data.toWekaFormat();
         String file_str = formatWekaStr(weka_str);
@@ -102,7 +102,7 @@ public class SimpleParallelDatasetGenerator extends AbstractParallelDatasetGener
             out.write(file_str);
             out.close();
         } catch (IOException e) {
-            throw new DatasetGenerationException(e);
+            throw new GenerationException(e);
         }
     }
 

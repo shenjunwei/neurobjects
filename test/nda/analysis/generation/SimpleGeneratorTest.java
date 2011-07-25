@@ -18,9 +18,9 @@ import nda.analysis.Setup;
  * @author Giuliano Vilela
  * @ingroup UnitTests
  */
-public class SimpleDatasetGeneratorTest {
+public class SimpleGeneratorTest {
     private File outputDir;
-    private SimpleDatasetGenerator generator;
+    private SimpleGenerator generator;
     private static String setupFilepath = "data/test/test_setup_gen.yml";
 
 
@@ -45,13 +45,13 @@ public class SimpleDatasetGeneratorTest {
         Setup setup = new Setup(setupFilepath);
         outputDir = new File(setup.getOutputDirectory());
 
-        generator = new SimpleDatasetGenerator(setup);
+        generator = new SimpleGenerator(setup);
         generator.setVerbose(false);
     }
 
 
     /**
-     * Test method for {@link nda.analysis.generation.SimpleDatasetGenerator#generate()}.
+     * Test method for {@link nda.analysis.generation.SimpleGenerator#generate()}.
      */
     @Test
     public void testGenerate() throws Exception {

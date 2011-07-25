@@ -35,7 +35,7 @@ import nda.util.Verbose;
  * 
  * @author Giuliano Vilela
  */
-public abstract class AbstractDatasetGenerator implements Verbose {
+public abstract class DatasetGenerator implements Verbose {
     protected Setup setup;
     protected SpikeHandlerI globalSpikeHandler;
     protected BehaviorHandlerI behaviorHandler;
@@ -43,19 +43,19 @@ public abstract class AbstractDatasetGenerator implements Verbose {
     protected boolean verbose;
 
 
-    public AbstractDatasetGenerator(String setupFilepath)
+    public DatasetGenerator(String setupFilepath)
     throws FileNotFoundException, InvalidSetupFileException {
         this(new Setup(setupFilepath));
     }
 
 
-    public AbstractDatasetGenerator(Setup _setup) {
+    public DatasetGenerator(Setup _setup) {
         setup = _setup;
         randomData = new RandomDataImpl();
     }
 
 
-    public abstract void generate() throws DatasetGenerationException;
+    public abstract void generate() throws GenerationException;
 
 
     /**
@@ -65,7 +65,7 @@ public abstract class AbstractDatasetGenerator implements Verbose {
      * Each round has a train relation and a test relation.
      */
     protected List<PatternHandler> buildDataset(Setup.Dataset dataset)
-    throws DatasetGenerationException {
+    throws GenerationException {
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
@@ -83,7 +83,7 @@ public abstract class AbstractDatasetGenerator implements Verbose {
      */
     protected List<PatternHandler> buildDatasetSingleRound(
             Setup.Dataset dataset, int round)
-            throws DatasetGenerationException {
+            throws GenerationException {
 
         SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
 
@@ -123,7 +123,7 @@ public abstract class AbstractDatasetGenerator implements Verbose {
             Setup.Class class_attr,
             SpikeRateMatrixI rateMatrix,
             PatternHandler trainSet, PatternHandler testSet)
-    throws DatasetGenerationException {
+    throws GenerationException {
 
         int totalPatterns = 0;
         for (String label : class_attr.getLabels())
@@ -134,7 +134,7 @@ public abstract class AbstractDatasetGenerator implements Verbose {
         int numTest = class_attr.getNumberTestSamples();
 
         if (numTrain + numTest > totalPatterns) {
-            throw new DatasetGenerationException(String.format(
+            throw new GenerationException(String.format(
                     "Can't sample %d train patterns and %d test patterns from " +
                     "class %s (%d patterns from labels %s) of dataset %s",
                     numTrain, numTest, class_attr.getName(), totalPatterns,
@@ -236,7 +236,7 @@ public abstract class AbstractDatasetGenerator implements Verbose {
     }
 
 
-    protected void loadHandlers() throws DatasetGenerationException {
+    protected void loadHandlers() throws GenerationException {
         try {
             String spikeDir = setup.getSpikesDirectory();
             globalSpikeHandler = new TextSpikeHandler(spikeDir);
@@ -244,14 +244,14 @@ public abstract class AbstractDatasetGenerator implements Verbose {
             String behaviorFilepath = setup.getContactsFilepath();
             behaviorHandler = new TextBehaviorHandler(behaviorFilepath);
         } catch (Exception e) {
-            throw new DatasetGenerationException(e);
+            throw new GenerationException(e);
         }
     }
 
 
     @SuppressWarnings("unchecked")
     protected SpikeRateMatrixI buildDatasetRateMatrix(Setup.Dataset dataset)
-    throws DatasetGenerationException {
+    throws GenerationException {
         List<String> filterList = (List<String>) dataset.getParameter("neurons");
         String neuronFilter = StringUtils.join(filterList, ", ");
 
