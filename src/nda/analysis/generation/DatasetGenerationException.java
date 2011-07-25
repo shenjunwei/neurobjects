@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.generation;
 
 
 /**

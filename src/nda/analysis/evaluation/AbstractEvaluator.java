@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.evaluation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,8 @@ import weka.classifiers.functions.RBFNetwork;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
+
+import nda.analysis.Setup;
 
 
 /**

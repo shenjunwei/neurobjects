@@ -10,10 +10,10 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import nda.analysis.EvaluationException;
-import nda.analysis.EvaluationResult;
 import nda.analysis.InvalidSetupFileException;
-import nda.analysis.SimpleEvaluator;
+import nda.analysis.evaluation.EvaluationException;
+import nda.analysis.evaluation.EvaluationResult;
+import nda.analysis.evaluation.SimpleEvaluator;
 
 
 /**

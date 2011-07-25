@@ -1,9 +1,11 @@
-package nda.analysis;
+package nda.analysis.evaluation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import weka.classifiers.Evaluation;
+
+import nda.analysis.Setup;
 
 
 /**

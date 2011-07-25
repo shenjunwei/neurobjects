@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.generation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import nda.analysis.Setup;
-import nda.analysis.SimpleDatasetGenerator;
 
 
 /**
@@ -32,7 +31,7 @@ public class SimpleDatasetGeneratorTest {
         File dirFile = new File(outputDir);
 
         if (!dirFile.exists() && !dirFile.mkdir())
-            throw new IllegalArgumentException("Cant create dir");
+            throw new IllegalArgumentException("Cant create dir: " + dirFile);
 
         for (File file : dirFile.listFiles())
             if (file.isFile()) file.delete();
@@ -52,7 +51,7 @@ public class SimpleDatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.SimpleDatasetGenerator#generate()}.
+     * Test method for {@link nda.analysis.generation.SimpleDatasetGenerator#generate()}.
      */
     @Test
     public void testGenerate() throws Exception {

@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.evaluation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import weka.core.Instances;
+
+import nda.analysis.InvalidSetupFileException;
+import nda.analysis.Setup;
 
 
 /**
