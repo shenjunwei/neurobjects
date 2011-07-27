@@ -3,6 +3,8 @@ package nda.analysis.evaluation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import weka.classifiers.Evaluation;
 
 import nda.analysis.Setup;
@@ -14,6 +16,7 @@ import nda.analysis.Setup;
  */
 public class EvaluationResult {
     private Setup.Dataset dataset;
+    private List<NamedClassifier> classifiers;
     private List<Evaluation> modelEvaluations;
     private String trainSetName, testSetName;
 
@@ -27,7 +30,9 @@ public class EvaluationResult {
         dataset = _dataset;
         trainSetName = train_n;
         testSetName = test_n;
+
         modelEvaluations = new ArrayList<Evaluation>();
+        classifiers = new ArrayList<NamedClassifier>();
     }
 
 
@@ -38,9 +43,20 @@ public class EvaluationResult {
                 trainSetName, testSetName
         );
 
-        int model_i = 1;
-        for (Evaluation evaluation : modelEvaluations) {
-            str += "## Model " + model_i++ + " ##\n\n";
+        for (int i = 0; i < classifiers.size(); ++i) {
+            NamedClassifier classifier = classifiers.get(i);
+            Evaluation evaluation = modelEvaluations.get(i);
+
+            String[] options = classifier.getClassifier().getOptions();
+            String optionsStr = StringUtils.join(options, ' ').trim();
+            if (optionsStr.isEmpty())
+                optionsStr = "<default>";
+
+            String modelHeader = String.format(
+                    "## Model: %s (%s) ##\n\n",
+                    classifier.getName(), optionsStr);
+
+            str += modelHeader;
 
             try {
                 str += evaluation.toSummaryString("=== Summary ===", false) + "\n";
@@ -54,6 +70,16 @@ public class EvaluationResult {
         }
 
         return str + "\n\n";
+    }
+
+
+    public void setClassifers(List<NamedClassifier> _classifiers) {
+        classifiers = _classifiers;
+    }
+
+
+    public List<NamedClassifier> getClassifiers() {
+        return classifiers;
     }
 
 

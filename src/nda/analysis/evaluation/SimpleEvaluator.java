@@ -1,14 +1,12 @@
 package nda.analysis.evaluation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import weka.core.Instances;
 
-import nda.analysis.InvalidSetupFileException;
 import nda.analysis.Setup;
 
 
@@ -19,24 +17,12 @@ import nda.analysis.Setup;
  * @author Giuliano Vilela
  */
 public class SimpleEvaluator extends DatasetEvaluator {
-    private Setup setup;
-    private boolean verbose;
+    private Setup generatorSetup;
 
 
-    public SimpleEvaluator(String setupFilepath)
-    throws FileNotFoundException, InvalidSetupFileException {
-        this(new Setup(setupFilepath));
-    }
-
-
-    public SimpleEvaluator(Setup _setup) {
-        setup = _setup;
-        setVerbose(true);
-    }
-
-
-    public void setVerbose(boolean _verbose) {
-        verbose = _verbose;
+    public SimpleEvaluator(Setup gen_setup, EvaluatorSetup eva_setup) {
+        super(eva_setup);
+        generatorSetup = gen_setup;
     }
 
 
@@ -45,9 +31,9 @@ public class SimpleEvaluator extends DatasetEvaluator {
         showMessage("Evaluating datasets...\n");
 
         List<EvaluationResult> results = new ArrayList<EvaluationResult>();
-        File outputDir = new File(setup.getOutputDirectory());
+        File outputDir = new File(generatorSetup.getOutputDirectory());
 
-        for (Setup.Dataset dataset : setup.getDatasets()) {
+        for (Setup.Dataset dataset : generatorSetup.getDatasets()) {
             showMessage("Evaluating dataset " + dataset.getName() + " ...");
 
             List<String> fileNames = dataset.getGeneratedFileNames();
