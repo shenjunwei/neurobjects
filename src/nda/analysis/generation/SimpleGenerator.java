@@ -8,7 +8,6 @@ import java.util.List;
 
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.PatternHandler;
-import nda.analysis.Setup;
 
 
 /**
@@ -24,7 +23,7 @@ public class SimpleGenerator extends DatasetGenerator {
     }
 
 
-    public SimpleGenerator(Setup setup) {
+    public SimpleGenerator(GeneratorSetup setup) {
         super(setup);
         setVerbose(false);
     }
@@ -47,7 +46,7 @@ public class SimpleGenerator extends DatasetGenerator {
             throw new GenerationException("Cant create dir: " + outputDir);
         }
 
-        for (Setup.Dataset dataset : setup.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : setup.getDatasets()) {
             showMessage("Building dataset " + dataset.getName() + " ...");
 
             showMessage(" - extracting patterns...");

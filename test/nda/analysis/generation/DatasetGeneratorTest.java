@@ -18,7 +18,6 @@ import org.junit.Test;
 import weka.core.Instances;
 
 import nda.analysis.PatternHandler;
-import nda.analysis.Setup;
 import nda.data.BehaviorHandlerI;
 import nda.data.Interval;
 import nda.data.SpikeRateMatrixI;
@@ -44,7 +43,7 @@ public class DatasetGeneratorTest {
 
     // Needed in order to test an abstract class with concrete private methods
     private static class MockDatasetGenerator extends DatasetGenerator {
-        private MockDatasetGenerator(Setup setup) {
+        private MockDatasetGenerator(GeneratorSetup setup) {
             super(setup);
 
             RandomDataImpl random = (RandomDataImpl) randomData;
@@ -64,10 +63,10 @@ public class DatasetGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
-        Setup setup = new Setup(setupFilepath);
+        GeneratorSetup setup = new GeneratorSetup(setupFilepath);
         generator = new MockDatasetGenerator(setup);
 
-        Setup short_setup = new Setup(shortSetupFilepath);
+        GeneratorSetup short_setup = new GeneratorSetup(shortSetupFilepath);
         short_gen = new MockDatasetGenerator(short_setup);
     }
 
@@ -91,10 +90,10 @@ public class DatasetGeneratorTest {
     public void testSampleBallInstances() throws Exception {
         generator.loadHandlers();
 
-        List<Setup.Dataset> datasets = generator.setup.getDatasets();
+        List<GeneratorSetup.Dataset> datasets = generator.setup.getDatasets();
 
-        Setup.Dataset ball_ds = datasets.get(0);
-        Setup.Class yesClass = ball_ds.getClasses().get(0);
+        GeneratorSetup.Dataset ball_ds = datasets.get(0);
+        GeneratorSetup.Class yesClass = ball_ds.getClasses().get(0);
         SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(ball_ds);
 
         assertEquals("ge4_ball", ball_ds.getName());
@@ -145,23 +144,23 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.generation.DatasetGenerator#sampleInstances(nda.data.SpikeRateMatrixI, nda.analysis.Setup.Class, int)}.
+     * Test method for {@link nda.analysis.generation.DatasetGenerator#sampleInstances(nda.data.SpikeRateMatrixI, nda.analysis.generation.GeneratorSetup.Class, int)}.
      */
     @Test
     public void testSampleInstances1vsN() throws Exception {
         generator.loadHandlers();
         BehaviorHandlerI behaviorHandler = generator.behaviorHandler;
 
-        for (Setup.Dataset dataset : generator.setup.getDatasets()) {
-            List<Setup.Class> classes = dataset.getClasses();
+        for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
+            List<GeneratorSetup.Class> classes = dataset.getClasses();
 
             if (classes.size() != 2) {
                 // only test 1_vs_n datasets in this method
                 continue;
             }
 
-            Setup.Class yesClass = classes.get(0);
-            Setup.Class noClass = classes.get(1);
+            GeneratorSetup.Class yesClass = classes.get(0);
+            GeneratorSetup.Class noClass = classes.get(1);
 
             SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(dataset);
 
@@ -241,20 +240,20 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.generation.DatasetGenerator#addInstancesFromClass(nda.analysis.PatternHandler, nda.data.SpikeRateMatrixI, nda.analysis.Setup.Class, int)}.
+     * Test method for {@link nda.analysis.generation.DatasetGenerator#addInstancesFromClass(nda.analysis.PatternHandler, nda.data.SpikeRateMatrixI, nda.analysis.generation.GeneratorSetup.Class, int)}.
      */
     @Test
     public void testAddInstancesFromClass() throws Exception {
         generator.loadHandlers();
 
-        for (Setup.Dataset dataset : generator.setup.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
             SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(dataset);
 
             Set<String> classNames = new HashSet<String>();
-            for (Setup.Class class_attr : dataset.getClasses())
+            for (GeneratorSetup.Class class_attr : dataset.getClasses())
                 classNames.add(class_attr.getName());
 
-            for (Setup.Class class_attr : dataset.getClasses()) {
+            for (GeneratorSetup.Class class_attr : dataset.getClasses()) {
                 PatternHandler trainSet = new PatternHandler(
                         "train", rateMatrix, classNames);
 
@@ -288,13 +287,13 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.generation.DatasetGenerator#buildDatasetSingleRound(nda.analysis.Setup.Dataset, int)}.
+     * Test method for {@link nda.analysis.generation.DatasetGenerator#buildDatasetSingleRound(nda.analysis.generation.GeneratorSetup.Dataset, int)}.
      */
     @Test
     public void testBuildDatasetSingleRound() throws Exception {
         generator.loadHandlers();
 
-        for (Setup.Dataset dataset : generator.setup.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
             Set<String> setNames = new HashSet<String>();
 
             for (int round = 0; round < 10; ++round) {
@@ -308,7 +307,7 @@ public class DatasetGeneratorTest {
                 setNames.add(trainSet.getRelation().relationName());
                 setNames.add(testSet.getRelation().relationName());
 
-                for (Setup.Class class_attr : dataset.getClasses()) {
+                for (GeneratorSetup.Class class_attr : dataset.getClasses()) {
                     String class_label = class_attr.getName();
 
                     List<double[]> trainPatterns = trainSet.getPatterns(class_label);
@@ -328,13 +327,13 @@ public class DatasetGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.generation.DatasetGenerator#buildDataset(nda.analysis.Setup.Dataset)}.
+     * Test method for {@link nda.analysis.generation.DatasetGenerator#buildDataset(nda.analysis.generation.GeneratorSetup.Dataset)}.
      */
     @Test
     public void testBuildDataset() throws Exception {
         generator.loadHandlers();
 
-        for (Setup.Dataset dataset : generator.setup.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
             Set<String> setNames = new HashSet<String>();
 
             List<PatternHandler> sets = generator.buildDataset(dataset);
@@ -355,7 +354,7 @@ public class DatasetGeneratorTest {
                 setNames.add(trainSetName);
                 setNames.add(testSetName);
 
-                for (Setup.Class class_attr : dataset.getClasses()) {
+                for (GeneratorSetup.Class class_attr : dataset.getClasses()) {
                     String class_label = class_attr.getName();
 
                     List<double[]> trainPatterns = trainSet.getPatterns(class_label);
@@ -376,11 +375,11 @@ public class DatasetGeneratorTest {
 
     @Test
     public void testClassesLabels() {
-        for (Setup.Dataset dataset : generator.setup.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
             Set<String> class_labels = new HashSet<String>();
 
             int count = 0;
-            for (Setup.Class class_attr : dataset.getClasses()) {
+            for (GeneratorSetup.Class class_attr : dataset.getClasses()) {
                 class_labels.addAll(class_attr.getLabels());
                 count += class_attr.getLabels().size();
             }
@@ -430,7 +429,7 @@ public class DatasetGeneratorTest {
     public void testPatternsSizeError() throws Exception {
         short_gen.loadHandlers();
 
-        for (Setup.Dataset dataset : short_gen.setup.getDatasets())
+        for (GeneratorSetup.Dataset dataset : short_gen.setup.getDatasets())
             short_gen.buildDataset(dataset);
     }
 

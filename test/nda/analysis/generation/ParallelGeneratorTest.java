@@ -17,7 +17,6 @@ import org.junit.Test;
 import weka.core.Instances;
 
 import nda.analysis.PatternHandler;
-import nda.analysis.Setup;
 
 
 /**
@@ -39,7 +38,7 @@ public class ParallelGeneratorTest {
 
     // Needed in order to test an abstract class with concrete private methods
     private static class MockParallelGenerator extends ParallelGenerator {
-        private MockParallelGenerator(Setup setup) {
+        private MockParallelGenerator(GeneratorSetup setup) {
             super(setup);
 
             RandomDataImpl random = (RandomDataImpl) randomData;
@@ -57,7 +56,7 @@ public class ParallelGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
-        Setup setup = new Setup(setupFilepath);
+        GeneratorSetup setup = new GeneratorSetup(setupFilepath);
         generator = new MockParallelGenerator(setup);
     }
 
@@ -74,17 +73,17 @@ public class ParallelGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.generation.ParallelGenerator#buildAll(nda.analysis.Setup)}.
+     * Test method for {@link nda.analysis.generation.ParallelGenerator#buildAll(nda.analysis.generation.GeneratorSetup)}.
      */
     @Test
     public void testBuildAll() throws Exception {
         generator.loadHandlers();
-        Setup setup = generator.setup;
+        GeneratorSetup setup = generator.setup;
 
         List<PatternHandler> expected_patterns = new ArrayList<PatternHandler>();
         List<PatternHandler> generated_patterns = new ArrayList<PatternHandler>();
 
-        for (Setup.Dataset dataset : setup.getDatasets())
+        for (GeneratorSetup.Dataset dataset : setup.getDatasets())
             expected_patterns.addAll(generator.buildDataset(dataset));
 
         List<Future<List<PatternHandler>>> results = generator.buildAll(generator.setup);
@@ -104,17 +103,17 @@ public class ParallelGeneratorTest {
 
 
     /**
-     * Test method for {@link nda.analysis.generation.ParallelGenerator#buildTasks(nda.analysis.Setup)}.
+     * Test method for {@link nda.analysis.generation.ParallelGenerator#buildTasks(nda.analysis.generation.GeneratorSetup)}.
      */
     @Test
     public void testBuildTasks() throws Exception {
         generator.loadHandlers();
-        Setup setup = generator.setup;
+        GeneratorSetup setup = generator.setup;
 
         List<PatternHandler> expected_patterns = new ArrayList<PatternHandler>();
         List<PatternHandler> generated_patterns = new ArrayList<PatternHandler>();
 
-        for (Setup.Dataset dataset : setup.getDatasets())
+        for (GeneratorSetup.Dataset dataset : setup.getDatasets())
             expected_patterns.addAll(generator.buildDataset(dataset));
 
         List<Callable<List<PatternHandler>>> tasks = generator.buildTasks(setup);

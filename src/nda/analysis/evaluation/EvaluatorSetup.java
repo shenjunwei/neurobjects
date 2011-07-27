@@ -16,7 +16,7 @@ import weka.classifiers.Classifier;
 import weka.core.Utils;
 
 import nda.analysis.InvalidSetupFileException;
-import nda.analysis.Setup;
+import nda.analysis.generation.GeneratorSetup;
 
 
 /**
@@ -27,7 +27,7 @@ import nda.analysis.Setup;
 public class EvaluatorSetup {
     private static final String WEKA_CLASSIFIERS_PACKAGE = "weka.classifiers";
 
-    private static Yaml yaml = Setup.getYaml();
+    private static Yaml yaml = GeneratorSetup.getYaml();
 
     private Map<String, Object> setup;
     private List<NamedClassifier> classifiers;

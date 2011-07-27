@@ -12,9 +12,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import nda.analysis.InvalidSetupFileException;
-import nda.analysis.Setup;
 import nda.analysis.generation.DatasetGenerator;
 import nda.analysis.generation.GenerationException;
+import nda.analysis.generation.GeneratorSetup;
 import nda.analysis.generation.SimpleGenerator;
 import nda.analysis.generation.SimpleParallelGenerator;
 
@@ -48,7 +48,7 @@ public class DatasetGeneratorApp {
     }
 
 
-    private static DatasetGenerator getGenerator(Setup setup, CommandLine cml) {
+    private static DatasetGenerator getGenerator(GeneratorSetup setup, CommandLine cml) {
         DatasetGenerator generator;
 
         if (cml.hasOption("parallel"))
@@ -81,7 +81,7 @@ public class DatasetGeneratorApp {
 
         for (String setupFilepath : cml.getArgs()) {
             try {
-                Setup setup = new Setup(setupFilepath);
+                GeneratorSetup setup = new GeneratorSetup(setupFilepath);
                 DatasetGenerator generator = getGenerator(setup, cml);
                 generator.generate();
             }

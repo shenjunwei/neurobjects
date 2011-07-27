@@ -7,7 +7,7 @@ import java.util.List;
 
 import weka.core.Instances;
 
-import nda.analysis.Setup;
+import nda.analysis.generation.GeneratorSetup;
 
 
 /**
@@ -17,10 +17,10 @@ import nda.analysis.Setup;
  * @author Giuliano Vilela
  */
 public class SimpleEvaluator extends DatasetEvaluator {
-    private Setup generatorSetup;
+    private GeneratorSetup generatorSetup;
 
 
-    public SimpleEvaluator(Setup gen_setup, EvaluatorSetup eva_setup) {
+    public SimpleEvaluator(GeneratorSetup gen_setup, EvaluatorSetup eva_setup) {
         super(eva_setup);
         generatorSetup = gen_setup;
     }
@@ -33,7 +33,7 @@ public class SimpleEvaluator extends DatasetEvaluator {
         List<EvaluationResult> results = new ArrayList<EvaluationResult>();
         File outputDir = new File(generatorSetup.getOutputDirectory());
 
-        for (Setup.Dataset dataset : generatorSetup.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : generatorSetup.getDatasets()) {
             showMessage("Evaluating dataset " + dataset.getName() + " ...");
 
             List<String> fileNames = dataset.getGeneratedFileNames();
