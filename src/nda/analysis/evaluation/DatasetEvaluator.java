@@ -1,17 +1,13 @@
 package nda.analysis.evaluation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.functions.RBFNetwork;
-import weka.classifiers.functions.SMO;
-import weka.classifiers.trees.J48;
 import weka.core.Instances;
 
 import nda.analysis.Setup;
+import nda.util.Verbose;
 
 
 /**
@@ -19,12 +15,14 @@ import nda.analysis.Setup;
  * 
  * @author Giuliano Vilela
  */
-public abstract class DatasetEvaluator {
-    protected List<Classifier> models;
+public abstract class DatasetEvaluator implements Verbose {
+    protected EvaluatorSetup setup;
+    protected boolean verbose;
 
 
-    protected DatasetEvaluator() {
-        loadDefaultModels();
+    protected DatasetEvaluator(EvaluatorSetup _setup) {
+        setup = _setup;
+        setVerbose(false);
     }
 
 
@@ -36,14 +34,19 @@ public abstract class DatasetEvaluator {
             Instances trainData, Instances testData)
     throws EvaluationException {
 
-        trainData.setClass(trainData.attribute("label"));
-        testData.setClass(testData.attribute("label"));
+        List<NamedClassifier> classifiers = setup.getClassifiers();
 
         EvaluationResult result = new EvaluationResult(
                 dataset, trainData.relationName(), testData.relationName());
+        result.setClassifers(classifiers);
 
-        for (Classifier model : models) {
+        trainData.setClass(trainData.attribute("label"));
+        testData.setClass(testData.attribute("label"));
+
+        for (NamedClassifier n_classifier : classifiers) {
             try {
+                Classifier model = n_classifier.getClassifier();
+
                 // Train
                 model.buildClassifier(trainData);
 
@@ -63,27 +66,14 @@ public abstract class DatasetEvaluator {
     }
 
 
-    public void addModel(Classifier model) {
-        models.add(model);
+    @Override
+    public void setVerbose(boolean _verbose) {
+        verbose = _verbose;
     }
 
 
-    public void removeModel(Classifier model) {
-        models.remove(model);
-    }
-
-
-    public List<Classifier> getModels() {
-        return models;
-    }
-
-
-    protected void loadDefaultModels() {
-        models = new ArrayList<Classifier>();
-
-        models.add(new NaiveBayes());
-        models.add(new J48());
-        models.add(new RBFNetwork());
-        models.add(new SMO());
+    @Override
+    public boolean getVerbose() {
+        return verbose;
     }
 }
