@@ -10,6 +10,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import nda.analysis.generation.GeneratorSetup;
+
 
 /**
  * Tests for the Setup class.
@@ -18,8 +20,8 @@ import org.junit.Test;
  * @ingroup UnitTests
  */
 public class SetupTest {
-    private Setup ge5_setup;
-    private Setup test_setup;
+    private GeneratorSetup ge5_setup;
+    private GeneratorSetup test_setup;
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
     private static String testSetupFilepath = "data/test/test_setup.yml";
@@ -27,40 +29,40 @@ public class SetupTest {
 
     @Before
     public void setUp() throws Exception {
-        ge5_setup = new Setup(ge5SetupFilepath);
-        test_setup = new Setup(testSetupFilepath);
+        ge5_setup = new GeneratorSetup(ge5SetupFilepath);
+        test_setup = new GeneratorSetup(testSetupFilepath);
     }
 
 
     @Test(expected = FileNotFoundException.class)
     public void testMissingFile() throws Exception {
-        new Setup("__missing_file__");
+        new GeneratorSetup("__missing_file__");
     }
 
 
     @Test(expected = InvalidSetupFileException.class)
     public void testInvalidFile() throws Exception {
-        new Setup(invalidFilepath);
+        new GeneratorSetup(invalidFilepath);
     }
 
 
     /**
-     * Test method for {@link nda.analysis.Setup#toString()}.
+     * Test method for {@link nda.analysis.generation.GeneratorSetup#toString()}.
      */
     @Test
     public void testToString() {
         assertFalse(test_setup.toString().isEmpty());
 
-        for (Setup.Dataset dataset : test_setup.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : test_setup.getDatasets()) {
             assertFalse(dataset.toString().isEmpty());
-            for (Setup.Class class_attr : dataset.getClasses())
+            for (GeneratorSetup.Class class_attr : dataset.getClasses())
                 assertFalse(class_attr.toString().isEmpty());
         }
     }
 
 
     /**
-     * Test method for {@link nda.analysis.Setup#getName()}.
+     * Test method for {@link nda.analysis.generation.GeneratorSetup#getName()}.
      */
     @Test
     public void testGetName() {
@@ -70,7 +72,7 @@ public class SetupTest {
 
 
     /**
-     * Test method for {@link nda.analysis.Setup#getSpikesDirectory()}.
+     * Test method for {@link nda.analysis.generation.GeneratorSetup#getSpikesDirectory()}.
      */
     @Test
     public void testGetSpikesDirectory() {
@@ -80,7 +82,7 @@ public class SetupTest {
 
 
     /**
-     * Test method for {@link nda.analysis.Setup#getContactsFilepath()}.
+     * Test method for {@link nda.analysis.generation.GeneratorSetup#getContactsFilepath()}.
      */
     @Test
     public void testGetContactsFilepath() {
@@ -90,7 +92,7 @@ public class SetupTest {
 
 
     /**
-     * Test method for {@link nda.analysis.Setup#getOutputDirectory()}.
+     * Test method for {@link nda.analysis.generation.GeneratorSetup#getOutputDirectory()}.
      */
     @Test
     public void testGetOutputDirectory() {
@@ -100,7 +102,7 @@ public class SetupTest {
 
 
     /**
-     * Test method for {@link nda.analysis.Setup#getDatasets()}.
+     * Test method for {@link nda.analysis.generation.GeneratorSetup#getDatasets()}.
      */
     @Test
     public void testGetDatasets() {
@@ -111,9 +113,9 @@ public class SetupTest {
 
     @Test
     public void testMinimalDataset() {
-        List<Setup.Dataset> datasets = test_setup.getDatasets();
+        List<GeneratorSetup.Dataset> datasets = test_setup.getDatasets();
 
-        Setup.Dataset ds_ball = datasets.get(0);
+        GeneratorSetup.Dataset ds_ball = datasets.get(0);
         assertEquals("ge4_ball", ds_ball.getName());
         assertEquals(1, ds_ball.getNumberRounds());
         assertEquals(0.8, ds_ball.getTrainRatio(), 1e-8);
@@ -122,7 +124,7 @@ public class SetupTest {
         assertEquals(0.250, (Double)ds_ball.getParameter("bin_size"), 1e-8);
         assertEquals(5, ((Integer)ds_ball.getParameter("window_width")).intValue());
 
-        Setup.Dataset ds_food = datasets.get(2);
+        GeneratorSetup.Dataset ds_food = datasets.get(2);
         assertEquals("ge4_food", ds_food.getName());
         assertEquals(1, ds_food.getNumberRounds());
         assertEquals(0.8, ds_food.getTrainRatio(), 1e-8);
@@ -135,13 +137,13 @@ public class SetupTest {
 
     @Test
     public void testClassesA() {
-        Setup.Dataset dataset = test_setup.getDatasets().get(0);
+        GeneratorSetup.Dataset dataset = test_setup.getDatasets().get(0);
 
-        List<Setup.Class> classes = dataset.getClasses();
+        List<GeneratorSetup.Class> classes = dataset.getClasses();
         assertEquals(2, classes.size());
 
-        Setup.Class posClass = classes.get(0);
-        Setup.Class negClass = classes.get(1);
+        GeneratorSetup.Class posClass = classes.get(0);
+        GeneratorSetup.Class negClass = classes.get(1);
 
         assertEquals("yes", posClass.getName());
         assertEquals("no", negClass.getName());

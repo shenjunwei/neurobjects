@@ -10,7 +10,6 @@ import java.util.concurrent.Future;
 
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.PatternHandler;
-import nda.analysis.Setup;
 
 
 /**
@@ -28,7 +27,7 @@ public abstract class ParallelGenerator extends DatasetGenerator {
     }
 
 
-    public ParallelGenerator(Setup _setup) {
+    public ParallelGenerator(GeneratorSetup _setup) {
         super(_setup);
         init();
     }
@@ -54,7 +53,7 @@ public abstract class ParallelGenerator extends DatasetGenerator {
     }
 
 
-    protected List<Future<List<PatternHandler>>> buildAll(Setup setup)
+    protected List<Future<List<PatternHandler>>> buildAll(GeneratorSetup setup)
     throws GenerationException {
         ExecutorService executor = getExecutor();
 
@@ -71,13 +70,13 @@ public abstract class ParallelGenerator extends DatasetGenerator {
     }
 
 
-    protected List<Callable<List<PatternHandler>>> buildTasks(Setup setup) {
+    protected List<Callable<List<PatternHandler>>> buildTasks(GeneratorSetup setup) {
         int estimate = setup.getDatasets().size() * 6;
 
         List<Callable<List<PatternHandler>>> tasks =
             new ArrayList<Callable<List<PatternHandler>>>(estimate);
 
-        for (Setup.Dataset dataset : setup.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : setup.getDatasets()) {
             for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
                 GeneratorTask task = new GeneratorTask(dataset, round);
                 tasks.add(task);
@@ -89,10 +88,10 @@ public abstract class ParallelGenerator extends DatasetGenerator {
 
 
     protected class GeneratorTask implements Callable<List<PatternHandler>> {
-        private Setup.Dataset dataset;
+        private GeneratorSetup.Dataset dataset;
         private int round;
 
-        public GeneratorTask(Setup.Dataset _dataset, int _round) {
+        public GeneratorTask(GeneratorSetup.Dataset _dataset, int _round) {
             dataset = _dataset;
             round = _round;
         }

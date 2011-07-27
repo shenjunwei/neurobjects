@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nda.analysis.Setup;
 
 
 /**
@@ -26,7 +25,7 @@ public class SimpleParallelGeneratorTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        Setup setup = new Setup(setupFilepath);
+        GeneratorSetup setup = new GeneratorSetup(setupFilepath);
         String outputDir = setup.getOutputDirectory();
         File dirFile = new File(outputDir);
 
@@ -42,7 +41,7 @@ public class SimpleParallelGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
-        Setup setup = new Setup(setupFilepath);
+        GeneratorSetup setup = new GeneratorSetup(setupFilepath);
         outputDir = new File(setup.getOutputDirectory());
 
         generator = new SimpleParallelGenerator(setup);

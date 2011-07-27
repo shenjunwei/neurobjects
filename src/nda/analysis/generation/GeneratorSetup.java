@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.generation;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,14 +11,15 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
+import nda.analysis.InvalidSetupFileException;
+
 
 /**
  * Thin wrapper for the dataset setup configuration files.
- * 
- * @author Nivaldo Vasconcelos
+ *
  * @author Giuliano Vilela
  */
-public class Setup {
+public class GeneratorSetup {
     private static Yaml yaml = null;
 
     public static Yaml getYaml() {
@@ -30,13 +31,13 @@ public class Setup {
     private Map<String, Object> topMap;
     private List<Dataset> datasets;
 
-    public Setup(String filepath) throws InvalidSetupFileException, FileNotFoundException {
+    public GeneratorSetup(String filepath) throws InvalidSetupFileException, FileNotFoundException {
         this(new FileReader(filepath));
     }
 
 
     @SuppressWarnings("unchecked")
-    public Setup(Reader reader) throws InvalidSetupFileException {
+    public GeneratorSetup(Reader reader) throws InvalidSetupFileException {
         try {
             topMap = (Map<String, Object>) getYaml().load(reader);
             parseDatasets();

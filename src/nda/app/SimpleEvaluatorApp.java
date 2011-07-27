@@ -11,11 +11,11 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import nda.analysis.InvalidSetupFileException;
-import nda.analysis.Setup;
 import nda.analysis.evaluation.EvaluationException;
 import nda.analysis.evaluation.EvaluationResult;
 import nda.analysis.evaluation.EvaluatorSetup;
 import nda.analysis.evaluation.SimpleEvaluator;
+import nda.analysis.generation.GeneratorSetup;
 
 
 /**
@@ -66,7 +66,7 @@ public class SimpleEvaluatorApp {
             String eva_setup_path = filepaths[i+1];
 
             try {
-                Setup gen_setup = new Setup(gen_setup_path);
+                GeneratorSetup gen_setup = new GeneratorSetup(gen_setup_path);
                 EvaluatorSetup eva_setup = new EvaluatorSetup(eva_setup_path);
 
                 SimpleEvaluator evaluator = new SimpleEvaluator(gen_setup, eva_setup);

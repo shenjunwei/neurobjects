@@ -10,7 +10,6 @@ import java.util.concurrent.Future;
 
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.PatternHandler;
-import nda.analysis.Setup;
 
 
 /**
@@ -31,7 +30,7 @@ public class SimpleParallelGenerator extends ParallelGenerator {
     }
 
 
-    public SimpleParallelGenerator(Setup _setup) {
+    public SimpleParallelGenerator(GeneratorSetup _setup) {
         super(_setup);
         setVerbose(false);
     }

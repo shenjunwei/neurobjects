@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import weka.classifiers.Evaluation;
 
-import nda.analysis.Setup;
+import nda.analysis.generation.GeneratorSetup;
 
 
 /**
@@ -15,18 +15,18 @@ import nda.analysis.Setup;
  * @author Giuliano Vilela
  */
 public class EvaluationResult {
-    private Setup.Dataset dataset;
+    private GeneratorSetup.Dataset dataset;
     private List<NamedClassifier> classifiers;
     private List<Evaluation> modelEvaluations;
     private String trainSetName, testSetName;
 
 
-    public EvaluationResult(Setup.Dataset dataset) {
+    public EvaluationResult(GeneratorSetup.Dataset dataset) {
         this(dataset, "<train>", "<test>");
     }
 
 
-    public EvaluationResult(Setup.Dataset _dataset, String train_n, String test_n) {
+    public EvaluationResult(GeneratorSetup.Dataset _dataset, String train_n, String test_n) {
         dataset = _dataset;
         trainSetName = train_n;
         testSetName = test_n;
@@ -83,7 +83,7 @@ public class EvaluationResult {
     }
 
 
-    public Setup.Dataset getDataset() {
+    public GeneratorSetup.Dataset getDataset() {
         return dataset;
     }
 

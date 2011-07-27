@@ -6,7 +6,7 @@ import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
 
-import nda.analysis.Setup;
+import nda.analysis.generation.GeneratorSetup;
 import nda.util.Verbose;
 
 
@@ -30,7 +30,7 @@ public abstract class DatasetEvaluator implements Verbose {
 
 
     protected EvaluationResult evaluate(
-            Setup.Dataset dataset,
+            GeneratorSetup.Dataset dataset,
             Instances trainData, Instances testData)
     throws EvaluationException {
 
