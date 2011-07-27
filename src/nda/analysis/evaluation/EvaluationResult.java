@@ -96,4 +96,19 @@ public class EvaluationResult {
     public void addEvaluation(Evaluation evaluation) {
         modelEvaluations.add(evaluation);
     }
+
+
+    public int numEvaluations() {
+        return modelEvaluations.size();
+    }
+
+
+    public String getTrainSetName() {
+        return trainSetName;
+    }
+
+
+    public String getTestSetName() {
+        return testSetName;
+    }
 }

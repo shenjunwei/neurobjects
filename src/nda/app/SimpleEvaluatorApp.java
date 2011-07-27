@@ -11,7 +11,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import nda.analysis.InvalidSetupFileException;
+import nda.analysis.evaluation.CSVReport;
 import nda.analysis.evaluation.EvaluationException;
+import nda.analysis.evaluation.EvaluationReportI;
 import nda.analysis.evaluation.EvaluationResult;
 import nda.analysis.evaluation.EvaluatorSetup;
 import nda.analysis.evaluation.SimpleEvaluator;
@@ -45,6 +47,20 @@ public class SimpleEvaluatorApp {
     }
 
 
+    private static EvaluationReportI getReport(EvaluatorSetup setup)
+    throws InvalidSetupFileException {
+
+        String reportType = setup.getReportType();
+
+        if (reportType.equals("csv")) {
+            return new CSVReport(setup);
+        }
+        else {
+            throw new InvalidSetupFileException("Invalid report type: " + reportType);
+        }
+    }
+
+
     public static void main(String[] args) {
         CommandLineParser parser = new GnuParser();
         CommandLine cml = null;
@@ -74,8 +90,8 @@ public class SimpleEvaluatorApp {
 
                 List<EvaluationResult> results = evaluator.evaluate();
 
-                for (EvaluationResult result : results)
-                    System.out.println(result);
+                EvaluationReportI report = getReport(eva_setup);
+                report.makeReport(results);
             }
             catch (FileNotFoundException e) {
                 System.out.println("Setup file doesn't exist: " + e.getMessage());
