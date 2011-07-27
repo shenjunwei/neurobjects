@@ -90,6 +90,9 @@ public class SimpleEvaluatorApp {
 
                 List<EvaluationResult> results = evaluator.evaluate();
 
+                if (cml.hasOption('v'))
+                    System.out.println("Writing report...");
+
                 EvaluationReportI report = getReport(eva_setup);
                 report.makeReport(results);
             }
