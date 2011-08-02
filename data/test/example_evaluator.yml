@@ -1,0 +1,12 @@
+#
+# Default Evaluator setup file
+#
+
+report: csv
+file: data/test/results.csv
+
+classifiers:
+  - class: bayes.NaiveBayes
+  - class: trees.J48
+  - class: functions.RBFNetwork
+  - class: functions.SMO
