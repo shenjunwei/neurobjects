@@ -221,7 +221,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
         for (String filter : filters) {
             filter = filter.toLowerCase().trim();
 
-            if (name.startsWith(filter))
+            if (name.startsWith(filter) || filter.equals("*"))
                 return true;
         }
 

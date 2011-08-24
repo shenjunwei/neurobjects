@@ -174,6 +174,10 @@ public class TextSpikeHandlerTest {
         SpikeHandlerI f3 = allNeurons.withFilter("");
         assertEquals("", f3.getFilter());
         assertEquals(10, f3.getNumberOfSpikeTrains());
+
+        SpikeHandlerI f4 = allNeurons.withFilter("*");
+        assertEquals("*", f4.getFilter());
+        assertEquals(10, f4.getNumberOfSpikeTrains());
     }
 
 
