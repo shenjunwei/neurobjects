@@ -117,7 +117,7 @@ public class GeneratorSetupTest {
         List<GeneratorSetup.Dataset> datasets = test_setup.getDatasets();
 
         GeneratorSetup.Dataset ds_ball = datasets.get(0);
-        assertEquals("ge4_ball", ds_ball.getName());
+        assertEquals("ge4_ball_p1", ds_ball.getName());
         assertEquals(1, ds_ball.getNumberRounds());
         assertEquals(0.8, ds_ball.getTrainRatio(), 1e-8);
         assertEquals(2, ds_ball.getClasses().size());
@@ -125,7 +125,7 @@ public class GeneratorSetupTest {
         assertEquals(5, ((Integer)ds_ball.getParameter("window_width")).intValue());
 
         GeneratorSetup.Dataset ds_food = datasets.get(2);
-        assertEquals("ge4_food", ds_food.getName());
+        assertEquals("ge4_food_p1", ds_food.getName());
         assertEquals(1, ds_food.getNumberRounds());
         assertEquals(0.8, ds_food.getTrainRatio(), 1e-8);
         assertEquals(2, ds_food.getClasses().size());

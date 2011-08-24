@@ -109,4 +109,11 @@ public class IntervalTest {
         assertTrue(Interval.INF.contains(neg_i));
         assertFalse(norm_i.contains(Interval.INF));
     }
+
+    @Test
+    public void testEnclose() {
+        assertEquals(Interval.INF, norm_i.enclose(Interval.INF));
+        assertEquals(neg_i, norm_i.enclose(neg_i));
+        assertEquals(neg_i, neg_i.enclose(norm_i));
+    }
 }
