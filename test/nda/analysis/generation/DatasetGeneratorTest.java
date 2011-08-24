@@ -210,10 +210,11 @@ public class DatasetGeneratorTest {
 
         for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
             Set<String> setNames = new HashSet<String>();
+            SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(dataset);
 
             for (int round = 0; round < 10; ++round) {
                 List<PatternHandler> sets = generator.buildDatasetSingleRound(
-                        dataset, round);
+                        dataset, round, rateMatrix);
 
                 assertEquals(2, sets.size());
                 PatternHandler trainSet = sets.get(0);
@@ -233,6 +234,17 @@ public class DatasetGeneratorTest {
 
                     assertEquals(trainSet.getLabelSet(), testSet.getLabelSet());
                     assertEquals(trainSet.getDimension(), testSet.getDimension());
+
+                    for (double[] pA : trainPatterns) {
+                        for (double[] pB : testPatterns) {
+                            assertEquals(pA.length, pB.length);
+                            assertNotEquals(pA, pB);
+                        }
+                        assertPatternBelongsToClass(generator, rateMatrix, class_attr, pA);
+                    }
+
+                    for (double[] pB : testPatterns)
+                        assertPatternBelongsToClass(generator, rateMatrix, class_attr, pB);
                 }
             }
 

@@ -67,8 +67,10 @@ public abstract class DatasetGenerator implements Verbose {
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
+        SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
+
         for (int round = 1; round <= dataset.getNumberRounds(); ++round)
-            patterns.addAll(buildDatasetSingleRound(dataset, round));
+            patterns.addAll(buildDatasetSingleRound(dataset, round, rateMatrix));
 
         return patterns;
     }
@@ -80,15 +82,13 @@ public abstract class DatasetGenerator implements Verbose {
      * This method generates 2 PatternHandler's (train and test).
      */
     protected List<PatternHandler> buildDatasetSingleRound(
-            GeneratorSetup.Dataset dataset, int round)
+            GeneratorSetup.Dataset dataset, int round,
+            SpikeRateMatrixI rateMatrix)
             throws GenerationException {
-
-        SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
 
         Set<String> labels = new HashSet<String>();
         for (GeneratorSetup.Class class_attr : dataset.getClasses())
             labels.add(class_attr.getName());
-
 
         String trainFileName = dataset.getGeneratedFileName("train", round);
         String testFileName = dataset.getGeneratedFileName("test", round);
@@ -321,7 +321,7 @@ public abstract class DatasetGenerator implements Verbose {
     }
 
 
-    protected static int getPatternColumn(
+    /*protected static int getPatternColumn(
             SpikeRateMatrixI rateMatrix, Interval interval, int ind) {
 
         int old_column = rateMatrix.getCurrentColumn();
@@ -332,7 +332,7 @@ public abstract class DatasetGenerator implements Verbose {
 
         rateMatrix.setCurrentColumn(old_column);
         return column;
-    }
+    }*/
 
 
     @SuppressWarnings("deprecation")
