@@ -16,6 +16,7 @@ import nda.analysis.evaluation.EvaluationException;
 import nda.analysis.evaluation.EvaluationReportI;
 import nda.analysis.evaluation.EvaluationResult;
 import nda.analysis.evaluation.EvaluatorSetup;
+import nda.analysis.evaluation.SQLScriptReport;
 import nda.analysis.evaluation.SimpleEvaluator;
 import nda.analysis.generation.GeneratorSetup;
 
@@ -54,6 +55,9 @@ public class SimpleEvaluatorApp {
 
         if (reportType.equals("csv")) {
             return new CSVReport(setup);
+        }
+        else if (reportType.equals("sql_script")) {
+            return new SQLScriptReport(setup);
         }
         else {
             throw new InvalidSetupFileException("Invalid report type: " + reportType);

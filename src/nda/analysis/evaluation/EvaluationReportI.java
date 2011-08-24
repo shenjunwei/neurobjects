@@ -10,5 +10,5 @@ import java.util.List;
  * @author Giuliano Vilela
  */
 public interface EvaluationReportI {
-    public void makeReport(List<EvaluationResult> result) throws EvaluationException;
+    public void makeReport(List<EvaluationResult> results) throws EvaluationException;
 }

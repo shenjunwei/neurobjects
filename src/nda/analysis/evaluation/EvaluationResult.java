@@ -1,6 +1,7 @@
 package nda.analysis.evaluation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ public class EvaluationResult {
     private List<NamedClassifier> classifiers;
     private List<Evaluation> modelEvaluations;
     private String trainSetName, testSetName;
+    private Date creationTime;
 
 
     public EvaluationResult(GeneratorSetup.Dataset dataset) {
@@ -34,6 +36,7 @@ public class EvaluationResult {
 
         modelEvaluations = new ArrayList<Evaluation>();
         classifiers = new ArrayList<NamedClassifier>();
+        creationTime = new Date();
     }
 
 
@@ -79,6 +82,11 @@ public class EvaluationResult {
     }
 
 
+    public void setCreationTime(Date time) {
+        creationTime = time;
+    }
+
+
     public List<NamedClassifier> getClassifiers() {
         return classifiers;
     }
@@ -116,5 +124,10 @@ public class EvaluationResult {
 
     public Object getParameter(String paramName) {
         return dataset.getParameter(paramName);
+    }
+
+
+    public Date getCreationTime() {
+        return creationTime;
     }
 }

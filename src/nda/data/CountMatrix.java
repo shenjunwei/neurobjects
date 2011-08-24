@@ -213,10 +213,13 @@ public class CountMatrix implements SpikeRateMatrixI {
     public int numPatterns(Interval interval) {
         interval = interval.intersection(getInterval());
 
+        if (interval.isEmpty())
+            return 0;
+
         int st_bin = histogram.getBinFor(interval.start());
         int end_bin = histogram.getBinFor(interval.end());
 
-        return end_bin - st_bin - cursor_width + 2;
+        return Math.max(0, end_bin - st_bin - cursor_width + 2);
 
         /*
         int count = 0;
