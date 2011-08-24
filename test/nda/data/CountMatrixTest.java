@@ -10,7 +10,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
+import nda.util.ArrayUtils;
 
 
 /**
@@ -26,16 +28,19 @@ public class CountMatrixTest {
 
     private static SpikeHandlerI handler_v1;
     private static SpikeHandlerI handler_test;
+    private static SpikeHandlerI handler_s1;
 
     private CountMatrix cm_v1;
     private CountMatrix cm_test;
     private CountMatrix cm_v1b;
+    private CountMatrix cm_s1;
 
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         handler_v1 = new TextSpikeHandler(spikeDir, "V1");
         handler_test = new TextSpikeHandler(testDir, "test");
+        handler_s1 = new TextSpikeHandler(spikeDir, "S1");
     }
 
 
@@ -44,6 +49,8 @@ public class CountMatrixTest {
         cm_v1 = new CountMatrix(handler_v1, 0.250);
         cm_test = new CountMatrix(handler_test, 2.0);
         cm_v1b = new CountMatrix(handler_v1, 50000);
+        cm_s1 = new CountMatrix(handler_s1, 0.250);
+        cm_s1.setWindowWidth(10);
     }
 
 
@@ -304,6 +311,31 @@ public class CountMatrixTest {
 
         Interval interval = Interval.make(5808, 5812);
         assertEquals(5, cm.numPatterns(interval));
+    }
+
+
+    @Test
+    public void testFoodPatterns() throws Exception {
+        BehaviorHandlerI behavior = new TextBehaviorHandler("data/test/real_contacts.txt");
+        List<Interval> intervals = behavior.getIntervals("food");
+
+        cm_s1.setWindowWidth(10);
+
+        for (Interval interval : intervals) {
+            List<double[]> patterns = cm_s1.getPatterns(interval);
+            assertEquals(cm_s1.numPatterns(interval), patterns.size());
+
+            for (double[] pattern : patterns) {
+                cm_s1.setCurrentTime(interval.start());
+
+                boolean any = false;
+                while (cm_s1.getCurrentTime() <= interval.end() && !any) {
+                    double[] pB = cm_s1.getPattern(10);
+                    any = any || ArrayUtils.equals(pattern, pB);
+                }
+                assertTrue(any);
+            }
+        }
     }
 
 

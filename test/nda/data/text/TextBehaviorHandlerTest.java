@@ -23,15 +23,18 @@ import nda.data.Interval;
 public class TextBehaviorHandlerTest {
     private final static String filepath1 = "data/test/behaviors/test_contacts.txt";
     private final static String filepath2 = "data/test/behaviors/ge5_contacts.txt";
+    private final static String filepath3 = "data/real/ge4/ge4_contacts.txt";
 
     private BehaviorHandlerI b1;
     private BehaviorHandlerI b2;
+    private BehaviorHandlerI ge4_bh;
 
 
     @Before
     public void setUp() throws Exception {
         b1 = new TextBehaviorHandler(filepath1);
         b2 = new TextBehaviorHandler(filepath2);
+        ge4_bh = new TextBehaviorHandler(filepath3);
     }
 
 
@@ -80,5 +83,25 @@ public class TextBehaviorHandlerTest {
         assertEquals("food", b1.getLabel(5815));
         assertEquals("urchin", b1.getLabel(5828));
         assertEquals("brush", b1.getLabel(6293));
+    }
+
+
+    @Test
+    public void testGE4Contacts() {
+        for (String lb_1 : ge4_bh.getLabelSet()) {
+            List<Interval> intervals_1 = ge4_bh.getIntervals(lb_1);
+
+            for (String lb_2 : ge4_bh.getLabelSet()) {
+                if (lb_2.equals(lb_1)) continue;
+
+                List<Interval> intervals_2 = ge4_bh.getIntervals(lb_2);
+
+                for (Interval i1 : intervals_1)
+                    for (Interval i2 : intervals_2) {
+                        Interval i = i1.intersection(i2);
+                        assertTrue(i.isEmpty() || i.duration() == 0);
+                    }
+            }
+        }
     }
 }
