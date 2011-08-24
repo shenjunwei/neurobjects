@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 
@@ -24,6 +23,7 @@ import nda.data.SpikeHandlerI;
 import nda.data.SpikeRateMatrixI;
 import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
+import nda.util.FileUtils;
 import nda.util.Verbose;
 
 
@@ -77,7 +77,7 @@ public abstract class DatasetGenerator implements Verbose {
 
 
     /**
-     * Builds a Dataset from a single round.
+     * Builds a single round of a dataset.
      * 
      * This method generates 2 PatternHandler's (train and test).
      */
@@ -91,11 +91,12 @@ public abstract class DatasetGenerator implements Verbose {
         for (GeneratorSetup.Class class_attr : dataset.getClasses())
             labels.add(class_attr.getName());
 
-        String dataset_name = dataset.getName();
-        String trainSetName = String.format(
-                "%s_%02d_%s", dataset_name, round, "train");
-        String testSetName = String.format(
-                "%s_%02d_%s", dataset_name, round, "test");
+
+        String trainFileName = dataset.getGeneratedFileName("train", round);
+        String testFileName = dataset.getGeneratedFileName("test", round);
+
+        String trainSetName = FileUtils.parseFileName(trainFileName);
+        String testSetName = FileUtils.parseFileName(testFileName);
 
         PatternHandler trainSet = new PatternHandler(trainSetName, rateMatrix, labels);
         PatternHandler testSet = new PatternHandler(testSetName, rateMatrix, labels);
@@ -247,12 +248,10 @@ public abstract class DatasetGenerator implements Verbose {
     }
 
 
-    @SuppressWarnings("unchecked")
     protected SpikeRateMatrixI buildDatasetRateMatrix(GeneratorSetup.Dataset dataset)
     throws GenerationException {
-        List<String> filterList = (List<String>) dataset.getParameter("neurons");
-        String neuronFilter = StringUtils.join(filterList, ", ");
 
+        String neuronFilter = (String) dataset.getParameter("areas");
         SpikeHandlerI datasetHandler = globalSpikeHandler.withFilter(neuronFilter);
 
         double binSize = (Double) dataset.getParameter("bin_size");
