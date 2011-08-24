@@ -150,10 +150,11 @@ public class GeneratorSetup {
         List<Map<String, Object>> paramChoices = getParameterChoices();
         List<Object> datasetList = (List<Object>) topMap.get("datasets");
 
-        for (Object datasetObj : datasetList) {
-            Map<String, Object> datasetMap = (Map<String, Object>) datasetObj;
+        for (Map<String, Object> paramsMap : paramChoices) {
+            for (Object datasetObj : datasetList) {
+                Map<String, Object> datasetMap = (Map<String, Object>) datasetObj;
 
-            for (Map<String, Object> paramsMap : paramChoices) {
+
                 List<Dataset> list = Dataset.parseAll(topMap, datasetMap, paramsMap);
                 datasets.addAll(list);
             }
@@ -252,7 +253,11 @@ public class GeneratorSetup {
         }
 
         public String getName() {
-            return name;
+            return name + "_p" + paramsMap.get("_id");
+        }
+
+        public int getParameterChoiceId() {
+            return (Integer) paramsMap.get("_id");
         }
 
         public int getNumberRounds() {
@@ -276,16 +281,16 @@ public class GeneratorSetup {
             List<String> files = new ArrayList<String>();
 
             for (int round = 1; round <= numRounds; ++round) {
-                files.add(generatedFileName("train", round));
-                files.add(generatedFileName("test", round));
+                files.add(getGeneratedFileName("train", round));
+                files.add(getGeneratedFileName("test", round));
             }
 
             return files;
         }
 
-        public String generatedFileName(String set, int round) {
+        public String getGeneratedFileName(String set, int round) {
             return String.format("%s_p%d_r%d_%s.arff",
-                    getName(), paramsMap.get("_id"), round, set);
+                    name, paramsMap.get("_id"), round, set);
         }
     }
 

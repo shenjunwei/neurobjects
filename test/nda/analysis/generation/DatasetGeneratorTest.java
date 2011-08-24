@@ -96,7 +96,7 @@ public class DatasetGeneratorTest {
         GeneratorSetup.Class yesClass = ball_ds.getClasses().get(0);
         SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(ball_ds);
 
-        assertEquals("ge4_ball", ball_ds.getName());
+        assertEquals("ge4_ball_p1", ball_ds.getName());
         assertEquals("yes", yesClass.getName());
         assertEquals(1, yesClass.getLabels().size());
 
