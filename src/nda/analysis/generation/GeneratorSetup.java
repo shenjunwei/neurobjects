@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +101,42 @@ public class GeneratorSetup {
     }
 
 
+    /**
+     * @TODO Handle cases where other parameters, besides 'neurons', are composite
+     *       Should call a recursive function
+     */
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getParameterChoices() {
+        List<Map<String, Object>> paramChoices = new ArrayList<Map<String,Object>>();
+
+        Map<String, Object> paramsMap = (Map<String, Object>) topMap.get("params");
+        Object areaChoices = paramsMap.get("areas");
+
+        int choiceId = 1;
+
+        if (areaChoices instanceof List<?>) {
+            for (String area : (List<String>) areaChoices) {
+                Map<String, Object> choice = new HashMap<String, Object>();
+                choice.put("areas", area);
+
+                for (String paramName : paramsMap.keySet())
+                    if (!paramName.equals("areas"))
+                        choice.put(paramName, paramsMap.get(paramName));
+
+                choice.put("_id", choiceId++);
+                paramChoices.add(choice);
+            }
+
+            return paramChoices;
+        }
+        else {
+            paramsMap.put("_id", 1);
+            paramChoices.add(paramsMap);
+            return paramChoices;
+        }
+    }
+
+
     private String getDataDirectory() {
         String data_dir = (String) topMap.get("data_dir");
         return data_dir;
@@ -110,13 +147,16 @@ public class GeneratorSetup {
     private void parseDatasets() throws InvalidSetupFileException {
         datasets = new ArrayList<Dataset>();
 
+        List<Map<String, Object>> paramChoices = getParameterChoices();
         List<Object> datasetList = (List<Object>) topMap.get("datasets");
 
         for (Object datasetObj : datasetList) {
             Map<String, Object> datasetMap = (Map<String, Object>) datasetObj;
 
-            List<Dataset> list = Dataset.parseAll(topMap, datasetMap);
-            datasets.addAll(list);
+            for (Map<String, Object> paramsMap : paramChoices) {
+                List<Dataset> list = Dataset.parseAll(topMap, datasetMap, paramsMap);
+                datasets.addAll(list);
+            }
         }
     }
 
@@ -125,38 +165,40 @@ public class GeneratorSetup {
         private String name;
         private Map<String, Object> topMap;
         private Map<String, Object> datasetMap;
+        private Map<String, Object> paramsMap;
         private List<Class> classes;
 
         private static List<Dataset> parseAll(
                 Map<String, Object> topMap,
-                Map<String, Object> map) {
+                Map<String, Object> datasetMap,
+                Map<String, Object> paramsMap) {
 
-            if (map.containsKey("1_vs_n")) {
-                return parse1vsN(topMap, map);
-            }
-            else {
+            if (datasetMap.containsKey("1_vs_n"))
+                return parse1vsN(topMap, datasetMap, paramsMap);
+            else
                 throw new UnsupportedOperationException("Not yet implemented");
-            }
         }
 
         @SuppressWarnings("unchecked")
         private static List<Dataset> parse1vsN(
-                Map<String, Object> topMap, Map<String, Object> d_map) {
+                Map<String, Object> topMap,
+                Map<String, Object> datasetMap,
+                Map<String, Object> paramsMap) {
 
-            Map<String, Object> typeMap = (Map<String, Object>) d_map.get("1_vs_n");
+            Map<String, Object> typeMap = (Map<String, Object>) datasetMap.get("1_vs_n");
             List<String> labels = (List<String>) typeMap.get("labels");
 
             int n_labels = labels.size();
             List<Dataset> datasets = new ArrayList<Dataset>(n_labels);
 
-            double train_ratio = Double.valueOf(d_map.get("train_ratio").toString());
+            double train_ratio = Double.valueOf(datasetMap.get("train_ratio").toString());
             double class_ratio = Double.valueOf(typeMap.get("class_ratio").toString());
             int total_positives = (Integer) typeMap.get("total_positives");
 
             for (String pos_label : labels) {
                 String name;
-                if (d_map.containsKey("name"))
-                    name = (String) d_map.get("name");
+                if (datasetMap.containsKey("name"))
+                    name = (String) datasetMap.get("name");
                 else
                     name = (String) topMap.get("name");
                 name += "_" + pos_label;
@@ -164,8 +206,9 @@ public class GeneratorSetup {
                 Dataset dataset = new Dataset(name);
 
                 dataset.topMap = topMap;
-                dataset.datasetMap = d_map;
+                dataset.datasetMap = datasetMap;
                 dataset.classes = new ArrayList<Class>(n_labels);
+                dataset.paramsMap = paramsMap;
 
                 // Create the positive class
                 int pos_train_s = (int) Math.floor(total_positives * train_ratio);
@@ -220,17 +263,8 @@ public class GeneratorSetup {
             return (Double) datasetMap.get("train_ratio");
         }
 
-        @SuppressWarnings("unchecked")
         public Object getParameter(String parameter) {
-            Map<String,Object> localParams = (Map<String,Object>)datasetMap.get("params");
-
-            if (localParams != null && localParams.containsKey(parameter)) {
-                return localParams.get(parameter);
-            }
-            else {
-                Map<String,Object> g_params = (Map<String,Object>) topMap.get("params");
-                return g_params.get(parameter);
-            }
+            return paramsMap.get(parameter);
         }
 
         public List<Class> getClasses() {
@@ -242,15 +276,16 @@ public class GeneratorSetup {
             List<String> files = new ArrayList<String>();
 
             for (int round = 1; round <= numRounds; ++round) {
-                for (String set : new String[] { "train", "test" }) {
-                    String name = String.format("%s_%02d_%s.arff",
-                            getName(), round, set);
-
-                    files.add(name);
-                }
+                files.add(generatedFileName("train", round));
+                files.add(generatedFileName("test", round));
             }
 
             return files;
+        }
+
+        public String generatedFileName(String set, int round) {
+            return String.format("%s_p%d_r%d_%s.arff",
+                    getName(), paramsMap.get("_id"), round, set);
         }
     }
 

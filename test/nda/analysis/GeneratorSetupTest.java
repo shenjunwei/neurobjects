@@ -19,12 +19,13 @@ import nda.analysis.generation.GeneratorSetup;
  * @author Giuliano Vilela
  * @ingroup UnitTests
  */
-public class SetupTest {
+public class GeneratorSetupTest {
     private GeneratorSetup ge5_setup;
     private GeneratorSetup test_setup;
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
     private static String testSetupFilepath = "data/test/test_setup.yml";
+    private static String testSetupMPFilepath = "data/test/test_multiple_params.yml";
 
 
     @Before
@@ -120,7 +121,6 @@ public class SetupTest {
         assertEquals(1, ds_ball.getNumberRounds());
         assertEquals(0.8, ds_ball.getTrainRatio(), 1e-8);
         assertEquals(2, ds_ball.getClasses().size());
-        assertEquals("[HP, V]", ds_ball.getParameter("neurons").toString());
         assertEquals(0.250, (Double)ds_ball.getParameter("bin_size"), 1e-8);
         assertEquals(5, ((Integer)ds_ball.getParameter("window_width")).intValue());
 
@@ -129,7 +129,6 @@ public class SetupTest {
         assertEquals(1, ds_food.getNumberRounds());
         assertEquals(0.8, ds_food.getTrainRatio(), 1e-8);
         assertEquals(2, ds_food.getClasses().size());
-        assertEquals("[HP, V]", ds_food.getParameter("neurons").toString());
         assertEquals(0.250, (Double)ds_food.getParameter("bin_size"), 1e-8);
         assertEquals(5, ((Integer)ds_food.getParameter("window_width")).intValue());
     }
@@ -161,5 +160,28 @@ public class SetupTest {
         assertEquals(6, negClass.getNumberSamples());
         assertEquals(4, negClass.getNumberTrainSamples());
         assertEquals(2, negClass.getNumberTestSamples());
+    }
+
+
+    @Test
+    public void testMultipleParams() throws Exception {
+        GeneratorSetup test_mp = new GeneratorSetup(testSetupMPFilepath);
+
+        assertEquals(4, test_mp.getParameterChoices().size());
+        assertEquals("s2, s3", test_mp.getParameterChoices().get(1).get("areas"));
+        assertEquals("*", test_mp.getParameterChoices().get(3).get("areas"));
+        assertEquals(0.250, test_mp.getParameterChoices().get(0).get("bin_size"));
+        assertEquals(0.250, test_mp.getParameterChoices().get(1).get("bin_size"));
+        assertEquals(0.250, test_mp.getParameterChoices().get(2).get("bin_size"));
+        assertEquals(10, test_mp.getParameterChoices().get(0).get("window_width"));
+        assertEquals(10, test_mp.getParameterChoices().get(1).get("window_width"));
+        assertEquals(10, test_mp.getParameterChoices().get(2).get("window_width"));
+
+        assertEquals(16, test_mp.getDatasets().size());
+
+        int count = 0;
+        for (GeneratorSetup.Dataset dataset : test_mp.getDatasets())
+            count += dataset.getGeneratedFileNames().size();
+        assertEquals(16*10*2, count);
     }
 }
