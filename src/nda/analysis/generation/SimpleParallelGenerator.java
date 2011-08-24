@@ -71,9 +71,8 @@ public class SimpleParallelGenerator extends ParallelGenerator {
             results.remove(0);
 
             try {
-                List<PatternHandler> sets = completedResult.get();
-                writeFile(sets.get(0), outputDir);
-                writeFile(sets.get(1), outputDir);
+                for (PatternHandler data : completedResult.get())
+                    writeFile(data, outputDir);
 
                 showMessage("");
             }

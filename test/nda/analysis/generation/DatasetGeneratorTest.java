@@ -32,7 +32,7 @@ import nda.data.SpikeRateMatrixI;
 public class DatasetGeneratorTest {
 
     // Make the test reproducible
-    private static long RANDOM_SEED = 6667848180907283896L;
+    private static long RANDOM_SEED = 8146340101830722149L;
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -138,13 +138,6 @@ public class DatasetGeneratorTest {
 
                 for (int i = 0; i < trainRel.numInstances(); ++i) {
                     double[] pA = trainSet.getPattern(i);
-
-                    for (int j = 0; j < testRel.numInstances(); ++j) {
-                        double[] pB = testSet.getPattern(j);
-                        assertEquals(pA.length, pB.length);
-                        assertNotEquals(pA, pB);
-                    }
-
                     assertPatternBelongsToClass(generator, rateMatrix, class_attr, pA);
                 }
 
@@ -164,7 +157,7 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup.Dataset food_ds = null;
         for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets())
-            if (dataset.getName().equals("ge4_food_p2")) {
+            if (dataset.getName().equals("ge4_food_p1")) {
                 food_ds = dataset;
                 break;
             }
@@ -392,9 +385,3 @@ public class DatasetGeneratorTest {
         assertTrue(any);
     }
 }
-
-
-
-
-
-

@@ -71,16 +71,14 @@ public abstract class ParallelGenerator extends DatasetGenerator {
 
 
     protected List<Callable<List<PatternHandler>>> buildTasks(GeneratorSetup setup) {
-        int estimate = setup.getDatasets().size() * 6;
+        int estimate = setup.getDatasets().size() * 30;
 
         List<Callable<List<PatternHandler>>> tasks =
             new ArrayList<Callable<List<PatternHandler>>>(estimate);
 
         for (GeneratorSetup.Dataset dataset : setup.getDatasets()) {
-            for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
-                GeneratorTask task = new GeneratorTask(dataset, round);
-                tasks.add(task);
-            }
+            GeneratorTask task = new GeneratorTask(dataset);
+            tasks.add(task);
         }
 
         return tasks;
@@ -89,16 +87,14 @@ public abstract class ParallelGenerator extends DatasetGenerator {
 
     protected class GeneratorTask implements Callable<List<PatternHandler>> {
         private GeneratorSetup.Dataset dataset;
-        private int round;
 
-        public GeneratorTask(GeneratorSetup.Dataset _dataset, int _round) {
+        public GeneratorTask(GeneratorSetup.Dataset _dataset) {
             dataset = _dataset;
-            round = _round;
         }
 
         @Override
         public List<PatternHandler> call() throws GenerationException {
-            return buildDatasetSingleRound(dataset, round);
+            return buildDataset(dataset);
         }
     }
 }
