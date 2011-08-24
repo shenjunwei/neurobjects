@@ -63,9 +63,9 @@ public class SQLScriptReport implements EvaluationReportI {
 
                     /* id */
                     row.add("auto");
-                    /* area */
+                    /* neurons */
                     row.add(result.getParameter("areas").toString());
-                    /* animal */
+                    /* subject */
                     row.add(dataset.getSetup().getName());
                     /* object */
                     row.add(positiveLabel);
@@ -73,14 +73,14 @@ public class SQLScriptReport implements EvaluationReportI {
                     row.add(roundNumberStr);
                     /* classifier */
                     row.add(n_classifier.getName());
-                    /* num_instances */
-                    row.add("" + (int) evaluation.numInstances());
-                    /* correct */
-                    row.add("" + (int) evaluation.correct());
                     /* bin_size */
                     row.add("" + (int) (1000*(Double)result.getParameter("bin_size")));
                     /* window_size */
                     row.add("" + result.getParameter("window_width"));
+                    /* num_instances */
+                    row.add("" + (int) evaluation.numInstances());
+                    /* correct */
+                    row.add("" + (int) evaluation.correct());
                     /* auroc */
                     row.add("" + evaluation.weightedAreaUnderROC());
                     /* kappa */
