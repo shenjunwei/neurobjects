@@ -38,5 +38,6 @@ datasets:
 
     1_vs_n:
       labels: [ball, brush, urchin]
-      class_ratio: 3
-      total_positives: 5
+      class_ratio: 2
+      total_positives: 4
+

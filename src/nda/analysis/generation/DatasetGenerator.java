@@ -3,6 +3,7 @@ package nda.analysis.generation;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +37,7 @@ import nda.util.Verbose;
 public abstract class DatasetGenerator implements Verbose {
     protected GeneratorSetup setup;
     protected SpikeHandlerI globalSpikeHandler;
-    protected BehaviorHandlerI behaviorHandler;
+    protected BehaviorHandlerI globalBehaviorHandler;
     protected RandomData randomData;
     protected boolean verbose;
 
@@ -122,70 +123,55 @@ public abstract class DatasetGenerator implements Verbose {
             PatternHandler trainSet, PatternHandler testSet)
     throws GenerationException {
 
-        int totalPatterns = 0;
-        for (String label : class_attr.getLabels())
-            for (Interval interval : behaviorHandler.getIntervals(label))
-                totalPatterns += rateMatrix.numPatterns(interval);
+        int numLabels = class_attr.getLabels().size();
+        int totalTrain = class_attr.getNumberTrainSamples();
+        int totalTest = class_attr.getNumberTestSamples();
 
-        int numTrain = class_attr.getNumberTrainSamples();
-        int numTest = class_attr.getNumberTestSamples();
+        int numTrainPerLabel = totalTrain / numLabels;
+        int numTrainResidual = totalTrain % numLabels;
 
-        if (numTrain + numTest > totalPatterns) {
-            throw new GenerationException(String.format(
-                    "Can't sample %d train patterns and %d test patterns from " +
-                    "class %s (%d patterns from labels %s) of dataset %s",
-                    numTrain, numTest, class_attr.getName(), totalPatterns,
-                    ArrayUtils.toString(class_attr.getLabels().toArray()),
-                    class_attr.getDataset().getName()));
-        }
+        int numTestPerLabel = totalTest / numLabels;
+        int numTestResidual = totalTest % numLabels;
 
-        int[][] inds = sampleTrainTest(totalPatterns, numTrain, numTest);
-        int[] trainInds = inds[0];
-        int[] testInds = inds[1];
+        List<String> labels = class_attr.getLabels();
+        Object[] residualTrainLabels = randomSample(labels, numTrainResidual);
+        Object[] residualTestLabels = randomSample(labels, numTestResidual);
 
+        for (String label : labels) {
+            List<double[]> patterns = new ArrayList<double[]>();
 
-        /**
-         * TODO: remove this
-         */
+            for (Interval interval : globalBehaviorHandler.getIntervals(label))
+                patterns.addAll(rateMatrix.getPatterns(interval));
 
-        List<double[]> all_patterns = new ArrayList<double[]>();
-        for (String label : class_attr.getLabels())
-            for (Interval interval : behaviorHandler.getIntervals(label))
-                all_patterns.addAll(rateMatrix.getPatterns(interval));
+            int numTrain = numTrainPerLabel;
+            int numTest = numTestPerLabel;
+            int totalForLabel = patterns.size();
 
-        for (int i : trainInds) {
-            double[] pattern = all_patterns.get(i);
-            trainSet.addPattern(pattern, class_attr.getName());
-        }
+            if (ArrayUtils.contains(residualTrainLabels, label)) numTrain++;
+            if (ArrayUtils.contains(residualTestLabels, label)) numTest++;
 
-        for (int i : testInds) {
-            double[] pattern = all_patterns.get(i);
-            testSet.addPattern(pattern, class_attr.getName());
-        }
+            if (numTrain + numTest > totalForLabel) {
+                throw new GenerationException(String.format(
+                        "Can't sample %d train patterns and %d test patterns from " +
+                        "label %s of dataset %s (it only has %d patterns)",
+                        numTrain, numTest, label,
+                        class_attr.getDataset().getName(), totalForLabel));
+            }
 
-        /*Map<String, List<Integer>> trainColumns = sampleInstancesColumns(
-                rateMatrix, class_attr, trainInds);
+            int[][] inds = sampleTrainTest(totalForLabel, numTrain, numTest);
+            int[] trainInds = inds[0];
+            int[] testInds = inds[1];
 
-        for (List<Integer> columns : trainColumns.values()) {
-            for (Integer col : columns) {
-                rateMatrix.setCurrentColumn(col);
-                double[] pattern = rateMatrix.iterator().next();
-
+            for (int i : trainInds) {
+                double[] pattern = patterns.get(i);
                 trainSet.addPattern(pattern, class_attr.getName());
             }
-        }
 
-        Map<String, List<Integer>> testColumns = sampleInstancesColumns(
-                rateMatrix, class_attr, testInds);
-
-        for (List<Integer> columns : testColumns.values()) {
-            for (Integer col : columns) {
-                rateMatrix.setCurrentColumn(col);
-                double[] pattern = rateMatrix.iterator().next();
-
+            for (int i : testInds) {
+                double[] pattern = patterns.get(i);
                 testSet.addPattern(pattern, class_attr.getName());
             }
-        }*/
+        }
     }
 
 
@@ -259,7 +245,7 @@ public abstract class DatasetGenerator implements Verbose {
             globalSpikeHandler = new TextSpikeHandler(spikeDir);
 
             String behaviorFilepath = setup.getContactsFilepath();
-            behaviorHandler = new TextBehaviorHandler(behaviorFilepath);
+            globalBehaviorHandler = new TextBehaviorHandler(behaviorFilepath);
         } catch (Exception e) {
             throw new GenerationException(e);
         }
@@ -318,6 +304,14 @@ public abstract class DatasetGenerator implements Verbose {
         Arrays.sort(train_inds);
         Arrays.sort(test_inds);
         return new int[][] { train_inds, test_inds };
+    }
+
+
+    protected Object[] randomSample(Collection<? extends Object> objects, int k) {
+        if (k == 0)
+            return new Object[0];
+        else
+            return randomData.nextSample(objects, k);
     }
 
 
