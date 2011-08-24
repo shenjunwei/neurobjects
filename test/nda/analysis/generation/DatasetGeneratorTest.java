@@ -91,8 +91,8 @@ public class DatasetGeneratorTest {
         assertNotNull(generator.globalSpikeHandler);
         assertEquals(10, generator.globalSpikeHandler.getNumberOfSpikeTrains());
 
-        assertNotNull(generator.behaviorHandler);
-        assertEquals(4, generator.behaviorHandler.getLabelSet().size());
+        assertNotNull(generator.globalBehaviorHandler);
+        assertEquals(4, generator.globalBehaviorHandler.getLabelSet().size());
     }
 
 
@@ -179,7 +179,7 @@ public class DatasetGeneratorTest {
         assertEquals(yesClass.getNumberTrainSamples(), trainSet.size());
         assertEquals(yesClass.getNumberTestSamples(), testSet.size());
 
-        BehaviorHandlerI behavior = generator.behaviorHandler;
+        BehaviorHandlerI behavior = generator.globalBehaviorHandler;
         List<Interval> intervals = behavior.getIntervals("food");
         assertEquals(14, intervals.size());
 
@@ -375,7 +375,7 @@ public class DatasetGeneratorTest {
 
         loop:
             for (String label : class_attr.getLabels())
-                for (Interval interval : generator.behaviorHandler.getIntervals(label))
+                for (Interval interval : generator.globalBehaviorHandler.getIntervals(label))
                     for (double[] p2 : rateMatrix.getPatterns(interval))
                         if (nda.util.ArrayUtils.equals(pattern, p2)) {
                             any = true;
