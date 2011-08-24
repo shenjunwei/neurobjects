@@ -85,4 +85,15 @@ public final class ArrayUtils {
 
         return str + "]";
     }
+
+    public static boolean equals(double[] a, double[] b) {
+        if (a.length != b.length)
+            return false;
+
+        for (int i = 0; i < a.length; ++i)
+            if (Double.compare(a[i], b[i]) != 0)
+                return false;
+
+        return true;
+    }
 }

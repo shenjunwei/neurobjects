@@ -4,10 +4,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -145,7 +143,27 @@ public abstract class DatasetGenerator implements Verbose {
         int[] trainInds = inds[0];
         int[] testInds = inds[1];
 
-        Map<String, List<Integer>> trainColumns = sampleInstancesColumns(
+
+        /**
+         * TODO: remove this
+         */
+
+        List<double[]> all_patterns = new ArrayList<double[]>();
+        for (String label : class_attr.getLabels())
+            for (Interval interval : behaviorHandler.getIntervals(label))
+                all_patterns.addAll(rateMatrix.getPatterns(interval));
+
+        for (int i : trainInds) {
+            double[] pattern = all_patterns.get(i);
+            trainSet.addPattern(pattern, class_attr.getName());
+        }
+
+        for (int i : testInds) {
+            double[] pattern = all_patterns.get(i);
+            testSet.addPattern(pattern, class_attr.getName());
+        }
+
+        /*Map<String, List<Integer>> trainColumns = sampleInstancesColumns(
                 rateMatrix, class_attr, trainInds);
 
         for (List<Integer> columns : trainColumns.values()) {
@@ -167,7 +185,7 @@ public abstract class DatasetGenerator implements Verbose {
 
                 testSet.addPattern(pattern, class_attr.getName());
             }
-        }
+        }*/
     }
 
 
@@ -184,7 +202,7 @@ public abstract class DatasetGenerator implements Verbose {
      *                 for interval in behaviorHandler.getIntervals(label)
      *                 for label in class_attr.getLabels())
      */
-    protected Map<String, List<Integer>> sampleInstancesColumns(
+    /*protected Map<String, List<Integer>> sampleInstancesColumns(
             SpikeRateMatrixI rateMatrix,
             GeneratorSetup.Class class_attr, int[] sample_indexes) {
 
@@ -232,7 +250,7 @@ public abstract class DatasetGenerator implements Verbose {
             }
 
         return sample;
-    }
+    }*/
 
 
     protected void loadHandlers() throws GenerationException {

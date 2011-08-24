@@ -155,7 +155,7 @@ public class GeneratorSetup {
                 Map<String, Object> datasetMap = (Map<String, Object>) datasetObj;
 
 
-                List<Dataset> list = Dataset.parseAll(topMap, datasetMap, paramsMap);
+                List<Dataset> list = Dataset.parseAll(topMap, datasetMap, paramsMap, this);
                 datasets.addAll(list);
             }
         }
@@ -168,14 +168,16 @@ public class GeneratorSetup {
         private Map<String, Object> datasetMap;
         private Map<String, Object> paramsMap;
         private List<Class> classes;
+        private GeneratorSetup setup;
 
         private static List<Dataset> parseAll(
                 Map<String, Object> topMap,
                 Map<String, Object> datasetMap,
-                Map<String, Object> paramsMap) {
+                Map<String, Object> paramsMap,
+                GeneratorSetup setup) {
 
             if (datasetMap.containsKey("1_vs_n"))
-                return parse1vsN(topMap, datasetMap, paramsMap);
+                return parse1vsN(topMap, datasetMap, paramsMap, setup);
             else
                 throw new UnsupportedOperationException("Not yet implemented");
         }
@@ -184,7 +186,8 @@ public class GeneratorSetup {
         private static List<Dataset> parse1vsN(
                 Map<String, Object> topMap,
                 Map<String, Object> datasetMap,
-                Map<String, Object> paramsMap) {
+                Map<String, Object> paramsMap,
+                GeneratorSetup setup) {
 
             Map<String, Object> typeMap = (Map<String, Object>) datasetMap.get("1_vs_n");
             List<String> labels = (List<String>) typeMap.get("labels");
@@ -210,6 +213,7 @@ public class GeneratorSetup {
                 dataset.datasetMap = datasetMap;
                 dataset.classes = new ArrayList<Class>(n_labels);
                 dataset.paramsMap = paramsMap;
+                dataset.setup = setup;
 
                 // Create the positive class
                 int pos_train_s = (int) Math.floor(total_positives * train_ratio);
@@ -278,6 +282,10 @@ public class GeneratorSetup {
 
         public List<Class> getClasses() {
             return classes;
+        }
+
+        public GeneratorSetup getSetup() {
+            return setup;
         }
 
         public List<String> getGeneratedFileNames() {
