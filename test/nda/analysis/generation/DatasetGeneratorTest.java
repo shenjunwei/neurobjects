@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import weka.core.Instances;
 
 import nda.analysis.PatternHandler;
+import nda.data.BehaviorHandlerI;
 import nda.data.Interval;
 import nda.data.SpikeRateMatrixI;
 
@@ -153,6 +155,50 @@ public class DatasetGeneratorTest {
             }
         }
     }
+
+
+    @Test
+    public void testAddInstancesFromGE4Food() throws Exception {
+        MockDatasetGenerator generator = ge4_generator;
+        generator.loadHandlers();
+
+        GeneratorSetup.Dataset food_ds = null;
+        for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets())
+            if (dataset.getName().equals("ge4_food_p2")) {
+                food_ds = dataset;
+                break;
+            }
+
+        assertNotNull(food_ds);
+
+        Set<String> classNames = new HashSet<String>();
+        for (GeneratorSetup.Class class_attr : food_ds.getClasses())
+            classNames.add(class_attr.getName());
+
+        GeneratorSetup.Class yesClass = food_ds.getClasses().get(0);
+        assertEquals(1, yesClass.getLabels().size());
+
+        SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(food_ds);
+        PatternHandler trainSet = new PatternHandler("train", rateMatrix, classNames);
+        PatternHandler testSet = new PatternHandler("test", rateMatrix, classNames);
+
+        generator.addInstancesFromClass(yesClass, rateMatrix, trainSet, testSet);
+        assertEquals(yesClass.getNumberTrainSamples(), trainSet.size());
+        assertEquals(yesClass.getNumberTestSamples(), testSet.size());
+
+        BehaviorHandlerI behavior = generator.behaviorHandler;
+        List<Interval> intervals = behavior.getIntervals("food");
+        assertEquals(14, intervals.size());
+
+        List<double[]> patterns = new ArrayList<double[]>();
+        patterns.addAll(trainSet.getPatterns("yes"));
+        patterns.addAll(testSet.getPatterns("yes"));
+        assertEquals(trainSet.size() + testSet.size(), patterns.size());
+
+        for (double[] pattern : patterns)
+            assertPatternBelongsToClass(generator, rateMatrix, yesClass, pattern);
+    }
+
 
 
     /**
