@@ -41,8 +41,10 @@ public class CSVReport implements EvaluationReportI {
 
         List<String> headers = new ArrayList<String>();
         headers.add("dataset");
-        headers.add("param_id");
         headers.add("round");
+        headers.add("areas");
+        headers.add("bin_size");
+        headers.add("window_width");
         headers.add("classifier_id");
         headers.add("num_instances");
         headers.add("correct");
@@ -75,8 +77,10 @@ public class CSVReport implements EvaluationReportI {
                 List<String> line = new ArrayList<String>(headers.size());
 
                 line.add(datasetName);
-                line.add("" + dataset.getParameterChoiceId());
                 line.add(roundNumberStr);
+                line.add(result.getParameter("areas").toString());
+                line.add(result.getParameter("bin_size").toString());
+                line.add(result.getParameter("window_width").toString());
                 line.add(n_classifier.getName());
                 line.add("" + ((int) evaluation.numInstances()));
                 line.add("" + ((int) evaluation.correct()));
