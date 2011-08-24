@@ -171,11 +171,15 @@ public class CountMatrix implements SpikeRateMatrixI {
     @Override
     public List<double[]> getPatterns(Interval interval) {
         interval = interval.intersection(getInterval());
-        setCurrentTime(interval.start());
-
         int numPatterns = numPatterns(interval);
+
+        if (numPatterns == 0) {
+            return new ArrayList<double[]>();
+        }
+
         List<double[]> patterns = new ArrayList<double[]>(numPatterns);
 
+        setCurrentTime(interval.start());
         for (double[] pattern : this) {
             if (patterns.size() == numPatterns)
                 break;
@@ -184,42 +188,23 @@ public class CountMatrix implements SpikeRateMatrixI {
         }
 
         return patterns;
-
-        /*
-        interval = interval.intersection(histogram.getInterval());
-        setCurrentTime(interval.start());
-
-        int estimate = numPatterns(cursor_width);
-        List<double[]> patterns = new ArrayList<double[]>(estimate);
-
-        Iterator<double[]> it = iterator();
-
-        while (it.hasNext()) {
-            int pattern_end_column = getCurrentColumn() + getWindowWidth() - 1;
-            double pattern_end_time = histogram.getTimeForBin(pattern_end_column);
-
-            if (pattern_end_time > interval.end())
-                break;
-            else
-                patterns.add(it.next());
-        }
-
-        return patterns;
-         */
     }
 
 
     @Override
     public int numPatterns(Interval interval) {
         interval = interval.intersection(getInterval());
-
         if (interval.isEmpty())
             return 0;
 
-        int st_bin = histogram.getBinFor(interval.start());
-        int end_bin = histogram.getBinFor(interval.end());
+        try {
+            int st_bin = histogram.getBinFor(interval.start());
+            int end_bin = histogram.getBinFor(interval.end());
 
-        return Math.max(0, end_bin - st_bin - cursor_width + 2);
+            return Math.max(0, end_bin - st_bin - cursor_width + 2);
+        } catch (IllegalArgumentException e) {
+            return 0;
+        }
 
         /*
         int count = 0;
