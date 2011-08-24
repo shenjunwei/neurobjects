@@ -29,6 +29,9 @@ public abstract class DatasetEvaluator implements Verbose {
     public abstract List<EvaluationResult> evaluate() throws EvaluationException;
 
 
+    /**
+     * Evaluate a single round of a dataset
+     */
     protected EvaluationResult evaluate(
             GeneratorSetup.Dataset dataset,
             Instances trainData, Instances testData)

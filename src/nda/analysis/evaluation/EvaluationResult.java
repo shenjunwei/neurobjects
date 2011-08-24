@@ -11,6 +11,7 @@ import nda.analysis.generation.GeneratorSetup;
 
 
 /**
+ * Result of the evaluation of a single round of a dataset.
  * 
  * @author Giuliano Vilela
  */
