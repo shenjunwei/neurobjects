@@ -112,4 +112,9 @@ public class EvaluationResult {
     public String getTestSetName() {
         return testSetName;
     }
+
+
+    public Object getParameter(String paramName) {
+        return dataset.getParameter(paramName);
+    }
 }
