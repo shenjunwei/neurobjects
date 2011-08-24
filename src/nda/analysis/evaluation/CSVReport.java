@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
-import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -44,49 +41,52 @@ public class CSVReport implements EvaluationReportI {
 
         List<String> headers = new ArrayList<String>();
         headers.add("dataset");
+        headers.add("param_id");
         headers.add("round");
         headers.add("classifier_id");
-        headers.add("classifiers_options");
+        headers.add("num_instances");
         headers.add("correct");
-        headers.add("incorrect");
-        headers.add("correct_pct");
+        headers.add("weighted_auroc");
+        headers.add("kappa");
 
-        GeneratorSetup.Dataset dataset = results.get(0).getDataset();
-        int numClasses = dataset.getClasses().size();
+        GeneratorSetup.Dataset sampleDataset = results.get(0).getDataset();
+        int numClasses = sampleDataset.getClasses().size();
 
-        for (GeneratorSetup.Class cls : dataset.getClasses()) {
+        for (GeneratorSetup.Class cls : sampleDataset.getClasses()) {
             String name = cls.getName();
-            headers.add(name + "_area_under_roc");
-            headers.add(name + "_false_positives");
-            headers.add(name + "_false_negatives");
+            headers.add(name + "_fp");
+            headers.add(name + "_fn");
+            headers.add(name + "_fmeasure");
         }
 
         writeLine(csv, headers);
 
         for (EvaluationResult result : results) {
+            GeneratorSetup.Dataset dataset = result.getDataset();
+
             String trainSetName = result.getTrainSetName();
-            String datasetName = getDatasetName(trainSetName);
-            String roundNumber = getRoundNumber(trainSetName);
+            String datasetName = dataset.getSetName();
+            String roundNumberStr = getRoundNumber(trainSetName);
 
             for (int i = 0; i < result.numEvaluations(); ++i) {
                 NamedClassifier n_classifier = result.getClassifiers().get(i);
-                Classifier classifier = n_classifier.getClassifier();
                 Evaluation evaluation = result.getModelEvaluations().get(i);
 
                 List<String> line = new ArrayList<String>(headers.size());
 
                 line.add(datasetName);
-                line.add(roundNumber);
+                line.add("" + dataset.getParameterChoiceId());
+                line.add(roundNumberStr);
                 line.add(n_classifier.getName());
-                line.add(StringUtils.join(classifier.getOptions(), ' ').trim());
+                line.add("" + ((int) evaluation.numInstances()));
                 line.add("" + ((int) evaluation.correct()));
-                line.add("" + ((int) evaluation.incorrect()));
-                line.add("" + evaluation.pctCorrect());
+                line.add("" + evaluation.weightedAreaUnderROC());
+                line.add("" + evaluation.kappa());
 
                 for (int j = 0; j < numClasses; ++j) {
-                    line.add("" + evaluation.areaUnderROC(j));
                     line.add("" + (int) evaluation.numFalsePositives(j));
                     line.add("" + (int) evaluation.numFalseNegatives(j));
+                    line.add("" + evaluation.fMeasure(j));
                 }
 
                 writeLine(csv, line);
@@ -106,20 +106,11 @@ public class CSVReport implements EvaluationReportI {
     }
 
 
-    private static String getDatasetName(String  trainSetName) {
-        int last_underscore = trainSetName.lastIndexOf('_');
-        int p_underscore = trainSetName.lastIndexOf('_', last_underscore - 1);
-
-        String datasetName = trainSetName.substring(0, p_underscore);
-        return datasetName;
-    }
-
-
     private static String getRoundNumber(String trainSetName) {
         int last_underscore = trainSetName.lastIndexOf('_');
         int p_underscore = trainSetName.lastIndexOf('_', last_underscore - 1);
 
-        String roundString = trainSetName.substring(p_underscore+1, last_underscore);
+        String roundString = trainSetName.substring(p_underscore+2, last_underscore);
         return roundString;
     }
 }

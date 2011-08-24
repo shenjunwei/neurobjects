@@ -252,6 +252,10 @@ public class GeneratorSetup {
                     datasetMap, topMap, classes);
         }
 
+        public String getSetName() {
+            return name;
+        }
+
         public String getName() {
             return name + "_p" + paramsMap.get("_id");
         }
