@@ -2,7 +2,8 @@ name: ge5
 data_dir: data/real/ge5
 
 params:
-  neurons: [S1, HP, V]
+  areas:
+    - S1, HP, V
   bin_size: 0.250
   window_step: 1
   window_width: 2

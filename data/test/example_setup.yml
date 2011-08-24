@@ -15,7 +15,8 @@ output_dir: data/test/example_datasets
 # in this scope, it becomes global
 # can be shadowed by a dataset-local "params" definition
 params:
-  neurons: [HP, V]
+  areas:
+    - HP, V
   bin_size: 0.250  # must not be an integer
   window_width: 5
 

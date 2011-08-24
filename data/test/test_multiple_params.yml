@@ -1,0 +1,22 @@
+name: ge4
+data_dir: data/real/ge4/
+
+params:
+  areas:
+    - s1
+    - s2, s3
+    - s4, s5
+    - '*'
+  bin_size: 0.250
+  window_width: 10
+
+
+datasets:
+  - name: ge4
+    rounds: 10
+    train_ratio: 0.8
+
+    1_vs_n:
+      labels: [ball, brush, food, urchin]
+      class_ratio: 2
+      total_positives: 70
