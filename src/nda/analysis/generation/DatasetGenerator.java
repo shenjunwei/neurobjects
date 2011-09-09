@@ -70,8 +70,9 @@ public abstract class DatasetGenerator implements Verbose {
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
         // We can only reuse the rateMatrix between rounds if there is no
-        // neuron dropping
-        if (dataset.getParameter("neuron_dropping") == null) {
+        // neuron dropping or surrogates
+        if (dataset.getParameter("neuron_drop") == null &&
+                dataset.getParameter("surrogate") == null) {
             SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
 
             for (int round = 1; round <= dataset.getNumberRounds(); ++round)
@@ -192,70 +193,6 @@ public abstract class DatasetGenerator implements Verbose {
     }
 
 
-    /**
-     * Map label -> List <column indices in rateMatrix>
-     * 
-     * Samples number patterns from rateMatrix, only considering labels from
-     * class_attr.getLabels().
-     * 
-     * @param rateMatrix
-     * @param class_attr
-     * @param sample_indexes Indexes from randomSample(total, K), where total =
-     *          sum (rateMatrix.numPatterns(interval)
-     *                 for interval in behaviorHandler.getIntervals(label)
-     *                 for label in class_attr.getLabels())
-     */
-    /*protected Map<String, List<Integer>> sampleInstancesColumns(
-            SpikeRateMatrixI rateMatrix,
-            GeneratorSetup.Class class_attr, int[] sample_indexes) {
-
-        List<String> labels = class_attr.getLabels();
-
-        Map<String,List<Integer>> sample =
-            new HashMap<String,List<Integer>>();
-
-        int numInstances = sample_indexes.length;
-
-        for (String label : labels)
-            sample.put(label, new ArrayList<Integer>(numInstances));
-
-        int sample_p = 0;
-        int seen = 0;
-
-        loop:
-            for (String label : labels) {
-                List<Interval> intervals = behaviorHandler.getIntervals(label);
-
-                int intervals_p = 0;
-                while (intervals_p < intervals.size()) {
-                    Interval interval = intervals.get(intervals_p);
-
-                    if (sample_p == sample_indexes.length)
-                        break loop;
-
-                    int next_sz = rateMatrix.numPatterns(interval);
-                    int next_ind_sample = sample_indexes[sample_p];
-
-                    if (next_ind_sample < seen + next_sz) {
-                        int real_ind = next_ind_sample - seen;
-                        int column = getPatternColumn(rateMatrix, interval, real_ind);
-
-                        List<Integer> list = sample.get(label);
-                        list.add(column);
-
-                        sample_p++;
-                    }
-                    else {
-                        intervals_p++;
-                        seen += next_sz;
-                    }
-                }
-            }
-
-        return sample;
-    }*/
-
-
     protected void loadHandlers() throws GenerationException {
         try {
             String spikeDir = setup.getSpikesDirectory();
@@ -281,9 +218,21 @@ public abstract class DatasetGenerator implements Verbose {
         CountMatrix rateMatrix = new CountMatrix(datasetHandler, binSize);
         rateMatrix.setWindowWidth(window_width);
 
-        if (dataset.getParameter("neuron_dropping") != null) {
-            int numDrop = (Integer) dataset.getParameter("neuron_dropping");
+        if (dataset.getParameter("num_drop") != null) {
+            int numDrop = (Integer) dataset.getParameter("num_drop");
             rateMatrix = QualityTests.withNeuronDrop(randomData, rateMatrix, numDrop);
+        }
+        else if (dataset.getParameter("num_surrogate") != null) {
+            int numSurrogates = (Integer) dataset.getParameter("num_surrogate");
+            String type = (String) dataset.getParameter("surrogate_type");
+
+            if (type.equals("uniform")) {
+                rateMatrix = QualityTests.withUniformSurrogates(
+                        randomData, rateMatrix, numSurrogates);
+            }
+            else {
+                throw new GenerationException("Unknown surrogate type: " + type);
+            }
         }
 
         return rateMatrix;

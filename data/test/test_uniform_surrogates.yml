@@ -1,4 +1,4 @@
-name: test_dropping
+name: test_uniform_surrogates
 spikes_dir: data/test/spikes/
 contacts_file: data/test/real_contacts.txt
 
@@ -7,7 +7,7 @@ params:
 
   bin_size: 0.250
   window_width: 10
-  neuron_drop: 0.8
+  surrogate: uniform
 
 datasets:
   - name: dataset_name
@@ -15,7 +15,6 @@ datasets:
     train_ratio: 0.8
 
     1_vs_n:
-      labels: [ball, brush, food, urchin]
+      labels: [ball, food, urchin]
       class_ratio: 2
       total_positives: 3
-

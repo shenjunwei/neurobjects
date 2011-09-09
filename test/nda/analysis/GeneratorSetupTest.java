@@ -2,6 +2,7 @@ package nda.analysis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
@@ -25,12 +26,14 @@ public class GeneratorSetupTest {
     private GeneratorSetup ge5_setup;
     private GeneratorSetup test_setup;
     private GeneratorSetup test_drop;
+    private GeneratorSetup test_uniform_sur;
 
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
     private static String testSetupFilepath = "data/test/test_setup.yml";
     private static String testSetupMPFilepath = "data/test/test_multiple_params.yml";
     private static String dropSetupFilepath = "data/test/test2_dropping.yml";
+    private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
 
 
     @Before
@@ -38,6 +41,7 @@ public class GeneratorSetupTest {
         ge5_setup = new GeneratorSetup(ge5SetupFilepath);
         test_setup = new GeneratorSetup(testSetupFilepath);
         test_drop = new GeneratorSetup(dropSetupFilepath);
+        test_uniform_sur = new GeneratorSetup(surrogateSetupFilepath);
     }
 
 
@@ -193,7 +197,7 @@ public class GeneratorSetupTest {
 
 
     @Test
-    public void testNeuronDroppingSetup() throws Exception {
+    public void testNeuronDropSetup() {
         assertEquals(40, test_drop.getDatasets().size());
 
         String[] ps = { "p1", "p2", "p3" };
@@ -207,10 +211,38 @@ public class GeneratorSetupTest {
                     break;
                 }
             }
+
+            assertNotNull(dataset.getParameter("num_drop"));
         }
 
         assertEquals((Integer) 12, count.get("p1"));
         assertEquals((Integer) 12, count.get("p2"));
         assertEquals((Integer) 16, count.get("p3"));
+    }
+
+
+    @Test
+    public void testUniformSurrogateSetup() {
+        assertEquals(30, test_uniform_sur.getDatasets().size());
+
+        String[] ps = { "p1", "p2", "p3" };
+        Map<String, Integer> count = new HashMap<String, Integer>();
+
+        for (String p : ps) count.put(p, 0);
+        for (GeneratorSetup.Dataset dataset : test_uniform_sur.getDatasets()) {
+            for (String p : ps) {
+                if (dataset.getName().contains(p)) {
+                    count.put(p, count.get(p) + 1);
+                    break;
+                }
+            }
+
+            assertNotNull(dataset.getParameter("num_surrogate"));
+            assertEquals("uniform", dataset.getParameter("surrogate_type"));
+        }
+
+        assertEquals((Integer) 9, count.get("p1"));
+        assertEquals((Integer) 9, count.get("p2"));
+        assertEquals((Integer) 12, count.get("p3"));
     }
 }

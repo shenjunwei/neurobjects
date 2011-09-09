@@ -176,7 +176,7 @@ public class GeneratorSetup {
                 Map<String, Object> topMap,
                 Map<String, Object> datasetMap,
                 Map<String, Object> paramsMap,
-                GeneratorSetup setup) {
+                GeneratorSetup setup) throws InvalidSetupFileException {
 
             if (datasetMap.containsKey("1_vs_n"))
                 return parse1vsN(topMap, datasetMap, paramsMap, setup);
@@ -189,7 +189,7 @@ public class GeneratorSetup {
                 Map<String, Object> topMap,
                 Map<String, Object> datasetMap,
                 Map<String, Object> paramsMap,
-                GeneratorSetup setup) {
+                GeneratorSetup setup) throws InvalidSetupFileException {
 
             Map<String, Object> typeMap = (Map<String, Object>) datasetMap.get("1_vs_n");
             List<String> labels = (List<String>) typeMap.get("labels");
@@ -240,29 +240,40 @@ public class GeneratorSetup {
                 dataset.classes.add(positiveClass);
                 dataset.classes.add(negativeClass);
 
+                boolean doNeuronDrop = paramsMap.containsKey("neuron_drop");
+                boolean doSurrogate = paramsMap.containsKey("surrogate");
+
+                if (doNeuronDrop && doSurrogate) {
+                    throw new InvalidSetupFileException("Can't do neuron dropping and surrogates");
+                }
                 // Generate extra datasets for neuron dropping
-                if (paramsMap.containsKey("neuron_dropping")) {
+                else if (doNeuronDrop || doSurrogate) {
                     String dir = setup.getSpikesDirectory();
                     String filter = (String) dataset.getParameter("areas");
-                    double dropLimit = (Double) paramsMap.get("neuron_dropping");
 
                     int numNeurons;
-
                     try {
                         numNeurons = TextSpikeHandler.spikeTrainCount(dir, filter);
                     } catch (InvalidDataDirectoryException e) {
                         numNeurons = 0;
                     }
 
-                    int maxDrop = (int) Math.floor(numNeurons * dropLimit);
-                    maxDrop = Math.min(maxDrop, numNeurons-1);
+                    for (int num_changed = 0; num_changed < numNeurons; ++num_changed) {
+                        Dataset sub_dataset = new Dataset(dataset);
 
-                    for (int drop = 0; drop <= maxDrop; ++drop) {
-                        Dataset drop_dataset = new Dataset(dataset);
-                        drop_dataset.name = dataset.name + "_d" + drop;
-                        drop_dataset.localParams.put("neuron_dropping", drop);
-                        drop_dataset.localParams.put("neuron_total", numNeurons);
-                        datasets.add(drop_dataset);
+                        if (doNeuronDrop) {
+                            sub_dataset.name = dataset.name + "_d" + num_changed;
+                            sub_dataset.localParams.put("num_drop", num_changed);
+                        }
+                        else {
+                            sub_dataset.name = dataset.name + "_s" + num_changed;
+                            sub_dataset.localParams.put("num_surrogate", num_changed);
+
+                            String sur_type = (String) paramsMap.get("surrogate");
+                            sub_dataset.localParams.put("surrogate_type", sur_type);
+                        }
+
+                        datasets.add(sub_dataset);
                     }
                 }
                 else {

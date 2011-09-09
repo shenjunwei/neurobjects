@@ -28,13 +28,11 @@ public class CountMatrixTest {
     private static SpikeHandlerI handler_v1;
     private static SpikeHandlerI handler_test;
     private static SpikeHandlerI handler_s1;
-    private static SpikeHandlerI handler_all;
 
     private CountMatrix cm_v1;
     private CountMatrix cm_test;
     private CountMatrix cm_v1b;
     private CountMatrix cm_s1;
-    private CountMatrix cm_all;
 
 
     @BeforeClass
@@ -42,7 +40,6 @@ public class CountMatrixTest {
         handler_v1 = new TextSpikeHandler(spikeDir, "V1");
         handler_test = new TextSpikeHandler(testDir, "test");
         handler_s1 = new TextSpikeHandler(spikeDir, "S1");
-        handler_all = new TextSpikeHandler(spikeDir, "*");
     }
 
 
@@ -53,7 +50,6 @@ public class CountMatrixTest {
         cm_v1b = new CountMatrix(handler_v1, 50000);
         cm_s1 = new CountMatrix(handler_s1, 0.250);
         cm_s1.setWindowWidth(10);
-        cm_all = new CountMatrix(handler_all, 0.250);
     }
 
 

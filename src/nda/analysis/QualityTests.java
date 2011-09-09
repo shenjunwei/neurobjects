@@ -14,7 +14,9 @@ import nda.util.RandomUtils;
  * @author Giuliano Vilela
  */
 public class QualityTests {
-    public static CountMatrix withNeuronDrop(RandomData random, CountMatrix matrix, int numDrop) {
+    public static CountMatrix withNeuronDrop(
+            RandomData random, CountMatrix matrix, int numDrop) {
+
         int numNeurons = matrix.numRows();
         int[] dropped_inds = RandomUtils.randomNSample(random, numNeurons, numDrop);
 
@@ -36,6 +38,39 @@ public class QualityTests {
 
         cm.setMatrix(new_matrix);
         cm.setNeuronNames(newNames);
+        return cm;
+    }
+
+
+    public static CountMatrix withUniformSurrogates(
+            RandomData random, CountMatrix matrix, int numSurrogates) {
+
+        int numNeurons = matrix.numRows();
+        int numCols = matrix.numColumns();
+
+        int[] surrogates = RandomUtils.randomNSample(random, numNeurons, numSurrogates);
+
+        CountMatrix cm = new CountMatrix(matrix);
+
+        int [][] old_matrix = matrix.getMatrix();
+        int[][] new_matrix = new int[numNeurons][numCols];
+
+        for (int i = 0; i < numNeurons; ++i) {
+            if (ArrayUtils.contains(surrogates, i)) {
+                int min = nda.util.ArrayUtils.getMin(old_matrix[i]);
+                int max = nda.util.ArrayUtils.getMax(old_matrix[i]);
+
+                new_matrix[i] = new int[numCols];
+                for (int j = 0; j < numCols; ++j)
+                    new_matrix[i][j] = random.nextInt(min, max);
+            }
+            else {
+                new_matrix[i] = cm.getMatrix()[i].clone();
+            }
+        }
+
+        cm.setMatrix(new_matrix);
+        cm.setNeuronNames(matrix.getNeuronNames());
         return cm;
     }
 }

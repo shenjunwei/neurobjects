@@ -27,6 +27,20 @@ public final class ArrayUtils {
         return Interval.make(min, max);
     }
 
+    public static Interval getMinMax(int[] mat) {
+        assert mat.length != 0;
+
+        int min = mat[0];
+        int max = mat[0];
+
+        for (int i = 1; i < mat.length; ++i) {
+            min = Math.min(min, mat[i]);
+            max = Math.max(max, mat[i]);
+        }
+
+        return Interval.make(min, max);
+    }
+
     public static double getMin(double[] mat) {
         assert mat.length != 0;
 
@@ -37,10 +51,30 @@ public final class ArrayUtils {
         return min;
     }
 
+    public static int getMin(int[] mat) {
+        assert mat.length != 0;
+
+        int min = mat[0];
+        for (int i = 1; i < mat.length; ++i)
+            min = Math.min(min, mat[i]);
+
+        return min;
+    }
+
     public static double getMax(double[] mat) {
         assert mat.length != 0;
 
         double max = mat[0];
+        for (int i = 1; i < mat.length; ++i)
+            max = Math.max(max, mat[i]);
+
+        return max;
+    }
+
+    public static int getMax(int[] mat) {
+        assert mat.length != 0;
+
+        int max = mat[0];
         for (int i = 1; i < mat.length; ++i)
             max = Math.max(max, mat[i]);
 
