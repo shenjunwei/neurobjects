@@ -58,6 +58,9 @@ public class SimpleEvaluator extends DatasetEvaluator {
                     showMessage(" - evaluating train/test round...");
                     EvaluationResult result = evaluate(dataset, trainData, testData);
                     results.add(result);
+
+                    trainDataReader.close();
+                    testDataReader.close();
                 } catch (Exception e) {
                     throw new EvaluationException(e);
                 }
