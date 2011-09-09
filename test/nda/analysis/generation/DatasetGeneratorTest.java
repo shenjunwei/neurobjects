@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +17,6 @@ import org.junit.Test;
 import weka.core.Instances;
 
 import nda.analysis.PatternHandler;
-import nda.data.BehaviorHandlerI;
 import nda.data.Interval;
 import nda.data.SpikeRateMatrixI;
 
@@ -54,17 +52,19 @@ public class DatasetGeneratorTest {
         public void generate() throws GenerationException { }
     }
 
+    private static String setupFilepath = "data/test/test_setup.yml";
+    private static String shortSetupFilepath = "data/test/short_setup.yml";
+    //private static String realSetupFilepath = "data/real/ge4/ge4_setup.yml";
+    private static String bugSetupFilepath = "data/test/bug_setup.yml";
+    private static String dropSetupFilepath = "data/test/test_dropping.yml";
+    private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
-    private MockDatasetGenerator ge4_generator;
+    //private MockDatasetGenerator ge4_generator;
     private MockDatasetGenerator bug_generator;
     private MockDatasetGenerator drop_generator;
-    private static String setupFilepath = "data/test/test_setup.yml";
-    private static String shortSetupFilepath = "data/test/short_setup.yml";
-    private static String realSetupFilepath = "data/real/ge4/ge4_setup.yml";
-    private static String bugSetupFilepath = "data/test/bug_setup.yml";
-    private static String dropSetupFilepath = "data/test/test_dropping.yml";
+    private MockDatasetGenerator surrogate_gen;
 
 
     @Before
@@ -75,14 +75,17 @@ public class DatasetGeneratorTest {
         GeneratorSetup short_setup = new GeneratorSetup(shortSetupFilepath);
         short_gen = new MockDatasetGenerator(short_setup);
 
-        GeneratorSetup real_setup = new GeneratorSetup(realSetupFilepath);
-        ge4_generator = new MockDatasetGenerator(real_setup);
+        //GeneratorSetup real_setup = new GeneratorSetup(realSetupFilepath);
+        //ge4_generator = new MockDatasetGenerator(real_setup);
 
         GeneratorSetup bug_setup = new GeneratorSetup(bugSetupFilepath);
         bug_generator = new MockDatasetGenerator(bug_setup);
 
         GeneratorSetup drop_setup = new GeneratorSetup(dropSetupFilepath);
         drop_generator = new MockDatasetGenerator(drop_setup);
+
+        GeneratorSetup sur_setup = new GeneratorSetup(surrogateSetupFilepath);
+        surrogate_gen = new MockDatasetGenerator(sur_setup);
     }
 
 
@@ -108,7 +111,7 @@ public class DatasetGeneratorTest {
     public void testAddInstancesFromClass() throws Exception {
         testAddInstancesFromClass(bug_generator);
         testAddInstancesFromClass(generator);
-        testAddInstancesFromClass(ge4_generator);
+        //testAddInstancesFromClass(ge4_generator);
     }
 
 
@@ -153,50 +156,6 @@ public class DatasetGeneratorTest {
             }
         }
     }
-
-
-    @Test
-    public void testAddInstancesFromGE4Food() throws Exception {
-        MockDatasetGenerator generator = ge4_generator;
-        generator.loadHandlers();
-
-        GeneratorSetup.Dataset food_ds = null;
-        for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets())
-            if (dataset.getName().equals("ge4_food_p1")) {
-                food_ds = dataset;
-                break;
-            }
-
-        assertNotNull(food_ds);
-
-        Set<String> classNames = new HashSet<String>();
-        for (GeneratorSetup.Class class_attr : food_ds.getClasses())
-            classNames.add(class_attr.getName());
-
-        GeneratorSetup.Class yesClass = food_ds.getClasses().get(0);
-        assertEquals(1, yesClass.getLabels().size());
-
-        SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(food_ds);
-        PatternHandler trainSet = new PatternHandler("train", rateMatrix, classNames);
-        PatternHandler testSet = new PatternHandler("test", rateMatrix, classNames);
-
-        generator.addInstancesFromClass(yesClass, rateMatrix, trainSet, testSet);
-        assertEquals(yesClass.getNumberTrainSamples(), trainSet.size());
-        assertEquals(yesClass.getNumberTestSamples(), testSet.size());
-
-        BehaviorHandlerI behavior = generator.globalBehaviorHandler;
-        List<Interval> intervals = behavior.getIntervals("food");
-        assertEquals(14, intervals.size());
-
-        List<double[]> patterns = new ArrayList<double[]>();
-        patterns.addAll(trainSet.getPatterns("yes"));
-        patterns.addAll(testSet.getPatterns("yes"));
-        assertEquals(trainSet.size() + testSet.size(), patterns.size());
-
-        for (double[] pattern : patterns)
-            assertPatternBelongsToClass(generator, rateMatrix, yesClass, pattern);
-    }
-
 
 
     /**
@@ -360,27 +319,67 @@ public class DatasetGeneratorTest {
 
 
     @Test
-    public void testNeuronDrop() throws Exception {
-        GeneratorSetup.Dataset dataset = null;
+    public void testNeuronDropRateMatrix() throws Exception {
+        drop_generator.loadHandlers();
 
-        int numDrop = 0;
+        assertEquals(12, drop_generator.setup.getDatasets().size());
+        assertEquals(10, drop_generator.globalSpikeHandler.getNumberOfSpikeTrains());
 
-        for (GeneratorSetup.Dataset ds : drop_generator.setup.getDatasets()) {
-            if (ds.getParameter("neuron_dropping") != null) {
-                numDrop = (Integer) ds.getParameter("neuron_dropping");
-                if (numDrop > 1) {
-                    dataset = ds;
-                    break;
-                }
+        for (GeneratorSetup.Dataset dataset : drop_generator.setup.getDatasets()) {
+            assertNotNull(dataset.getParameter("neuron_drop"));
+            assertNotNull(dataset.getParameter("num_drop"));
+            int num_drop = (Integer) dataset.getParameter("num_drop");
+
+            SpikeRateMatrixI rateMatrix = drop_generator.buildDatasetRateMatrix(dataset);
+            assertEquals(4 - num_drop, rateMatrix.numRows());
+        }
+    }
+
+
+    @Test
+    public void testNeuronDropDatasets() throws Exception {
+        drop_generator.loadHandlers();
+
+        assertEquals(12, drop_generator.setup.getDatasets().size());
+        assertEquals(10, drop_generator.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : drop_generator.setup.getDatasets()) {
+            assertNotNull(dataset.getParameter("neuron_drop"));
+            assertNotNull(dataset.getParameter("num_drop"));
+
+            int num_drop = (Integer) dataset.getParameter("num_drop");
+            assertTrue(dataset.getName().contains("d" + num_drop));
+
+            for (PatternHandler set : drop_generator.buildDataset(dataset)) {
+                assertEquals(10 * (4 - num_drop), set.getDimension());
             }
         }
+    }
 
-        drop_generator.loadHandlers();
-        List<PatternHandler> patterns = drop_generator.buildDataset(dataset);
 
-        assertEquals(10, patterns.size());
-        for (PatternHandler set : patterns)
-            assertEquals(2*10, set.getDimension());
+    @Test
+    public void testUniformSurrogateDatasets() throws Exception {
+        surrogate_gen.loadHandlers();
+
+        assertEquals(30, surrogate_gen.setup.getDatasets().size());
+        assertEquals(10, surrogate_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : surrogate_gen.setup.getDatasets()) {
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNotNull(dataset.getParameter("num_surrogate"));
+            assertEquals("uniform", dataset.getParameter("surrogate_type"));
+
+            int num_surrogate = (Integer) dataset.getParameter("num_surrogate");
+            assertTrue(dataset.getName().contains("s" + num_surrogate));
+
+            for (PatternHandler set : surrogate_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+            }
+        }
     }
 
 

@@ -16,6 +16,7 @@ import org.junit.Test;
 import nda.data.CountMatrix;
 import nda.data.SpikeHandlerI;
 import nda.data.text.TextSpikeHandler;
+import nda.util.ArrayUtils;
 
 
 /**
@@ -23,7 +24,7 @@ import nda.data.text.TextSpikeHandler;
  */
 public class QualityTestsTest {
     // Make the test reproducible
-    private static long RANDOM_SEED = 8146340101830722149L;
+    private static long RANDOM_SEED = 2204374272165065090L;
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -50,6 +51,7 @@ public class QualityTestsTest {
     @Before
     public void setUp() throws Exception {
         cm_all = new CountMatrix(handler_all, 0.250);
+        assertEquals(10, cm_all.numRows());
     }
 
 
@@ -58,8 +60,6 @@ public class QualityTestsTest {
      */
     @Test
     public void testWithNeuronDrop() {
-        assertEquals(10, cm_all.numRows());
-
         for (int k = 1; k < 10; ++k) {
             CountMatrix dropped = QualityTests.withNeuronDrop(random, cm_all, k);
 
@@ -91,6 +91,40 @@ public class QualityTestsTest {
             }
 
             assertEquals(dropped.numRows(), pos_set.size());
+        }
+    }
+
+
+    @Test
+    public void testWithUniformSurrogates() {
+        for (int k = 1; k <= 10; ++k) {
+            CountMatrix sur_matrix = QualityTests.withUniformSurrogates(random, cm_all, k);
+
+            assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
+            assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
+            assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
+            assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
+            assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
+            assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
+            assertEquals(cm_all.numRows(), sur_matrix.numRows());
+
+            int num_diff = 0;
+            for (int i = 0; i < sur_matrix.numRows(); ++i) {
+                assertEquals(
+                        cm_all.getNeuronNames().get(i),
+                        sur_matrix.getNeuronNames().get(i));
+
+                int[] row_a = sur_matrix.getRow(i);
+                int[] row_b = cm_all.getRow(i);
+
+                if (!Arrays.equals(row_a, row_b))
+                    num_diff++;
+
+                assertEquals(ArrayUtils.getMin(row_a), ArrayUtils.getMin(row_b));
+                assertEquals(ArrayUtils.getMax(row_a), ArrayUtils.getMax(row_b));
+            }
+
+            assertEquals(num_diff, k);
         }
     }
 }
