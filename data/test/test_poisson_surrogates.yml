@@ -1,0 +1,20 @@
+name: test_poisson_surrogates
+spikes_dir: data/test/spikes/
+contacts_file: data/test/real_contacts.txt
+
+params:
+  areas: [hp, s1, v1]
+
+  bin_size: 0.250
+  window_width: 10
+  surrogate: poisson
+
+datasets:
+  - name: dataset_name
+    rounds: 5
+    train_ratio: 0.8
+
+    1_vs_n:
+      labels: [ball, food, urchin]
+      class_ratio: 2
+      total_positives: 3

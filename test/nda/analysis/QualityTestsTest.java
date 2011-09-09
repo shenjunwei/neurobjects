@@ -24,7 +24,7 @@ import nda.util.ArrayUtils;
  */
 public class QualityTestsTest {
     // Make the test reproducible
-    private static long RANDOM_SEED = 2204374272165065090L;
+    private static long RANDOM_SEED = 4087141707394369619L;
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -96,9 +96,10 @@ public class QualityTestsTest {
 
 
     @Test
-    public void testWithUniformSurrogates() {
+    public void testUniformSurrogates() {
         for (int k = 1; k <= 10; ++k) {
-            CountMatrix sur_matrix = QualityTests.withUniformSurrogates(random, cm_all, k);
+            CountMatrix sur_matrix = QualityTests.withRandomSurrogates(
+                    random, cm_all, k, "uniform");
 
             assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
             assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
@@ -120,8 +121,42 @@ public class QualityTestsTest {
                 if (!Arrays.equals(row_a, row_b))
                     num_diff++;
 
-                assertEquals(ArrayUtils.getMin(row_a), ArrayUtils.getMin(row_b));
-                assertEquals(ArrayUtils.getMax(row_a), ArrayUtils.getMax(row_b));
+                assertTrue(ArrayUtils.getMin(row_a) >= ArrayUtils.getMin(row_b));
+                assertTrue(ArrayUtils.getMax(row_a) <= ArrayUtils.getMax(row_b));
+            }
+
+            assertEquals(num_diff, k);
+        }
+    }
+
+
+    @Test
+    public void testPoissonSurrogates() {
+        for (int k = 1; k <= 10; ++k) {
+            CountMatrix sur_matrix = QualityTests.withRandomSurrogates(
+                    random, cm_all, k, "poisson");
+
+            assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
+            assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
+            assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
+            assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
+            assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
+            assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
+            assertEquals(cm_all.numRows(), sur_matrix.numRows());
+
+            int num_diff = 0;
+            for (int i = 0; i < sur_matrix.numRows(); ++i) {
+                assertEquals(
+                        cm_all.getNeuronNames().get(i),
+                        sur_matrix.getNeuronNames().get(i));
+
+                int[] row_a = sur_matrix.getRow(i);
+                int[] row_b = cm_all.getRow(i);
+
+                if (!Arrays.equals(row_a, row_b))
+                    num_diff++;
+
+                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-2);
             }
 
             assertEquals(num_diff, k);

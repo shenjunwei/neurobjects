@@ -42,8 +42,8 @@ public class QualityTests {
     }
 
 
-    public static CountMatrix withUniformSurrogates(
-            RandomData random, CountMatrix matrix, int numSurrogates) {
+    public static CountMatrix withRandomSurrogates(
+            RandomData random, CountMatrix matrix, int numSurrogates, String type) {
 
         int numNeurons = matrix.numRows();
         int numCols = matrix.numColumns();
@@ -57,20 +57,43 @@ public class QualityTests {
 
         for (int i = 0; i < numNeurons; ++i) {
             if (ArrayUtils.contains(surrogates, i)) {
-                int min = nda.util.ArrayUtils.getMin(old_matrix[i]);
-                int max = nda.util.ArrayUtils.getMax(old_matrix[i]);
-
-                new_matrix[i] = new int[numCols];
-                for (int j = 0; j < numCols; ++j)
-                    new_matrix[i][j] = random.nextInt(min, max);
+                if (type.equals("uniform"))
+                    new_matrix[i] = uniformSurrogate(random, old_matrix[i]);
+                else if (type.equals("poisson"))
+                    new_matrix[i] = poissonSurrogate(random, old_matrix[i]);
+                else
+                    throw new IllegalArgumentException("Unknown surrogate type: " + type);
             }
             else {
-                new_matrix[i] = cm.getMatrix()[i].clone();
+                new_matrix[i] = old_matrix[i].clone();
             }
         }
 
         cm.setMatrix(new_matrix);
         cm.setNeuronNames(matrix.getNeuronNames());
         return cm;
+    }
+
+
+    private static int[] uniformSurrogate(RandomData random, int[] array) {
+        int min = nda.util.ArrayUtils.getMin(array);
+        int max = nda.util.ArrayUtils.getMax(array);
+
+        int[] surrogate = new int[array.length];
+        for (int i = 0; i < array.length; ++i)
+            surrogate[i] = random.nextInt(min, max);
+
+        return surrogate;
+    }
+
+
+    private static int[] poissonSurrogate(RandomData random, int[] array) {
+        double mean = nda.util.ArrayUtils.getAverage(array);
+
+        int[] surrogate = new int[array.length];
+        for (int i = 0; i < array.length; ++i)
+            surrogate[i] = Math.round(random.nextPoisson(mean));
+
+        return surrogate;
     }
 }

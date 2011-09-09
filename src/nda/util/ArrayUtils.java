@@ -90,6 +90,15 @@ public final class ArrayUtils {
         return sum / mat.length;
     }
 
+    public static double getAverage(int[] mat) {
+        assert mat.length != 0;
+
+        int sum = 0;
+        for (int x : mat) sum += x;
+
+        return ((double) sum) / mat.length;
+    }
+
     public static boolean isSorted(List<Double> list) {
         for (int i = 1; i < list.size(); ++i)
             if (list.get(i).compareTo(list.get(i-1)) < 0)

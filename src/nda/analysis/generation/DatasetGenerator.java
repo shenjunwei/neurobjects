@@ -224,14 +224,14 @@ public abstract class DatasetGenerator implements Verbose {
         }
         else if (dataset.getParameter("num_surrogate") != null) {
             int numSurrogates = (Integer) dataset.getParameter("num_surrogate");
-            String type = (String) dataset.getParameter("surrogate_type");
+            String surrogateType = (String) dataset.getParameter("surrogate_type");
 
-            if (type.equals("uniform")) {
-                rateMatrix = QualityTests.withUniformSurrogates(
-                        randomData, rateMatrix, numSurrogates);
-            }
-            else {
-                throw new GenerationException("Unknown surrogate type: " + type);
+            try {
+                rateMatrix = QualityTests.withRandomSurrogates(
+                        randomData, rateMatrix,
+                        numSurrogates, surrogateType);
+            } catch (IllegalArgumentException e) {
+                throw new GenerationException(e);
             }
         }
 
