@@ -258,7 +258,13 @@ public class GeneratorSetup {
                         numNeurons = 0;
                     }
 
-                    for (int num_changed = 0; num_changed < numNeurons; ++num_changed) {
+                    int limChanged;
+                    if (doNeuronDrop)
+                        limChanged = numNeurons-1;
+                    else
+                        limChanged = numNeurons;
+
+                    for (int num_changed = 0; num_changed <= limChanged; ++num_changed) {
                         Dataset sub_dataset = new Dataset(dataset);
 
                         if (doNeuronDrop) {
