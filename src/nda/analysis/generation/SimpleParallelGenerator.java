@@ -18,8 +18,6 @@ import nda.analysis.PatternHandler;
  * @author Giuliano Vilela
  */
 public class SimpleParallelGenerator extends ParallelGenerator {
-    private static final int TASK_POLLING_RATE = 200; // milliseconds
-
     private boolean verbose;
 
 
@@ -57,26 +55,20 @@ public class SimpleParallelGenerator extends ParallelGenerator {
         showMessage("Firing generation tasks...");
         List<Future<List<PatternHandler>>> results = buildAll(setup);
 
-        while (!results.isEmpty()) {
-            Future<List<PatternHandler>> completedResult = null;
-
-            while (!results.get(0).isDone()) {
-                try {
-                    Thread.sleep(TASK_POLLING_RATE);
-                }
-                catch (InterruptedException e1) { }
-            }
-
-            completedResult = results.get(0);
-            results.remove(0);
-
+        for (Future<List<PatternHandler>> futureResult : results) {
             try {
-                for (PatternHandler data : completedResult.get())
+                // Block until the next task finishes
+                List<PatternHandler> result = futureResult.get();
+
+                for (PatternHandler data : result)
                     writeFile(data, outputDir);
 
                 showMessage("");
             }
-            catch (InterruptedException e) { }
+            catch (InterruptedException e) {
+                showMessage("Main thread was interrupted: " + e.getMessage() + "...");
+                break;
+            }
             catch (ExecutionException e) {
                 throw new GenerationException(e.getCause());
             }
