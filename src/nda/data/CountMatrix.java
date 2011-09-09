@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 
 /**
  * @brief Create the Matrix of spike count given a interval
@@ -25,6 +27,40 @@ public class CountMatrix implements SpikeRateMatrixI {
     private String title;
     private List<String> neuronNames;
 
+
+    @Override
+    public SpikeRateMatrixI withNeuronDrop(int[] dropped_inds) {
+        CountMatrix cm = new CountMatrix(this);
+
+        int old_sz = numRows();
+        int new_sz = old_sz - dropped_inds.length;
+
+        int[][] new_matrix = new int[new_sz][numColumns()];
+        List<String> newNames = new ArrayList<String>();
+
+        int matrix_p = 0;
+        for (int i = 0; i < old_sz; ++i) {
+            if (ArrayUtils.contains(dropped_inds, i))
+                continue;
+
+            new_matrix[matrix_p++] = matrix[i];
+            newNames.add(neuronNames.get(i));
+        }
+
+        cm.matrix = new_matrix;
+        cm.neuronNames = newNames;
+        return cm;
+    }
+
+
+    private CountMatrix(CountMatrix copy) {
+        histogram = copy.histogram;
+        matrix = copy.matrix;
+        cursor_pos = copy.cursor_pos;
+        cursor_width = copy.cursor_width;
+        title = copy.title;
+        neuronNames = copy.neuronNames;
+    }
 
     public CountMatrix(SpikeHandlerI spikeHandler, int binCount) {
         Interval interval = spikeHandler.getGlobalSpikeInterval();

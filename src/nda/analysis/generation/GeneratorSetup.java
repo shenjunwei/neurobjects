@@ -244,6 +244,8 @@ public class GeneratorSetup {
                 if (paramsMap.containsKey("neuron_dropping")) {
                     String dir = setup.getSpikesDirectory();
                     String filter = (String) dataset.getParameter("areas");
+                    double dropLimit = (Double) paramsMap.get("neuron_dropping");
+
                     int numNeurons;
 
                     try {
@@ -252,10 +254,13 @@ public class GeneratorSetup {
                         numNeurons = 0;
                     }
 
-                    for (int drop = 0; drop < numNeurons; ++drop) {
+                    int maxDrop = (int) Math.floor(numNeurons * dropLimit);
+
+                    for (int drop = 0; drop <= maxDrop; ++drop) {
                         Dataset drop_dataset = new Dataset(dataset);
                         drop_dataset.name = dataset.name + "_d" + drop;
                         drop_dataset.localParams.put("neuron_dropping", drop);
+                        drop_dataset.localParams.put("neuron_total", numNeurons);
                         datasets.add(drop_dataset);
                     }
                 }

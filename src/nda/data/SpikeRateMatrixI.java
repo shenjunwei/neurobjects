@@ -233,4 +233,7 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
             throw new UnsupportedOperationException("can't remove a pattern");
         }
     }
+
+
+    public SpikeRateMatrixI withNeuronDrop(int[] dropped_inds);
 }

@@ -4,8 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.math.random.RandomData;
+import org.apache.commons.math.random.RandomDataImpl;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -338,6 +341,34 @@ public class CountMatrixTest {
         }
     }
 
+
+    @Test
+    public void testNeuronDrop() throws Exception {
+        int all_sz = cm_v1.numRows();
+        assertEquals(4, all_sz);
+
+        List<Integer> inds = Arrays.asList(0, 1, 2, 3);
+
+        for (int k = 1; k < 4; ++k) {
+            RandomData random = new RandomDataImpl();
+            Object[] rinds = random.nextSample(inds, k);
+
+            int[] drop = new int[rinds.length];
+            for (int i = 0; i < rinds.length; ++i) drop[i] = (Integer) rinds[i];
+
+            SpikeRateMatrixI dropped = cm_v1.withNeuronDrop(drop);
+
+            int new_sz = dropped.numRows();
+            assertEquals(all_sz-k, new_sz);
+
+            for (int i = 0; i < new_sz; ++i) {
+                String st = dropped.getNeuronNames().get(i);
+                int pos = cm_v1.getNeuronNames().indexOf(st);
+                assertTrue(pos != -1);
+                assertFalse(org.apache.commons.lang3.ArrayUtils.contains(drop, pos));
+            }
+        }
+    }
 
     private void checkPattern(double[] pattern, CountMatrix m, int start_c, int end_c) {
         int exp_l = m.numRows() * (end_c-start_c+1);

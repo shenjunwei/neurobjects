@@ -30,7 +30,7 @@ public class GeneratorSetupTest {
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
     private static String testSetupFilepath = "data/test/test_setup.yml";
     private static String testSetupMPFilepath = "data/test/test_multiple_params.yml";
-    private static String dropSetupFilepath = "data/test/test_dropping.yml";
+    private static String dropSetupFilepath = "data/test/test2_dropping.yml";
 
 
     @Before
