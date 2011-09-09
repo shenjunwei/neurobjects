@@ -226,7 +226,7 @@ public class GeneratorSetupTest {
 
     @Test
     public void testUniformSurrogateSetup() {
-        assertEquals(30, test_uniform_sur.getDatasets().size());
+        assertEquals(39, test_uniform_sur.getDatasets().size());
 
         String[] ps = { "p1", "p2", "p3" };
         Map<String, Integer> count = new HashMap<String, Integer>();
@@ -244,15 +244,15 @@ public class GeneratorSetupTest {
             assertEquals("uniform", dataset.getParameter("surrogate_type"));
         }
 
-        assertEquals((Integer) 9, count.get("p1"));
-        assertEquals((Integer) 9, count.get("p2"));
-        assertEquals((Integer) 12, count.get("p3"));
+        assertEquals((Integer) 12, count.get("p1"));
+        assertEquals((Integer) 12, count.get("p2"));
+        assertEquals((Integer) 15, count.get("p3"));
     }
 
 
     @Test
     public void testPoissonSurrogateSetup() {
-        assertEquals(30, test_poisson_sur.getDatasets().size());
+        assertEquals(39, test_poisson_sur.getDatasets().size());
 
         String[] ps = { "p1", "p2", "p3" };
         Map<String, Integer> count = new HashMap<String, Integer>();
@@ -270,8 +270,8 @@ public class GeneratorSetupTest {
             assertEquals("poisson", dataset.getParameter("surrogate_type"));
         }
 
-        assertEquals((Integer) 9, count.get("p1"));
-        assertEquals((Integer) 9, count.get("p2"));
-        assertEquals((Integer) 12, count.get("p3"));
+        assertEquals((Integer) 12, count.get("p1"));
+        assertEquals((Integer) 12, count.get("p2"));
+        assertEquals((Integer) 15, count.get("p3"));
     }
 }

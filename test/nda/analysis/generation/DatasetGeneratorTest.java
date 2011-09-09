@@ -366,7 +366,7 @@ public class DatasetGeneratorTest {
     public void testUniformSurrogateDatasets() throws Exception {
         surrogate_gen.loadHandlers();
 
-        assertEquals(30, surrogate_gen.setup.getDatasets().size());
+        assertEquals(39, surrogate_gen.setup.getDatasets().size());
         assertEquals(10, surrogate_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : surrogate_gen.setup.getDatasets()) {
@@ -392,7 +392,7 @@ public class DatasetGeneratorTest {
     public void testPoissonSurrogateDatasets() throws Exception {
         poisson_sur_gen.loadHandlers();
 
-        assertEquals(30, poisson_sur_gen.setup.getDatasets().size());
+        assertEquals(39, poisson_sur_gen.setup.getDatasets().size());
         assertEquals(10, poisson_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : poisson_sur_gen.setup.getDatasets()) {
