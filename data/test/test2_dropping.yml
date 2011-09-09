@@ -3,7 +3,7 @@ spikes_dir: data/test/spikes/
 contacts_file: data/test/real_contacts.txt
 
 params:
-  areas: [v1]
+  areas: [hp, s1, v1]
 
   bin_size: 0.250
   window_width: 10
@@ -15,7 +15,7 @@ datasets:
     train_ratio: 0.8
 
     1_vs_n:
-      labels: [ball, food, urchin]
+      labels: [ball, brush, food, urchin]
       class_ratio: 2
       total_positives: 3
 

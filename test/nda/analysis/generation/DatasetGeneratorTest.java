@@ -59,10 +59,12 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator short_gen;
     private MockDatasetGenerator ge4_generator;
     private MockDatasetGenerator bug_generator;
+    private MockDatasetGenerator drop_generator;
     private static String setupFilepath = "data/test/test_setup.yml";
     private static String shortSetupFilepath = "data/test/short_setup.yml";
     private static String realSetupFilepath = "data/real/ge4/ge4_setup.yml";
     private static String bugSetupFilepath = "data/test/bug_setup.yml";
+    private static String dropSetupFilepath = "data/test/test_dropping.yml";
 
 
     @Before
@@ -78,6 +80,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup bug_setup = new GeneratorSetup(bugSetupFilepath);
         bug_generator = new MockDatasetGenerator(bug_setup);
+
+        GeneratorSetup drop_setup = new GeneratorSetup(dropSetupFilepath);
+        drop_generator = new MockDatasetGenerator(drop_setup);
     }
 
 
@@ -351,6 +356,31 @@ public class DatasetGeneratorTest {
 
         for (GeneratorSetup.Dataset dataset : short_gen.setup.getDatasets())
             short_gen.buildDataset(dataset);
+    }
+
+
+    @Test
+    public void testNeuronDrop() throws Exception {
+        GeneratorSetup.Dataset dataset = null;
+
+        int numDrop = 0;
+
+        for (GeneratorSetup.Dataset ds : drop_generator.setup.getDatasets()) {
+            if (ds.getParameter("neuron_dropping") != null) {
+                numDrop = (Integer) ds.getParameter("neuron_dropping");
+                if (numDrop > 1) {
+                    dataset = ds;
+                    break;
+                }
+            }
+        }
+
+        drop_generator.loadHandlers();
+        List<PatternHandler> patterns = drop_generator.buildDataset(dataset);
+
+        assertEquals(10, patterns.size());
+        for (PatternHandler set : patterns)
+            assertEquals(2*10, set.getDimension());
     }
 
 

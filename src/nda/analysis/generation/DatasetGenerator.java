@@ -68,10 +68,20 @@ public abstract class DatasetGenerator implements Verbose {
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
-        SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
+        // We can only reuse the rateMatrix between rounds if there is no
+        // neuron dropping
+        if (dataset.getParameter("neuron_dropping") == null) {
+            SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
 
-        for (int round = 1; round <= dataset.getNumberRounds(); ++round)
-            patterns.addAll(buildDatasetSingleRound(dataset, round, rateMatrix));
+            for (int round = 1; round <= dataset.getNumberRounds(); ++round)
+                patterns.addAll(buildDatasetSingleRound(dataset, round, rateMatrix));
+        }
+        else {
+            for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
+                SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
+                patterns.addAll(buildDatasetSingleRound(dataset, round, rateMatrix));
+            }
+        }
 
         return patterns;
     }
@@ -263,6 +273,15 @@ public abstract class DatasetGenerator implements Verbose {
 
         SpikeRateMatrixI rateMatrix = new CountMatrix(datasetHandler, binSize);
         rateMatrix.setWindowWidth(window_width);
+
+        if (dataset.getParameter("neuron_dropping") != null) {
+            int numDrop = (Integer) dataset.getParameter("neuron_dropping");
+            int numTotal = (Integer) dataset.getParameter("neuron_total");
+
+            int[] dropped_inds = randomNSample(numTotal, numDrop);
+            rateMatrix = rateMatrix.withNeuronDrop(dropped_inds);
+        }
+
         return rateMatrix;
     }
 
@@ -304,6 +323,20 @@ public abstract class DatasetGenerator implements Verbose {
         Arrays.sort(train_inds);
         Arrays.sort(test_inds);
         return new int[][] { train_inds, test_inds };
+    }
+
+
+    protected int[] randomNSample(int n, int k) {
+        List<Integer> all = new ArrayList<Integer>();
+        for (int i = 0; i < n; ++i) all.add(i);
+
+        Object[] obj_sample = randomSample(all, k);
+
+        int[] sample = new int[obj_sample.length];
+        for (int i = 0; i < obj_sample.length; ++i)
+            sample[i] = (Integer) obj_sample[i];
+
+        return sample;
     }
 
 
