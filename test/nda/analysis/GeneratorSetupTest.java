@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,16 +24,20 @@ import nda.analysis.generation.GeneratorSetup;
 public class GeneratorSetupTest {
     private GeneratorSetup ge5_setup;
     private GeneratorSetup test_setup;
+    private GeneratorSetup test_drop;
+
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
     private static String testSetupFilepath = "data/test/test_setup.yml";
     private static String testSetupMPFilepath = "data/test/test_multiple_params.yml";
+    private static String dropSetupFilepath = "data/test/test_dropping.yml";
 
 
     @Before
     public void setUp() throws Exception {
         ge5_setup = new GeneratorSetup(ge5SetupFilepath);
         test_setup = new GeneratorSetup(testSetupFilepath);
+        test_drop = new GeneratorSetup(dropSetupFilepath);
     }
 
 
@@ -183,5 +189,28 @@ public class GeneratorSetupTest {
         for (GeneratorSetup.Dataset dataset : test_mp.getDatasets())
             count += dataset.getGeneratedFileNames().size();
         assertEquals(16*10*2, count);
+    }
+
+
+    @Test
+    public void testNeuronDroppingSetup() throws Exception {
+        assertEquals(40, test_drop.getDatasets().size());
+
+        String[] ps = { "p1", "p2", "p3" };
+        Map<String, Integer> count = new HashMap<String, Integer>();
+
+        for (String p : ps) count.put(p, 0);
+        for (GeneratorSetup.Dataset dataset : test_drop.getDatasets()) {
+            for (String p : ps) {
+                if (dataset.getName().contains(p)) {
+                    count.put(p, count.get(p) + 1);
+                    break;
+                }
+            }
+        }
+
+        assertEquals((Integer) 12, count.get("p1"));
+        assertEquals((Integer) 12, count.get("p2"));
+        assertEquals((Integer) 16, count.get("p3"));
     }
 }

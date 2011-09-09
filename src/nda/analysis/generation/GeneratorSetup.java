@@ -13,6 +13,8 @@ import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
 import nda.analysis.InvalidSetupFileException;
+import nda.data.text.InvalidDataDirectoryException;
+import nda.data.text.TextSpikeHandler;
 
 
 /**
@@ -154,7 +156,6 @@ public class GeneratorSetup {
             for (Object datasetObj : datasetList) {
                 Map<String, Object> datasetMap = (Map<String, Object>) datasetObj;
 
-
                 List<Dataset> list = Dataset.parseAll(topMap, datasetMap, paramsMap, this);
                 datasets.addAll(list);
             }
@@ -167,6 +168,7 @@ public class GeneratorSetup {
         private Map<String, Object> topMap;
         private Map<String, Object> datasetMap;
         private Map<String, Object> paramsMap;
+        private Map<String, Object> localParams;
         private List<Class> classes;
         private GeneratorSetup setup;
 
@@ -238,8 +240,29 @@ public class GeneratorSetup {
                 dataset.classes.add(positiveClass);
                 dataset.classes.add(negativeClass);
 
-                // Add the dataset to the main list
-                datasets.add(dataset);
+                // Generate extra datasets for neuron dropping
+                if (paramsMap.containsKey("neuron_dropping")) {
+                    String dir = setup.getSpikesDirectory();
+                    String filter = (String) dataset.getParameter("areas");
+                    int numNeurons;
+
+                    try {
+                        numNeurons = TextSpikeHandler.spikeTrainCount(dir, filter);
+                    } catch (InvalidDataDirectoryException e) {
+                        numNeurons = 0;
+                    }
+
+                    for (int drop = 0; drop < numNeurons; ++drop) {
+                        Dataset drop_dataset = new Dataset(dataset);
+                        drop_dataset.name = dataset.name + "_d" + drop;
+                        drop_dataset.localParams.put("neuron_dropping", drop);
+                        datasets.add(drop_dataset);
+                    }
+                }
+                else {
+                    // Add the dataset to the main list
+                    datasets.add(dataset);
+                }
             }
 
             return datasets;
@@ -248,7 +271,21 @@ public class GeneratorSetup {
 
         private Dataset(String _name) {
             name = _name;
+            localParams = new HashMap<String, Object>();
         }
+
+
+        private Dataset(Dataset copy) {
+            name = copy.name;
+            topMap = copy.topMap;
+            datasetMap = copy.datasetMap;
+            paramsMap = copy.paramsMap;
+            classes = copy.classes;
+            setup = copy.setup;
+
+            localParams = new HashMap<String, Object>();
+        }
+
 
         @Override
         public String toString() {
@@ -277,7 +314,10 @@ public class GeneratorSetup {
         }
 
         public Object getParameter(String parameter) {
-            return paramsMap.get(parameter);
+            if (localParams.get(parameter) != null)
+                return localParams.get(parameter);
+            else
+                return paramsMap.get(parameter);
         }
 
         public List<Class> getClasses() {
