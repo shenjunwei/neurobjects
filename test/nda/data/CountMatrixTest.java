@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 import org.junit.Before;
@@ -15,7 +16,6 @@ import org.junit.Test;
 
 import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
-import nda.util.ArrayUtils;
 
 
 /**
@@ -32,11 +32,13 @@ public class CountMatrixTest {
     private static SpikeHandlerI handler_v1;
     private static SpikeHandlerI handler_test;
     private static SpikeHandlerI handler_s1;
+    private static SpikeHandlerI handler_all;
 
     private CountMatrix cm_v1;
     private CountMatrix cm_test;
     private CountMatrix cm_v1b;
     private CountMatrix cm_s1;
+    private CountMatrix cm_all;
 
 
     @BeforeClass
@@ -44,6 +46,7 @@ public class CountMatrixTest {
         handler_v1 = new TextSpikeHandler(spikeDir, "V1");
         handler_test = new TextSpikeHandler(testDir, "test");
         handler_s1 = new TextSpikeHandler(spikeDir, "S1");
+        handler_all = new TextSpikeHandler(spikeDir, "*");
     }
 
 
@@ -54,6 +57,7 @@ public class CountMatrixTest {
         cm_v1b = new CountMatrix(handler_v1, 50000);
         cm_s1 = new CountMatrix(handler_s1, 0.250);
         cm_s1.setWindowWidth(10);
+        cm_all = new CountMatrix(handler_all, 0.250);
     }
 
 
@@ -334,7 +338,7 @@ public class CountMatrixTest {
                 boolean any = false;
                 while (cm_s1.getCurrentTime() <= interval.end() && !any) {
                     double[] pB = cm_s1.getPattern(10);
-                    any = any || ArrayUtils.equals(pattern, pB);
+                    any = any || nda.util.ArrayUtils.equals(pattern, pB);
                 }
                 assertTrue(any);
             }
@@ -344,28 +348,42 @@ public class CountMatrixTest {
 
     @Test
     public void testNeuronDrop() throws Exception {
-        int all_sz = cm_v1.numRows();
-        assertEquals(4, all_sz);
+        assertEquals(10, cm_all.numRows());
+        List<Integer> inds = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-        List<Integer> inds = Arrays.asList(0, 1, 2, 3);
-
-        for (int k = 1; k < 4; ++k) {
+        for (int k = 1; k < 10; ++k) {
             RandomData random = new RandomDataImpl();
             Object[] rinds = random.nextSample(inds, k);
 
             int[] drop = new int[rinds.length];
             for (int i = 0; i < rinds.length; ++i) drop[i] = (Integer) rinds[i];
 
-            SpikeRateMatrixI dropped = cm_v1.withNeuronDrop(drop);
+            CountMatrix dropped = (CountMatrix) cm_all.withNeuronDrop(drop);
 
-            int new_sz = dropped.numRows();
-            assertEquals(all_sz-k, new_sz);
+            assertEquals(cm_all.numColumns(), dropped.numColumns());
+            assertEquals(cm_all.getBinSize(), dropped.getBinSize(), 1e-8);
+            assertEquals(cm_all.getWindowWidth(), dropped.getWindowWidth());
+            assertEquals(cm_all.getCurrentColumn(), dropped.getCurrentColumn());
+            assertEquals(cm_all.getInterval(), dropped.getInterval());
+            assertEquals(cm_all.getTitle(), dropped.getTitle());
+            assertEquals(cm_all.numRows()-k, dropped.numRows());
 
-            for (int i = 0; i < new_sz; ++i) {
+            for (int i = 0; i < dropped.numRows(); ++i) {
                 String st = dropped.getNeuronNames().get(i);
-                int pos = cm_v1.getNeuronNames().indexOf(st);
+                int pos = cm_all.getNeuronNames().indexOf(st);
                 assertTrue(pos != -1);
-                assertFalse(org.apache.commons.lang3.ArrayUtils.contains(drop, pos));
+                assertFalse(ArrayUtils.contains(drop, pos));
+
+                boolean found = false;
+                int[] row = dropped.getRow(i);
+                for (int j = 0; j < cm_all.numRows(); ++j) {
+                    int[] ot_row = cm_all.getRow(j);
+                    if (Arrays.equals(row, ot_row)) {
+                        found = true;
+                        assertFalse(ArrayUtils.contains(drop, j));
+                    }
+                }
+                assertTrue(found);
             }
         }
     }
