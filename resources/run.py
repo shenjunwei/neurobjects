@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 
 import os
@@ -18,7 +19,8 @@ def clean(data_dir, animal):
   print 'Cleaning datasets for', animal
   
   __, _, datasets_path = get_paths(data_dir, animal)
-  os.system('rm %s/* -rf' % (datasets_path,))
+  os.system('rm %s -rf' % (datasets_path,))
+  os.system('mkdir -p %s' % (datasets_path,))
 
 
 def generate(data_dir, animal):
