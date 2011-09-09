@@ -15,15 +15,15 @@ import nda.util.RandomUtils;
  */
 public class QualityTests {
     public static CountMatrix withNeuronDrop(
-            RandomData random, CountMatrix matrix, int numDrop) {
+            RandomData random, CountMatrix originalMatrix, int numDrop) {
 
-        int numNeurons = matrix.numRows();
+        int numNeurons = originalMatrix.numRows();
         int[] dropped_inds = RandomUtils.randomNSample(random, numNeurons, numDrop);
 
-        CountMatrix cm = new CountMatrix(matrix);
+        CountMatrix newMatrix = new CountMatrix(originalMatrix);
 
         int new_sz = numNeurons - numDrop;
-        int[][] new_matrix = new int[new_sz][matrix.numColumns()];
+        int[][] new_values = new int[new_sz][originalMatrix.numColumns()];
 
         List<String> newNames = new ArrayList<String>();
 
@@ -32,46 +32,45 @@ public class QualityTests {
             if (ArrayUtils.contains(dropped_inds, i))
                 continue;
 
-            new_matrix[matrix_p++] = matrix.getRow(i);
-            newNames.add(matrix.getNeuronNames().get(i));
+            new_values[matrix_p++] = originalMatrix.getRow(i);
+            newNames.add(originalMatrix.getNeuronNames().get(i));
         }
 
-        cm.setMatrix(new_matrix);
-        cm.setNeuronNames(newNames);
-        return cm;
+        newMatrix.setMatrixValues(new_values);
+        newMatrix.setNeuronNames(newNames);
+        return newMatrix;
     }
 
 
     public static CountMatrix withRandomSurrogates(
-            RandomData random, CountMatrix matrix, int numSurrogates, String type) {
+            RandomData random, CountMatrix originalMatrix, int numSurrogates, String type) {
 
-        int numNeurons = matrix.numRows();
-        int numCols = matrix.numColumns();
+        int numNeurons = originalMatrix.numRows();
+        int numCols = originalMatrix.numColumns();
 
-        int[] surrogates = RandomUtils.randomNSample(random, numNeurons, numSurrogates);
+        int[] surrogate_inds = RandomUtils.randomNSample(random, numNeurons, numSurrogates);
 
-        CountMatrix cm = new CountMatrix(matrix);
+        CountMatrix newMatrix = new CountMatrix(originalMatrix);
 
-        int [][] old_matrix = matrix.getMatrix();
-        int[][] new_matrix = new int[numNeurons][numCols];
+        int [][] old_values = originalMatrix.getMatrix();
+        int[][] new_values = new int[numNeurons][numCols];
 
         for (int i = 0; i < numNeurons; ++i) {
-            if (ArrayUtils.contains(surrogates, i)) {
+            if (ArrayUtils.contains(surrogate_inds, i)) {
                 if (type.equals("uniform"))
-                    new_matrix[i] = uniformSurrogate(random, old_matrix[i]);
+                    new_values[i] = uniformSurrogate(random, old_values[i]);
                 else if (type.equals("poisson"))
-                    new_matrix[i] = poissonSurrogate(random, old_matrix[i]);
+                    new_values[i] = poissonSurrogate(random, old_values[i]);
                 else
                     throw new IllegalArgumentException("Unknown surrogate type: " + type);
             }
             else {
-                new_matrix[i] = old_matrix[i].clone();
+                new_values[i] = old_values[i].clone();
             }
         }
 
-        cm.setMatrix(new_matrix);
-        cm.setNeuronNames(matrix.getNeuronNames());
-        return cm;
+        newMatrix.setMatrixValues(new_values);
+        return newMatrix;
     }
 
 
@@ -92,7 +91,7 @@ public class QualityTests {
 
         int[] surrogate = new int[array.length];
         for (int i = 0; i < array.length; ++i)
-            surrogate[i] = Math.round(random.nextPoisson(mean));
+            surrogate[i] = (int) random.nextPoisson(mean);
 
         return surrogate;
     }

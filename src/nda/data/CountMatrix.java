@@ -354,7 +354,7 @@ public class CountMatrix implements SpikeRateMatrixI {
     }
 
 
-    public void setMatrix(int[][] matrix) {
+    public void setMatrixValues(int[][] matrix) {
         this.matrix = matrix;
     }
 
