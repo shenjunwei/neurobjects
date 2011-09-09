@@ -19,10 +19,12 @@ import nda.analysis.generation.GeneratorSetup;
 public class SQLScriptReport implements EvaluationReportI {
     private String outputFilePath;
     private String tableName;
+    private boolean truncateTable;
 
     public SQLScriptReport(EvaluatorSetup setup) {
         outputFilePath = (String) setup.getReportParameter("file");
         tableName = (String) setup.getReportParameter("table");
+        truncateTable = setup.getReportParameter("truncate_table") != null;
     }
 
 
@@ -40,7 +42,8 @@ public class SQLScriptReport implements EvaluationReportI {
         }
 
         try {
-            scriptFile.append("delete from " + escapeId(tableName) + ";\n");
+            if (truncateTable)
+                scriptFile.append("delete from " + escapeId(tableName) + ";\n");
 
             GeneratorSetup.Dataset sampleDataset = results.get(0).getDataset();
             int numClasses = sampleDataset.getClasses().size();
@@ -77,6 +80,11 @@ public class SQLScriptReport implements EvaluationReportI {
                     row.add("" + (int) (1000*(Double)result.getParameter("bin_size")));
                     /* window_size */
                     row.add("" + result.getParameter("window_width"));
+                    /* neuron_drop */
+                    if (result.getParameter("neuron_dropping") != null)
+                        row.add("" + result.getParameter("neuron_dropping"));
+                    else
+                        row.add("0");
                     /* num_instances */
                     row.add("" + (int) evaluation.numInstances());
                     /* correct */
