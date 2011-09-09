@@ -255,6 +255,7 @@ public class GeneratorSetup {
                     }
 
                     int maxDrop = (int) Math.floor(numNeurons * dropLimit);
+                    maxDrop = Math.min(maxDrop, numNeurons-1);
 
                     for (int drop = 0; drop <= maxDrop; ++drop) {
                         Dataset drop_dataset = new Dataset(dataset);
