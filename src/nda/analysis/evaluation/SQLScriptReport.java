@@ -66,10 +66,10 @@ public class SQLScriptReport implements EvaluationReportI {
 
                     /* id */
                     row.add("auto");
-                    /* neurons */
-                    row.add(result.getParameter("areas").toString());
                     /* subject */
                     row.add(dataset.getSetup().getName());
+                    /* neurons */
+                    row.add(result.getParameter("areas").toString());
                     /* object */
                     row.add(positiveLabel);
                     /* round */
@@ -80,11 +80,23 @@ public class SQLScriptReport implements EvaluationReportI {
                     row.add("" + (int) (1000*(Double)result.getParameter("bin_size")));
                     /* window_size */
                     row.add("" + result.getParameter("window_width"));
+
                     /* neuron_drop */
-                    if (result.getParameter("neuron_dropping") != null)
-                        row.add("" + result.getParameter("neuron_dropping"));
+                    if (result.getParameter("neuron_drop") != null)
+                        row.add("" + result.getParameter("neuron_drop"));
                     else
                         row.add("0");
+
+                    /* surrogate & num_surrogate */
+                    if (result.getParameter("surrogate") != null) {
+                        row.add("" + result.getParameter("surrogate_type"));
+                        row.add("" + result.getParameter("num_surrogate"));
+                    }
+                    else {
+                        row.add(null);
+                        row.add("0");
+                    }
+
                     /* num_instances */
                     row.add("" + (int) evaluation.numInstances());
                     /* correct */
@@ -121,7 +133,10 @@ public class SQLScriptReport implements EvaluationReportI {
 
 
     private static String escapeValue(String str) {
-        return "'" + str.replace("'", "''") + "'";
+        if (str != null)
+            return "'" + str.replace("'", "''") + "'";
+        else
+            return "null";
     }
 
 
