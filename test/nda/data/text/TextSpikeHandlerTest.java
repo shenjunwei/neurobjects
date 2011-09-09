@@ -263,4 +263,15 @@ public class TextSpikeHandlerTest {
         assertFalse(handler.getNeuronNames().contains("V1_04a"));
         assertFalse(handler.getNeuronNames().contains("V1_16a"));
     }
+
+
+    @Test
+    public void testCount() throws Exception {
+        assertEquals(3, TextSpikeHandler.spikeTrainCount(spikeDirPath, "HP"));
+        assertEquals(4, TextSpikeHandler.spikeTrainCount(spikeDirPath, "V1"));
+        assertEquals(2, TextSpikeHandler.spikeTrainCount(spikeDirPath, "V1_1"));
+        assertEquals(10, TextSpikeHandler.spikeTrainCount(spikeDirPath, "*"));
+        assertEquals(10, TextSpikeHandler.spikeTrainCount(spikeDirPath, ""));
+        assertEquals(6, TextSpikeHandler.spikeTrainCount(spikeDirPath, "hp, s1"));
+    }
 }

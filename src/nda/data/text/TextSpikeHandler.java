@@ -173,6 +173,20 @@ public class TextSpikeHandler implements SpikeHandlerI {
     }
 
 
+    public static int spikeTrainCount(String dataDir, String spikeFilter)
+    throws InvalidDataDirectoryException {
+
+        String[] files = listDirectory(dataDir);
+
+        int count = 0;
+        for (String filename : files)
+            if (filterMatch(filename, spikeFilter))
+                count++;
+
+        return count;
+    }
+
+
     protected void readSpikes(String dataDir, String spikeFilter, Interval spikeInterval)
     throws InvalidDataDirectoryException, InvalidDataFileException {
 
@@ -214,7 +228,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
     }
 
 
-    protected final boolean filterMatch(String name, String filter_str) {
+    protected final static boolean filterMatch(String name, String filter_str) {
         name = name.toLowerCase();
         String[] filters = filter_str.split(",");
 
