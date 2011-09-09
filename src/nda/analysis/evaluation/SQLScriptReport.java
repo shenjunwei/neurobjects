@@ -83,7 +83,7 @@ public class SQLScriptReport implements EvaluationReportI {
 
                     /* neuron_drop */
                     if (result.getParameter("neuron_drop") != null)
-                        row.add("" + result.getParameter("neuron_drop"));
+                        row.add("" + result.getParameter("num_drop"));
                     else
                         row.add("0");
 

@@ -308,7 +308,7 @@ public class GeneratorSetup {
                         double pct = Double.valueOf(tokens[i]);
 
                         Dataset sub_dataset = new Dataset(dataset);
-                        sub_dataset.name = dataset.name + "sur_fshuffle" + i;
+                        sub_dataset.name = dataset.name + "_sur_fshuffle" + i;
                         sub_dataset.localParams.put("pct_surrogate", pct);
                         sub_dataset.localParams.put("surrogate_type", "full_shuffle");
 
