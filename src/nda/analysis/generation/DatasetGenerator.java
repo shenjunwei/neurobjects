@@ -3,7 +3,6 @@ package nda.analysis.generation;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +14,7 @@ import org.apache.commons.math.random.RandomDataImpl;
 
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.PatternHandler;
+import nda.analysis.QualityTests;
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;
@@ -23,6 +23,7 @@ import nda.data.SpikeRateMatrixI;
 import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
 import nda.util.FileUtils;
+import nda.util.RandomUtils;
 import nda.util.Verbose;
 
 
@@ -144,8 +145,14 @@ public abstract class DatasetGenerator implements Verbose {
         int numTestResidual = totalTest % numLabels;
 
         List<String> labels = class_attr.getLabels();
-        Object[] residualTrainLabels = randomSample(labels, numTrainResidual);
-        Object[] residualTestLabels = randomSample(labels, numTestResidual);
+
+        Object[] residualTrainLabels = RandomUtils.randomSample(
+                randomData, labels, numTrainResidual
+        );
+
+        Object[] residualTestLabels = RandomUtils.randomSample(
+                randomData, labels, numTestResidual
+        );
 
         for (String label : labels) {
             List<double[]> patterns = new ArrayList<double[]>();
@@ -271,15 +278,12 @@ public abstract class DatasetGenerator implements Verbose {
         double binSize = (Double) dataset.getParameter("bin_size");
         int window_width = (Integer) dataset.getParameter("window_width");
 
-        SpikeRateMatrixI rateMatrix = new CountMatrix(datasetHandler, binSize);
+        CountMatrix rateMatrix = new CountMatrix(datasetHandler, binSize);
         rateMatrix.setWindowWidth(window_width);
 
         if (dataset.getParameter("neuron_dropping") != null) {
             int numDrop = (Integer) dataset.getParameter("neuron_dropping");
-            int numTotal = (Integer) dataset.getParameter("neuron_total");
-
-            int[] dropped_inds = randomNSample(numTotal, numDrop);
-            rateMatrix = rateMatrix.withNeuronDrop(dropped_inds);
+            rateMatrix = QualityTests.withNeuronDrop(randomData, rateMatrix, numDrop);
         }
 
         return rateMatrix;
@@ -324,42 +328,6 @@ public abstract class DatasetGenerator implements Verbose {
         Arrays.sort(test_inds);
         return new int[][] { train_inds, test_inds };
     }
-
-
-    protected int[] randomNSample(int n, int k) {
-        List<Integer> all = new ArrayList<Integer>();
-        for (int i = 0; i < n; ++i) all.add(i);
-
-        Object[] obj_sample = randomSample(all, k);
-
-        int[] sample = new int[obj_sample.length];
-        for (int i = 0; i < obj_sample.length; ++i)
-            sample[i] = (Integer) obj_sample[i];
-
-        return sample;
-    }
-
-
-    protected Object[] randomSample(Collection<? extends Object> objects, int k) {
-        if (k == 0)
-            return new Object[0];
-        else
-            return randomData.nextSample(objects, k);
-    }
-
-
-    /*protected static int getPatternColumn(
-            SpikeRateMatrixI rateMatrix, Interval interval, int ind) {
-
-        int old_column = rateMatrix.getCurrentColumn();
-
-        rateMatrix.setCurrentTime(interval.start());
-        int cur_pos = rateMatrix.getCurrentColumn();
-        int column = cur_pos + ind;
-
-        rateMatrix.setCurrentColumn(old_column);
-        return column;
-    }*/
 
 
     @SuppressWarnings("deprecation")
