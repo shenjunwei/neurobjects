@@ -59,6 +59,7 @@ public class DatasetGeneratorTest {
     private static String dropSetupFilepath = "data/test/test_dropping.yml";
     private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
     private static String poissonSurSetupFilepath = "data/test/test_poisson_surrogates.yml";
+    private static String fShuffleSurSetupFilepath = "data/test/test_full_shuffle.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -67,6 +68,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator drop_generator;
     private MockDatasetGenerator surrogate_gen;
     private MockDatasetGenerator poisson_sur_gen;
+    private MockDatasetGenerator fshuffle_sur_gen;
 
 
     @Before
@@ -91,6 +93,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup poisson_setup = new GeneratorSetup(poissonSurSetupFilepath);
         poisson_sur_gen = new MockDatasetGenerator(poisson_setup);
+
+        GeneratorSetup fshuffle_setup = new GeneratorSetup(fShuffleSurSetupFilepath);
+        fshuffle_sur_gen = new MockDatasetGenerator(fshuffle_setup);
     }
 
 
@@ -375,7 +380,7 @@ public class DatasetGeneratorTest {
             assertEquals("uniform", dataset.getParameter("surrogate_type"));
 
             int num_surrogate = (Integer) dataset.getParameter("num_surrogate");
-            assertTrue(dataset.getName().contains("s" + num_surrogate));
+            assertTrue(dataset.getName().contains("sur_uni" + num_surrogate));
 
             for (PatternHandler set : surrogate_gen.buildDataset(dataset)) {
                 if (dataset.getParameter("areas").equals("hp") ||
@@ -401,9 +406,33 @@ public class DatasetGeneratorTest {
             assertEquals("poisson", dataset.getParameter("surrogate_type"));
 
             int num_surrogate = (Integer) dataset.getParameter("num_surrogate");
-            assertTrue(dataset.getName().contains("s" + num_surrogate));
+            assertTrue(dataset.getName().contains("sur_poi" + num_surrogate));
 
             for (PatternHandler set : poisson_sur_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+            }
+        }
+    }
+
+
+    @Test
+    public void testFullShuffleSurrogateDatasets() throws Exception {
+        fshuffle_sur_gen.loadHandlers();
+
+        assertEquals(27, fshuffle_sur_gen.setup.getDatasets().size());
+        assertEquals(10, fshuffle_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : fshuffle_sur_gen.setup.getDatasets()) {
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNotNull(dataset.getParameter("pct_surrogate"));
+            assertEquals("full_shuffle", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("sur_fshuffle"));
+
+            for (PatternHandler set : fshuffle_sur_gen.buildDataset(dataset)) {
                 if (dataset.getParameter("areas").equals("hp") ||
                         dataset.getParameter("areas").equals("s1"))
                     assertEquals(30, set.getDimension());

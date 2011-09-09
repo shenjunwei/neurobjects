@@ -1,6 +1,7 @@
 package nda.analysis;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -24,7 +25,7 @@ import nda.util.ArrayUtils;
  */
 public class QualityTestsTest {
     // Make the test reproducible
-    private static long RANDOM_SEED = 4087141707394369619L;
+    private static long RANDOM_SEED = 6371276238402931227L;
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -125,7 +126,7 @@ public class QualityTestsTest {
                 assertTrue(ArrayUtils.getMax(row_a) <= ArrayUtils.getMax(row_b));
             }
 
-            assertEquals(num_diff, k);
+            assertEquals(k, num_diff);
         }
     }
 
@@ -156,10 +157,60 @@ public class QualityTestsTest {
                 if (!Arrays.equals(row_a, row_b))
                     num_diff++;
 
+                // may fail sometimes due to randomness
                 assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-2);
             }
 
-            assertEquals(num_diff, k);
+            assertEquals(k, num_diff);
+        }
+    }
+
+
+    @Test
+    public void testFullShuffleSurrogate() {
+        double[] pct_values = { 0.0, 0.1, 0.3, 0.5, 0.7, 0.8, 1.0 };
+
+        for (double pct : pct_values) {
+            CountMatrix sur_matrix = QualityTests.withColumnShuffle(random, cm_all, pct);
+
+            assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
+            assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
+            assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
+            assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
+            assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
+            assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
+            assertEquals(cm_all.numRows(), sur_matrix.numRows());
+            assertEquals(cm_all.getNeuronNames(), sur_matrix.getNeuronNames());
+
+            for (int r = 0; r < cm_all.numRows(); ++r) {
+                int[] row_a = cm_all.getRow(r);
+                int[] row_b = sur_matrix.getRow(r);
+
+                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-8);
+                assertEquals(ArrayUtils.getMin(row_a), ArrayUtils.getMin(row_b));
+                assertEquals(ArrayUtils.getMax(row_a), ArrayUtils.getMax(row_b));
+
+                if (pct == 0.0)
+                    assertTrue(Arrays.equals(row_a, row_b));
+                else
+                    assertFalse(Arrays.equals(row_a, row_b));
+            }
+
+            int num_diff = 0;
+
+            for (int c = 0; c < sur_matrix.numColumns(); ++c) {
+                boolean equals = true;
+
+                for (int r = 0; r < sur_matrix.numRows() && equals; ++r)
+                    if (sur_matrix.get(r, c) != cm_all.get(r, c))
+                        equals = false;
+
+                if (!equals) ++num_diff;
+            }
+
+            int numSwaps = (int) Math.round(pct * cm_all.numColumns());
+            assertTrue(num_diff >= (2*numSwaps / 3.0));
+            assertTrue(num_diff <= (numSwaps*2));
         }
     }
 }

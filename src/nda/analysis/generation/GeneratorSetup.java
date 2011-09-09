@@ -235,19 +235,31 @@ public class GeneratorSetup {
                 Class negativeClass = new Class(
                         "no", dataset, neg_labels, neg_train_s, neg_test_s);
 
-
                 // Add the classes to the dataset
                 dataset.classes.add(positiveClass);
                 dataset.classes.add(negativeClass);
 
-                boolean doNeuronDrop = paramsMap.containsKey("neuron_drop");
-                boolean doSurrogate = paramsMap.containsKey("surrogate");
+
+                boolean doNeuronDrop =
+                    paramsMap.containsKey("neuron_drop") &&
+                    !paramsMap.get("neuron_drop").equals(false);
+
+                boolean doNeuronSurrogate =
+                    paramsMap.containsKey("surrogate") && (
+                            paramsMap.get("surrogate").equals("uniform") ||
+                            paramsMap.get("surrogate").equals("poisson"));
+
+                boolean doFullSurrogate =
+                    paramsMap.containsKey("surrogate") &&
+                    ((String) paramsMap.get("surrogate")).startsWith("full_shuffle");
+
+                boolean doSurrogate = doNeuronSurrogate || doFullSurrogate;
 
                 if (doNeuronDrop && doSurrogate) {
                     throw new InvalidSetupFileException("Can't do neuron dropping and surrogates");
                 }
-                // Generate extra datasets for neuron dropping
-                else if (doNeuronDrop || doSurrogate) {
+                // Generate datasets per number or neurons transformed
+                else if (doNeuronDrop || doNeuronSurrogate) {
                     String dir = setup.getSpikesDirectory();
                     String filter = (String) dataset.getParameter("areas");
 
@@ -272,12 +284,33 @@ public class GeneratorSetup {
                             sub_dataset.localParams.put("num_drop", num_changed);
                         }
                         else {
-                            sub_dataset.name = dataset.name + "_s" + num_changed;
+                            String str;
+                            if (paramsMap.get("surrogate").equals("uniform"))
+                                str = "_sur_uni";
+                            else
+                                str = "_sur_poi";
+
+                            sub_dataset.name = dataset.name + str + num_changed;
                             sub_dataset.localParams.put("num_surrogate", num_changed);
 
                             String sur_type = (String) paramsMap.get("surrogate");
                             sub_dataset.localParams.put("surrogate_type", sur_type);
                         }
+
+                        datasets.add(sub_dataset);
+                    }
+                }
+                else if (doFullSurrogate) {
+                    String sur_spec = (String) paramsMap.get("surrogate");
+                    String[] tokens = sur_spec.split(" ");
+
+                    for (int i = 1; i < tokens.length; ++i) {
+                        double pct = Double.valueOf(tokens[i]);
+
+                        Dataset sub_dataset = new Dataset(dataset);
+                        sub_dataset.name = dataset.name + "sur_fshuffle" + i;
+                        sub_dataset.localParams.put("pct_surrogate", pct);
+                        sub_dataset.localParams.put("surrogate_type", "full_shuffle");
 
                         datasets.add(sub_dataset);
                     }
