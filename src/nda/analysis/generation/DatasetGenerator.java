@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -21,6 +22,7 @@ import nda.data.SpikeRateMatrixI;
 import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
 import nda.util.FileUtils;
+import nda.util.LRUCache;
 import nda.util.RandomUtils;
 import nda.util.Verbose;
 
@@ -34,11 +36,16 @@ import nda.util.Verbose;
  * @author Giuliano Vilela
  */
 public abstract class DatasetGenerator implements Verbose {
+
+    private static final int DEFAULT_RATE_MATRIX_CACHE_SIZE = 10;
+
+    protected boolean verbose;
+    protected RandomData randomData;
+
     protected GeneratorSetup setup;
     protected SpikeHandlerI globalSpikeHandler;
     protected BehaviorHandlerI globalBehaviorHandler;
-    protected RandomData randomData;
-    protected boolean verbose;
+    protected Map<Integer,CountMatrix> globalCountMatrixCache;
 
 
     public DatasetGenerator(String setupFilepath)
@@ -56,6 +63,22 @@ public abstract class DatasetGenerator implements Verbose {
     public abstract void generate() throws GenerationException;
 
 
+    protected void loadHandlers() throws GenerationException {
+        try {
+            String spikeDir = setup.getSpikesDirectory();
+            globalSpikeHandler = new TextSpikeHandler(spikeDir);
+
+            String behaviorFilepath = setup.getContactsFilepath();
+            globalBehaviorHandler = new TextBehaviorHandler(behaviorFilepath);
+
+            globalCountMatrixCache = new LRUCache<Integer, CountMatrix>(
+                    DEFAULT_RATE_MATRIX_CACHE_SIZE);
+        } catch (Exception e) {
+            throw new GenerationException(e);
+        }
+    }
+
+
     /**
      * Builds all rounds for a single dataset.
      * 
@@ -67,7 +90,9 @@ public abstract class DatasetGenerator implements Verbose {
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
-        CountMatrix datasetMatrix = buildDatasetRateMatrix(dataset);
+        // areas, bin_size, window_width do dataset
+        // globalSpikeHandler do generator
+        CountMatrix datasetMatrix = getDatasetRateMatrix(dataset);
 
         for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
             CountMatrix roundMatrix;
@@ -78,6 +103,7 @@ public abstract class DatasetGenerator implements Verbose {
             else
                 roundMatrix = datasetMatrix;
 
+            // usa o globalBehaviorHandler do generator
             patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix));
         }
 
@@ -189,30 +215,25 @@ public abstract class DatasetGenerator implements Verbose {
     }
 
 
-    protected void loadHandlers() throws GenerationException {
-        try {
-            String spikeDir = setup.getSpikesDirectory();
-            globalSpikeHandler = new TextSpikeHandler(spikeDir);
-
-            String behaviorFilepath = setup.getContactsFilepath();
-            globalBehaviorHandler = new TextBehaviorHandler(behaviorFilepath);
-        } catch (Exception e) {
-            throw new GenerationException(e);
-        }
-    }
-
-
-    protected CountMatrix buildDatasetRateMatrix(GeneratorSetup.Dataset dataset)
+    protected CountMatrix getDatasetRateMatrix(GeneratorSetup.Dataset dataset)
     throws GenerationException {
 
-        String neuronFilter = (String) dataset.getParameter("areas");
-        SpikeHandlerI datasetHandler = globalSpikeHandler.withFilter(neuronFilter);
+        int params_id = dataset.getParameterChoiceId();
+        CountMatrix rateMatrix = globalCountMatrixCache.get(params_id);
 
-        double binSize = (Double) dataset.getParameter("bin_size");
-        int window_width = (Integer) dataset.getParameter("window_width");
+        if (rateMatrix == null) {
+            String neuronFilter = (String) dataset.getParameter("areas");
+            SpikeHandlerI datasetHandler = globalSpikeHandler.withFilter(neuronFilter);
 
-        CountMatrix rateMatrix = new CountMatrix(datasetHandler, binSize);
-        rateMatrix.setWindowWidth(window_width);
+            double binSize = (Double) dataset.getParameter("bin_size");
+            int window_width = (Integer) dataset.getParameter("window_width");
+
+            rateMatrix = new CountMatrix(datasetHandler, binSize);
+            rateMatrix.setWindowWidth(window_width);
+
+            globalCountMatrixCache.put(params_id, rateMatrix);
+        }
+
         return rateMatrix;
     }
 

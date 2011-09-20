@@ -2,6 +2,7 @@ package nda.analysis.generation;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -18,44 +19,35 @@ import nda.analysis.PatternHandler;
  * @author Giuliano Vilela
  */
 public abstract class ParallelGenerator extends DatasetGenerator {
-    private ExecutorService executor;
 
     public ParallelGenerator(String setupFilepath)
     throws FileNotFoundException, InvalidSetupFileException {
         super(setupFilepath);
-        init();
     }
 
 
     public ParallelGenerator(GeneratorSetup _setup) {
         super(_setup);
-        init();
     }
 
 
-    protected void init() {
-        executor = null;
+    @Override
+    protected void loadHandlers() throws GenerationException {
+        super.loadHandlers();
+        globalCountMatrixCache = Collections.synchronizedMap(globalCountMatrixCache);
     }
 
 
-    public void setExecutor(ExecutorService ex) {
-        executor = ex;
-    }
-
-
-    protected ExecutorService getExecutor() {
-        if (executor == null) {
-            int numCores = Runtime.getRuntime().availableProcessors();
-            executor = Executors.newFixedThreadPool(numCores);
-        }
-
-        return executor;
+    protected ExecutorService buildExecutor() {
+        int numCores = Runtime.getRuntime().availableProcessors();
+        return Executors.newFixedThreadPool(numCores);
     }
 
 
     protected List<Future<List<PatternHandler>>> buildAll(GeneratorSetup setup)
     throws GenerationException {
-        ExecutorService executor = getExecutor();
+
+        ExecutorService executor = buildExecutor();
 
         List<Future<List<PatternHandler>>> results =
             new ArrayList<Future<List<PatternHandler>>>();
