@@ -138,7 +138,7 @@ public class DatasetGeneratorTest {
         generator.loadHandlers();
 
         for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
-            SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(dataset);
+            SpikeRateMatrixI rateMatrix = generator.getDatasetRateMatrix(dataset);
 
             Set<String> classNames = new HashSet<String>();
             for (GeneratorSetup.Class class_attr : dataset.getClasses())
@@ -186,7 +186,7 @@ public class DatasetGeneratorTest {
 
         for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
             Set<String> setNames = new HashSet<String>();
-            SpikeRateMatrixI rateMatrix = generator.buildDatasetRateMatrix(dataset);
+            SpikeRateMatrixI rateMatrix = generator.getDatasetRateMatrix(dataset);
 
             for (int round = 0; round < 10; ++round) {
                 List<PatternHandler> sets = generator.buildDatasetSingleRound(

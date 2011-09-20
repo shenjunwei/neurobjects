@@ -2,12 +2,12 @@ package nda.analysis.generation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.apache.commons.math.random.RandomDataImpl;
@@ -65,10 +65,11 @@ public class ParallelGeneratorTest {
      * Test method for {@link nda.analysis.generation.ParallelGenerator#getExecutor()}.
      */
     @Test
-    public void testGetExecutor() {
-        assertNotNull(generator.getExecutor());
-        assertFalse(generator.getExecutor().isShutdown());
-        assertFalse(generator.getExecutor().isTerminated());
+    public void testBuildExecutor() {
+        ExecutorService executor = generator.buildExecutor();
+
+        assertFalse(executor.isShutdown());
+        assertFalse(executor.isTerminated());
     }
 
 
