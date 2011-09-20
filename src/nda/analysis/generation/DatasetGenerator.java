@@ -221,16 +221,24 @@ public abstract class DatasetGenerator implements Verbose {
             int numDrop = (Integer) dataset.getParameter("num_drop");
             rateMatrix = QualityTests.withNeuronDrop(randomData, rateMatrix, numDrop);
         }
-        // per neuron surrogate (uniform or poisson)
+        // per neuron surrogate (uniform, poisson or neuron_swap)
         else if (dataset.getParameter("num_surrogate") != null) {
             int numSurrogates = (Integer) dataset.getParameter("num_surrogate");
             String surrogateType = (String) dataset.getParameter("surrogate_type");
 
             try {
-                rateMatrix = QualityTests.withRandomSurrogates(
-                        randomData, rateMatrix,
-                        numSurrogates, surrogateType);
-            } catch (IllegalArgumentException e) {
+                if (surrogateType.equals("neuron_swap")) {
+                    double pct = (Double) dataset.getParameter("pct_surrogate");
+
+                    rateMatrix = QualityTests.withNeuronSwap(
+                            randomData, rateMatrix, numSurrogates, pct);
+                }
+                else {
+                    rateMatrix = QualityTests.withRandomSurrogates(
+                            randomData, rateMatrix,
+                            numSurrogates, surrogateType);
+                }
+            } catch (Throwable e) {
                 throw new GenerationException(e);
             }
         }

@@ -30,6 +30,7 @@ public class GeneratorSetupTest {
     private GeneratorSetup test_uniform_sur;
     private GeneratorSetup test_poisson_sur;
     private GeneratorSetup test_col_swap_sur;
+    private GeneratorSetup test_neuron_swap_sur;
 
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
@@ -39,6 +40,7 @@ public class GeneratorSetupTest {
     private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
     private static String poissonSurSetupFilepath = "data/test/test_poisson_surrogates.yml";
     private static String colSwapSurSetupFilepath = "data/test/test_col_swap.yml";
+    private static String neuronSwapSurSetupFilepath = "data/test/test_neuron_swap.yml";
 
 
     @Before
@@ -49,6 +51,7 @@ public class GeneratorSetupTest {
         test_uniform_sur = new GeneratorSetup(surrogateSetupFilepath);
         test_poisson_sur = new GeneratorSetup(poissonSurSetupFilepath);
         test_col_swap_sur = new GeneratorSetup(colSwapSurSetupFilepath);
+        test_neuron_swap_sur = new GeneratorSetup(neuronSwapSurSetupFilepath);
     }
 
 
@@ -281,7 +284,7 @@ public class GeneratorSetupTest {
 
 
     @Test
-    public void testFullShuffleSurrogateSetup() {
+    public void testColSwapSurrogateSetup() {
         assertEquals(27, test_col_swap_sur.getDatasets().size());
 
         String[] ps = { "_p1", "_p2", "_p3" };
@@ -317,5 +320,35 @@ public class GeneratorSetupTest {
         assertEquals((Integer) 9, count.get("_p3"));
 
         for (int c : pct_count) assertEquals(9, c);
+    }
+
+
+    @Test
+    public void testNeuronSwapSurrogateSetup() {
+        assertEquals(39, test_neuron_swap_sur.getDatasets().size());
+
+        String[] ps = { "_p1", "_p2", "_p3" };
+        Map<String, Integer> count = new HashMap<String, Integer>();
+        for (String p : ps) count.put(p, 0);
+
+        for (GeneratorSetup.Dataset dataset : test_neuron_swap_sur.getDatasets()) {
+            for (String p : ps) {
+                if (dataset.getName().contains(p)) {
+                    count.put(p, count.get(p) + 1);
+                    break;
+                }
+            }
+
+            assertTrue(dataset.getName().contains("sur_neuron_swap"));
+            assertNotNull(dataset.getParameter("pct_surrogate"));
+            assertEquals("neuron_swap", dataset.getParameter("surrogate_type"));
+
+            double pct = (Double) dataset.getParameter("pct_surrogate");
+            assertEquals(0.5, pct, 1e-8);
+        }
+
+        assertEquals((Integer) 12, count.get("_p1"));
+        assertEquals((Integer) 12, count.get("_p2"));
+        assertEquals((Integer) 15, count.get("_p3"));
     }
 }

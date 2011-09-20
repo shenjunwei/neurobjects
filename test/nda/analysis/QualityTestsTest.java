@@ -25,7 +25,7 @@ import nda.util.ArrayUtils;
  */
 public class QualityTestsTest {
     // Make the test reproducible
-    private static long RANDOM_SEED = 6371276238402931227L;
+    private static long RANDOM_SEED = -4234200573864204844L;
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -158,7 +158,7 @@ public class QualityTestsTest {
                     num_diff++;
 
                 // may fail sometimes due to randomness
-                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-2);
+                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-1);
             }
 
             assertEquals(k, num_diff);
@@ -211,6 +211,62 @@ public class QualityTestsTest {
             int numSwaps = (int) Math.round(pct * cm_all.numColumns());
             assertTrue(num_diff >= (2*numSwaps / 3.0));
             assertTrue(num_diff <= (numSwaps*2));
+        }
+    }
+
+
+    @Test
+    public void testNeuronSwapSurrogates() {
+        double[] pct_values = { 0.0, 0.4, 0.8, 1.0 };
+
+        for (int numSurrogates = 1; numSurrogates <= 10; ++numSurrogates) {
+            for (double pct : pct_values) {
+
+                CountMatrix sur_matrix = QualityTests.withNeuronSwap(
+                        random, cm_all, numSurrogates, pct);
+
+                assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
+                assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
+                assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
+                assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
+                assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
+                assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
+                assertEquals(cm_all.numRows(), sur_matrix.numRows());
+                assertEquals(cm_all.getNeuronNames(), sur_matrix.getNeuronNames());
+
+                int diff_rows = 0;
+                int numSwaps = (int) Math.round(pct * cm_all.numColumns());
+
+                for (int r = 0; r < cm_all.numRows(); ++r) {
+                    int[] row_a = cm_all.getRow(r);
+                    int[] row_b = sur_matrix.getRow(r);
+
+                    assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-8);
+                    assertEquals(ArrayUtils.getMin(row_a), ArrayUtils.getMin(row_b));
+                    assertEquals(ArrayUtils.getMax(row_a), ArrayUtils.getMax(row_b));
+
+                    if (pct == 0.0) {
+                        assertTrue(Arrays.equals(row_a, row_b));
+                    }
+                    else if (!Arrays.equals(row_a, row_b)) {
+                        diff_rows++;
+
+                        int diff_cols = 0;
+                        for (int c = 0; c < cm_all.numColumns(); ++c)
+                            if (sur_matrix.get(r, c) != cm_all.get(r, c))
+                                diff_cols++;
+
+                        // may fail sometimes due to randomness
+                        assertTrue(diff_cols >= (numSwaps / 800));
+                        assertTrue(diff_cols <= (numSwaps*2));
+                    }
+                }
+
+                if (pct > 0.0)
+                    assertEquals(numSurrogates, diff_rows);
+                else
+                    assertEquals(0, diff_rows);
+            }
         }
     }
 }

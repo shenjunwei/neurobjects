@@ -60,6 +60,7 @@ public class DatasetGeneratorTest {
     private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
     private static String poissonSurSetupFilepath = "data/test/test_poisson_surrogates.yml";
     private static String colSwapSurSetupFilepath = "data/test/test_col_swap.yml";
+    private static String neuronSwapSurSetupFilepath = "data/test/test_neuron_swap.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -69,6 +70,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator surrogate_gen;
     private MockDatasetGenerator poisson_sur_gen;
     private MockDatasetGenerator col_swap_sur_gen;
+    private MockDatasetGenerator neuron_swap_sur_gen;
 
 
     @Before
@@ -94,8 +96,11 @@ public class DatasetGeneratorTest {
         GeneratorSetup poisson_setup = new GeneratorSetup(poissonSurSetupFilepath);
         poisson_sur_gen = new MockDatasetGenerator(poisson_setup);
 
-        GeneratorSetup fshuffle_setup = new GeneratorSetup(colSwapSurSetupFilepath);
-        col_swap_sur_gen = new MockDatasetGenerator(fshuffle_setup);
+        GeneratorSetup col_swap_setup = new GeneratorSetup(colSwapSurSetupFilepath);
+        col_swap_sur_gen = new MockDatasetGenerator(col_swap_setup);
+
+        GeneratorSetup neuron_swap_setup = new GeneratorSetup(neuronSwapSurSetupFilepath);
+        neuron_swap_sur_gen = new MockDatasetGenerator(neuron_swap_setup);
     }
 
 
@@ -433,6 +438,31 @@ public class DatasetGeneratorTest {
             assertTrue(dataset.getName().contains("sur_col_swap"));
 
             for (PatternHandler set : col_swap_sur_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+            }
+        }
+    }
+
+
+    @Test
+    public void testNeuronSwapSurrogateDatasets() throws Exception {
+        neuron_swap_sur_gen.loadHandlers();
+
+        assertEquals(39, neuron_swap_sur_gen.setup.getDatasets().size());
+        assertEquals(10, neuron_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : neuron_swap_sur_gen.setup.getDatasets()) {
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNotNull(dataset.getParameter("num_surrogate"));
+            assertNotNull(dataset.getParameter("pct_surrogate"));
+            assertEquals("neuron_swap", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("sur_neuron_swap"));
+
+            for (PatternHandler set : neuron_swap_sur_gen.buildDataset(dataset)) {
                 if (dataset.getParameter("areas").equals("hp") ||
                         dataset.getParameter("areas").equals("s1"))
                     assertEquals(30, set.getDimension());

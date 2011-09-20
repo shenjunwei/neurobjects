@@ -247,7 +247,8 @@ public class GeneratorSetup {
                 boolean doNeuronSurrogate =
                     paramsMap.containsKey("surrogate") && (
                             paramsMap.get("surrogate").equals("uniform") ||
-                            paramsMap.get("surrogate").equals("poisson"));
+                            paramsMap.get("surrogate").equals("poisson") ||
+                            ((String)paramsMap.get("surrogate")).startsWith("neuron_swap"));
 
                 boolean doFullSurrogate =
                     paramsMap.containsKey("surrogate") &&
@@ -284,17 +285,27 @@ public class GeneratorSetup {
                             sub_dataset.localParams.put("num_drop", num_changed);
                         }
                         else {
-                            String str;
-                            if (paramsMap.get("surrogate").equals("uniform"))
+                            String surrogate = (String) paramsMap.get("surrogate");
+
+                            String str = null;
+                            if (surrogate.equals("uniform"))
                                 str = "_sur_uniform";
-                            else
+                            else if (surrogate.equals("poisson"))
                                 str = "_sur_poisson";
+                            else if (surrogate.startsWith("neuron_swap"))
+                                str = "_sur_neuron_swap";
 
                             sub_dataset.name = dataset.name + str + num_changed;
                             sub_dataset.localParams.put("num_surrogate", num_changed);
 
-                            String sur_type = (String) paramsMap.get("surrogate");
-                            sub_dataset.localParams.put("surrogate_type", sur_type);
+                            if (surrogate.startsWith("neuron_swap")) {
+                                sub_dataset.localParams.put("surrogate_type", "neuron_swap");
+                                double pct = Double.valueOf(surrogate.split(" ")[1]);
+                                sub_dataset.localParams.put("pct_surrogate", pct);
+                            }
+                            else {
+                                sub_dataset.localParams.put("surrogate_type", surrogate);
+                            }
                         }
 
                         datasets.add(sub_dataset);
