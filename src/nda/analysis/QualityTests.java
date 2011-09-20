@@ -74,7 +74,28 @@ public class QualityTests {
         CountMatrix newMatrix = new CountMatrix(originalMatrix);
 
         int[][] old_values = originalMatrix.getMatrix();
-        int[][] new_values = columnShuffle(random, old_values, pct);
+        int[][] new_values = matrixColumnsSwap(random, old_values, pct);
+
+        newMatrix.setMatrixValues(new_values);
+        return newMatrix;
+    }
+
+
+    public static CountMatrix withNeuronSwap(
+            RandomData random, CountMatrix originalMatrix, int numSurrogates, double pct) {
+
+        int numNeurons = originalMatrix.numRows();
+        int[] surrogate_inds = RandomUtils.randomNSample(random, numNeurons, numSurrogates);
+
+        CountMatrix newMatrix = new CountMatrix(originalMatrix);
+
+        // new_values shares non-modified rows with old_values
+        int [][] old_values = originalMatrix.getMatrix();
+        int[][] new_values = old_values.clone();
+
+        for (int i : surrogate_inds) {
+            new_values[i] = lineColumnsSwap(random, old_values[i], pct);
+        }
 
         newMatrix.setMatrixValues(new_values);
         return newMatrix;
@@ -125,6 +146,28 @@ public class QualityTests {
                 surrogate[r][i] = surrogate[r][j];
                 surrogate[r][j] = tmp;
             }
+        }
+
+        return surrogate;
+    }
+
+
+    private static int[] lineColumnsSwap(RandomData random, int[] array, double pct) {
+        if (pct < 0 || pct > 1)
+            throw new IllegalArgumentException("Invalid pct value: " + pct);
+
+        int numColumns = array.length;
+        int numSwaps = (int) Math.round(numColumns * pct);
+
+        int[] surrogate = array.clone();
+
+        for (int k = 0; k < numSwaps; ++k) {
+            int i = random.nextInt(0, numColumns-1);
+            int j = random.nextInt(0, numColumns-1);
+
+            int tmp = surrogate[i];
+            surrogate[i] = surrogate[j];
+            surrogate[j] = tmp;
         }
 
         return surrogate;
