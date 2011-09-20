@@ -167,11 +167,11 @@ public class QualityTestsTest {
 
 
     @Test
-    public void testFullShuffleSurrogate() {
+    public void testColumnSwapSurrogates() {
         double[] pct_values = { 0.0, 0.1, 0.3, 0.5, 0.7, 0.8, 1.0 };
 
         for (double pct : pct_values) {
-            CountMatrix sur_matrix = QualityTests.withColumnShuffle(random, cm_all, pct);
+            CountMatrix sur_matrix = QualityTests.withColumnSwap(random, cm_all, pct);
 
             assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
             assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);

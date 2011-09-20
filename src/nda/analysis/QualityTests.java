@@ -50,8 +50,8 @@ public class QualityTests {
 
         CountMatrix newMatrix = new CountMatrix(originalMatrix);
 
+        // new_values shares non-modified rows with old_values
         int [][] old_values = originalMatrix.getMatrix();
-        // share non-modified rows with old_values
         int[][] new_values = old_values.clone();
 
         for (int i : surrogate_inds) {
@@ -68,7 +68,7 @@ public class QualityTests {
     }
 
 
-    public static CountMatrix withColumnShuffle(
+    public static CountMatrix withColumnSwap(
             RandomData random, CountMatrix originalMatrix, double pct) {
 
         CountMatrix newMatrix = new CountMatrix(originalMatrix);
@@ -104,7 +104,7 @@ public class QualityTests {
     }
 
 
-    private static int[][] columnShuffle(RandomData random, int[][] matrix, double pct) {
+    private static int[][] matrixColumnsSwap(RandomData random, int[][] matrix, double pct) {
         if (pct < 0 || pct > 1)
             throw new IllegalArgumentException("Invalid pct value: " + pct);
 
