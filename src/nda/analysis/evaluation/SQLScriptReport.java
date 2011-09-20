@@ -85,16 +85,30 @@ public class SQLScriptReport implements EvaluationReportI {
                     if (result.getParameter("neuron_drop") != null)
                         row.add("" + result.getParameter("num_drop"));
                     else
-                        row.add("0");
+                        row.add(null);
 
-                    /* surrogate & num_surrogate */
+                    /* surrogate, num_surrogate, pct_surrogate */
                     if (result.getParameter("surrogate") != null) {
-                        row.add("" + result.getParameter("surrogate_type"));
-                        row.add("" + result.getParameter("num_surrogate"));
+                        String type = (String) result.getParameter("surrogate_type");
+                        row.add("" + type);
+
+                        if (type.equals("uniform") || type.equals("poisson")) {
+                            row.add("" + result.getParameter("num_surrogate"));
+                            row.add(null);
+                        }
+                        else if (type.equals("col_swap")) {
+                            row.add(null);
+                            row.add("" + result.getParameter("pct_surrogate"));
+                        }
+                        else if (type.equals("neuron_swap")) {
+                            row.add("" + result.getParameter("num_surrogate"));
+                            row.add("" + result.getParameter("pct_surrogate"));
+                        }
                     }
                     else {
                         row.add(null);
-                        row.add("0");
+                        row.add(null);
+                        row.add(null);
                     }
 
                     /* num_instances */
