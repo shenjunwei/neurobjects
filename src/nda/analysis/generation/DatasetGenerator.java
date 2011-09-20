@@ -13,7 +13,6 @@ import org.apache.commons.math.random.RandomDataImpl;
 
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.PatternHandler;
-import nda.analysis.QualityTests;
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;

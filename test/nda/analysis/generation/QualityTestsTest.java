@@ -1,4 +1,4 @@
-package nda.analysis;
+package nda.analysis.generation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nda.analysis.generation.QualityTests;
 import nda.data.CountMatrix;
 import nda.data.SpikeHandlerI;
 import nda.data.text.TextSpikeHandler;
@@ -57,7 +58,7 @@ public class QualityTestsTest {
 
 
     /**
-     * Test method for {@link nda.analysis.QualityTests#withNeuronDrop(org.apache.commons.math.random.RandomData, nda.data.CountMatrix, int)}.
+     * Test method for {@link nda.analysis.generation.QualityTests#withNeuronDrop(org.apache.commons.math.random.RandomData, nda.data.CountMatrix, int)}.
      */
     @Test
     public void testWithNeuronDrop() {
