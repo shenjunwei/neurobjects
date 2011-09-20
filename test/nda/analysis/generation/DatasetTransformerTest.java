@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nda.analysis.generation.QualityTests;
 import nda.data.CountMatrix;
 import nda.data.SpikeHandlerI;
 import nda.data.text.TextSpikeHandler;
@@ -24,7 +23,7 @@ import nda.util.ArrayUtils;
 /**
  * @author Giuliano Vilela
  */
-public class QualityTestsTest {
+public class DatasetTransformerTest {
     // Make the test reproducible
     private static long RANDOM_SEED = -4234200573864204844L;
 
@@ -58,12 +57,12 @@ public class QualityTestsTest {
 
 
     /**
-     * Test method for {@link nda.analysis.generation.QualityTests#withNeuronDrop(org.apache.commons.math.random.RandomData, nda.data.CountMatrix, int)}.
+     * Test method for {@link nda.analysis.generation.DatasetTransformer#withNeuronDrop(org.apache.commons.math.random.RandomData, nda.data.CountMatrix, int)}.
      */
     @Test
     public void testWithNeuronDrop() {
         for (int k = 1; k < 10; ++k) {
-            CountMatrix dropped = QualityTests.withNeuronDrop(random, cm_all, k);
+            CountMatrix dropped = DatasetTransformer.withNeuronDrop(random, cm_all, k);
 
             assertEquals(cm_all.numColumns(), dropped.numColumns());
             assertEquals(cm_all.getBinSize(), dropped.getBinSize(), 1e-8);
@@ -100,7 +99,7 @@ public class QualityTestsTest {
     @Test
     public void testUniformSurrogates() {
         for (int k = 1; k <= 10; ++k) {
-            CountMatrix sur_matrix = QualityTests.withRandomSurrogates(
+            CountMatrix sur_matrix = DatasetTransformer.withRandomSurrogates(
                     random, cm_all, k, "uniform");
 
             assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
@@ -135,7 +134,7 @@ public class QualityTestsTest {
     @Test
     public void testPoissonSurrogates() {
         for (int k = 1; k <= 10; ++k) {
-            CountMatrix sur_matrix = QualityTests.withRandomSurrogates(
+            CountMatrix sur_matrix = DatasetTransformer.withRandomSurrogates(
                     random, cm_all, k, "poisson");
 
             assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
@@ -172,7 +171,7 @@ public class QualityTestsTest {
         double[] pct_values = { 0.0, 0.1, 0.3, 0.5, 0.7, 0.8, 1.0 };
 
         for (double pct : pct_values) {
-            CountMatrix sur_matrix = QualityTests.withColumnSwap(random, cm_all, pct);
+            CountMatrix sur_matrix = DatasetTransformer.withColumnSwap(random, cm_all, pct);
 
             assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
             assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
@@ -223,7 +222,7 @@ public class QualityTestsTest {
         for (int numSurrogates = 1; numSurrogates <= 10; ++numSurrogates) {
             for (double pct : pct_values) {
 
-                CountMatrix sur_matrix = QualityTests.withNeuronSwap(
+                CountMatrix sur_matrix = DatasetTransformer.withNeuronSwap(
                         random, cm_all, numSurrogates, pct);
 
                 assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
@@ -277,7 +276,7 @@ public class QualityTestsTest {
         double[] pct_values = { 0.0, 0.1, 0.3, 0.5, 0.7, 0.8, 1.0 };
 
         for (double pct : pct_values) {
-            CountMatrix sur_matrix = QualityTests.withMatrixSwap(random, cm_all, pct);
+            CountMatrix sur_matrix = DatasetTransformer.withMatrixSwap(random, cm_all, pct);
 
             assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
             assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);

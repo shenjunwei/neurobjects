@@ -67,10 +67,9 @@ public abstract class DatasetGenerator implements Verbose {
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
-        // We can only reuse the rateMatrix between rounds if there is no
-        // neuron dropping or surrogates
-        if (dataset.getParameter("neuron_drop") == null &&
-                dataset.getParameter("surrogate") == null) {
+        // We can only reuse the rateMatrix between rounds if it isn't going to be
+        // transformed every round
+        if (DatasetTransformer.needsTransform(dataset)) {
             SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
 
             for (int round = 1; round <= dataset.getNumberRounds(); ++round)
@@ -216,47 +215,13 @@ public abstract class DatasetGenerator implements Verbose {
         CountMatrix rateMatrix = new CountMatrix(datasetHandler, binSize);
         rateMatrix.setWindowWidth(window_width);
 
-        if (dataset.getParameter("num_drop") != null) {
-            int numDrop = (Integer) dataset.getParameter("num_drop");
-            rateMatrix = QualityTests.withNeuronDrop(randomData, rateMatrix, numDrop);
-        }
-        // per neuron surrogate (uniform, poisson or neuron_swap)
-        else if (dataset.getParameter("num_surrogate") != null) {
-            int numSurrogates = (Integer) dataset.getParameter("num_surrogate");
-            String surrogateType = (String) dataset.getParameter("surrogate_type");
-
-            try {
-                if (surrogateType.equals("neuron_swap")) {
-                    double pct = (Double) dataset.getParameter("pct_surrogate");
-
-                    rateMatrix = QualityTests.withNeuronSwap(
-                            randomData, rateMatrix, numSurrogates, pct);
-                }
-                else {
-                    rateMatrix = QualityTests.withRandomSurrogates(
-                            randomData, rateMatrix,
-                            numSurrogates, surrogateType);
-                }
-            } catch (Throwable e) {
-                throw new GenerationException(e);
+        try {
+            if (DatasetTransformer.needsTransform(dataset)) {
+                rateMatrix = DatasetTransformer.applyTransform(
+                        randomData, rateMatrix, dataset);
             }
-        }
-        // full matrix surrogate (full_shuffle)
-        else if (dataset.getParameter("pct_surrogate") != null) {
-            double pctSurrogates = (Double) dataset.getParameter("pct_surrogate");
-
-            try {
-                if (dataset.getParameter("surrogate_type").equals("col_swap")) {
-                    rateMatrix = QualityTests.withColumnSwap(
-                            randomData, rateMatrix, pctSurrogates);
-                }
-                else {
-                    rateMatrix = QualityTests.withMatrixSwap(
-                            randomData, rateMatrix, pctSurrogates);
-                }
-            } catch (Throwable e) {
-                throw new GenerationException(e);
-            }
+        } catch (Throwable e) {
+            throw new GenerationException(e);
         }
 
         return rateMatrix;
