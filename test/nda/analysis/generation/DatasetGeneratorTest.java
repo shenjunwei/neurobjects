@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,10 @@ public class DatasetGeneratorTest {
     // Make the test reproducible
     private static long RANDOM_SEED = 8146340101830722149L;
 
+    // Should be updated when the seed above changes or any of the
+    // generators are modified. This one was based on commit 3049aba.
+    byte[] INTEGRITY_HASH = {-50,70,-26,119,-98,-2,-73,105,113,-78,93,-118,-96,-21,-33,-18};
+
     // Uncomment the following block to test with a new seed
     /*static {
         RANDOM_SEED = new Random().nextLong();
@@ -54,7 +59,6 @@ public class DatasetGeneratorTest {
 
     private static String setupFilepath = "data/test/test_setup.yml";
     private static String shortSetupFilepath = "data/test/short_setup.yml";
-    //private static String realSetupFilepath = "data/real/ge4/ge4_setup.yml";
     private static String bugSetupFilepath = "data/test/bug_setup.yml";
     private static String dropSetupFilepath = "data/test/test_dropping.yml";
     private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
@@ -65,7 +69,6 @@ public class DatasetGeneratorTest {
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
-    //private MockDatasetGenerator ge4_generator;
     private MockDatasetGenerator bug_generator;
     private MockDatasetGenerator drop_generator;
     private MockDatasetGenerator surrogate_gen;
@@ -82,9 +85,6 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup short_setup = new GeneratorSetup(shortSetupFilepath);
         short_gen = new MockDatasetGenerator(short_setup);
-
-        //GeneratorSetup real_setup = new GeneratorSetup(realSetupFilepath);
-        //ge4_generator = new MockDatasetGenerator(real_setup);
 
         GeneratorSetup bug_setup = new GeneratorSetup(bugSetupFilepath);
         bug_generator = new MockDatasetGenerator(bug_setup);
@@ -131,7 +131,6 @@ public class DatasetGeneratorTest {
     public void testAddInstancesFromClass() throws Exception {
         testAddInstancesFromClass(bug_generator);
         testAddInstancesFromClass(generator);
-        //testAddInstancesFromClass(ge4_generator);
     }
 
 
@@ -499,6 +498,32 @@ public class DatasetGeneratorTest {
                     assertEquals(40, set.getDimension());
             }
         }
+    }
+
+
+    @Test
+    public void testIntegrity() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        DatasetGenerator[] generators = {
+                generator, drop_generator, surrogate_gen,
+                poisson_sur_gen, col_swap_sur_gen,
+                neuron_swap_sur_gen, matrix_swap_sur_gen
+        };
+
+        for (DatasetGenerator generator : generators) {
+            generator.loadHandlers();
+
+            for (GeneratorSetup.Dataset dataset : generator.setup.getDatasets()) {
+                for (PatternHandler data : generator.buildDataset(dataset)) {
+                    String str = data.getRelation().toString();
+                    digest.update(str.getBytes("UTF-8"));
+                }
+            }
+        }
+
+        byte[] hash = digest.digest();
+        assertTrue(nda.util.ArrayUtils.equals(INTEGRITY_HASH, hash));
     }
 
 
