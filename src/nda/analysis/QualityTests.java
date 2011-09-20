@@ -102,6 +102,19 @@ public class QualityTests {
     }
 
 
+    public static CountMatrix withMatrixSwap(
+            RandomData random, CountMatrix originalMatrix, double pct) {
+
+        CountMatrix newMatrix = new CountMatrix(originalMatrix);
+
+        int[][] old_values = originalMatrix.getMatrix();
+        int[][] new_values = matrixElementsSwap(random, old_values, pct);
+
+        newMatrix.setMatrixValues(new_values);
+        return newMatrix;
+    }
+
+
     private static int[] uniformSurrogate(RandomData random, int[] array) {
         int min = nda.util.ArrayUtils.getMin(array);
         int max = nda.util.ArrayUtils.getMax(array);
@@ -168,6 +181,33 @@ public class QualityTests {
             int tmp = surrogate[i];
             surrogate[i] = surrogate[j];
             surrogate[j] = tmp;
+        }
+
+        return surrogate;
+    }
+
+
+    private static int[][] matrixElementsSwap(RandomData random, int[][] matrix, double pct) {
+        if (pct < 0 || pct > 1)
+            throw new IllegalArgumentException("Invalid pct value: " + pct);
+
+        int numRows = matrix.length;
+        int numColumns = matrix[0].length;
+        int numSwaps = (int) Math.round((numRows * numColumns) * pct);
+
+        int[][] surrogate = new int[numRows][];
+        for (int r = 0; r < numRows; ++r)
+            surrogate[r] = matrix[r].clone();
+
+        for (int k = 0; k < numSwaps; ++k) {
+            int a = random.nextInt(0, numRows-1);
+            int b = random.nextInt(0, numColumns-1);
+            int c = random.nextInt(0, numRows-1);
+            int d = random.nextInt(0, numColumns-1);
+
+            int tmp = surrogate[a][b];
+            surrogate[a][b] = surrogate[c][d];
+            surrogate[c][d] = tmp;
         }
 
         return surrogate;

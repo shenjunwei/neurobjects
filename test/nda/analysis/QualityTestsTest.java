@@ -269,4 +269,33 @@ public class QualityTestsTest {
             }
         }
     }
+
+
+    @Test
+    public void testMatrixSwapSurrogates() {
+        double[] pct_values = { 0.0, 0.1, 0.3, 0.5, 0.7, 0.8, 1.0 };
+
+        for (double pct : pct_values) {
+            CountMatrix sur_matrix = QualityTests.withMatrixSwap(random, cm_all, pct);
+
+            assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
+            assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
+            assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
+            assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
+            assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
+            assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
+            assertEquals(cm_all.numRows(), sur_matrix.numRows());
+            assertEquals(cm_all.getNeuronNames(), sur_matrix.getNeuronNames());
+
+            int num_diff = 0;
+            for (int r = 0; r < sur_matrix.numRows(); ++r)
+                for (int c = 0; c < sur_matrix.numColumns(); ++c)
+                    if (sur_matrix.get(r, c) != cm_all.get(r, c))
+                        num_diff++;
+
+            int numSwaps = (int) Math.round(pct * (cm_all.numColumns() * cm_all.numRows()));
+            assertTrue(num_diff >= (numSwaps / 7));
+            assertTrue(num_diff <= (numSwaps*2));
+        }
+    }
 }

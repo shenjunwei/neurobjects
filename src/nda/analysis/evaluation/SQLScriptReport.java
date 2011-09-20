@@ -96,7 +96,7 @@ public class SQLScriptReport implements EvaluationReportI {
                             row.add("" + result.getParameter("num_surrogate"));
                             row.add(null);
                         }
-                        else if (type.equals("col_swap")) {
+                        else if (type.equals("col_swap") || type.equals("matrix_swap")) {
                             row.add(null);
                             row.add("" + result.getParameter("pct_surrogate"));
                         }
