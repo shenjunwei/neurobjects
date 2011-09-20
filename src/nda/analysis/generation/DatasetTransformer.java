@@ -13,8 +13,52 @@ import nda.util.RandomUtils;
 /**
  * @author Giuliano Vilela
  */
-public class QualityTests {
-    public static CountMatrix withNeuronDrop(
+public class DatasetTransformer {
+    public static boolean needsTransform(GeneratorSetup.Dataset dataset) {
+        return (dataset.getParameter("neuron_drop") != null ||
+                dataset.getParameter("surrogate") != null);
+    }
+
+
+    public static CountMatrix applyTransform(
+            RandomData random, CountMatrix rateMatrix,
+            GeneratorSetup.Dataset dataset) {
+
+        // neuron dropping
+        if (dataset.getParameter("num_drop") != null) {
+            int numDrop = (Integer) dataset.getParameter("num_drop");
+            return withNeuronDrop(random, rateMatrix, numDrop);
+        }
+        // per neuron surrogate (uniform, poisson or neuron_swap)
+        else if (dataset.getParameter("num_surrogate") != null) {
+            int numSurrogates = (Integer) dataset.getParameter("num_surrogate");
+            String surrogateType = (String) dataset.getParameter("surrogate_type");
+
+            if (surrogateType.equals("neuron_swap")) {
+                double pct = (Double) dataset.getParameter("pct_surrogate");
+                return withNeuronSwap(random, rateMatrix, numSurrogates, pct);
+            }
+            else {
+                return withRandomSurrogates(
+                        random, rateMatrix, numSurrogates, surrogateType);
+            }
+        }
+        // full matrix surrogate
+        else if (dataset.getParameter("pct_surrogate") != null) {
+            double pctSurrogates = (Double) dataset.getParameter("pct_surrogate");
+
+            if (dataset.getParameter("surrogate_type").equals("col_swap"))
+                return withColumnSwap(random, rateMatrix, pctSurrogates);
+            else
+                return withMatrixSwap(random, rateMatrix, pctSurrogates);
+        }
+        else {
+            throw new IllegalArgumentException("Dataset doesn't need a transform");
+        }
+    }
+
+
+    protected static CountMatrix withNeuronDrop(
             RandomData random, CountMatrix originalMatrix, int numDrop) {
 
         int numNeurons = originalMatrix.numRows();
@@ -42,7 +86,7 @@ public class QualityTests {
     }
 
 
-    public static CountMatrix withRandomSurrogates(
+    protected static CountMatrix withRandomSurrogates(
             RandomData random, CountMatrix originalMatrix, int numSurrogates, String type) {
 
         int numNeurons = originalMatrix.numRows();
@@ -68,7 +112,7 @@ public class QualityTests {
     }
 
 
-    public static CountMatrix withColumnSwap(
+    protected static CountMatrix withColumnSwap(
             RandomData random, CountMatrix originalMatrix, double pct) {
 
         CountMatrix newMatrix = new CountMatrix(originalMatrix);
@@ -81,7 +125,7 @@ public class QualityTests {
     }
 
 
-    public static CountMatrix withNeuronSwap(
+    protected static CountMatrix withNeuronSwap(
             RandomData random, CountMatrix originalMatrix, int numSurrogates, double pct) {
 
         int numNeurons = originalMatrix.numRows();
