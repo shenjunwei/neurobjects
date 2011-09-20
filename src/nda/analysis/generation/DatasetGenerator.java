@@ -67,19 +67,18 @@ public abstract class DatasetGenerator implements Verbose {
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
-        // We can only reuse the rateMatrix between rounds if it isn't going to be
-        // transformed every round
-        if (DatasetTransformer.needsTransform(dataset)) {
-            SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
+        CountMatrix datasetMatrix = buildDatasetRateMatrix(dataset);
 
-            for (int round = 1; round <= dataset.getNumberRounds(); ++round)
-                patterns.addAll(buildDatasetSingleRound(dataset, round, rateMatrix));
-        }
-        else {
-            for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
-                SpikeRateMatrixI rateMatrix = buildDatasetRateMatrix(dataset);
-                patterns.addAll(buildDatasetSingleRound(dataset, round, rateMatrix));
-            }
+        for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
+            CountMatrix roundMatrix;
+
+            if (DatasetTransformer.needsTransform(dataset))
+                roundMatrix = DatasetTransformer.applyTransform(
+                        randomData, datasetMatrix, dataset);
+            else
+                roundMatrix = datasetMatrix;
+
+            patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix));
         }
 
         return patterns;
@@ -203,7 +202,7 @@ public abstract class DatasetGenerator implements Verbose {
     }
 
 
-    protected SpikeRateMatrixI buildDatasetRateMatrix(GeneratorSetup.Dataset dataset)
+    protected CountMatrix buildDatasetRateMatrix(GeneratorSetup.Dataset dataset)
     throws GenerationException {
 
         String neuronFilter = (String) dataset.getParameter("areas");
@@ -214,16 +213,6 @@ public abstract class DatasetGenerator implements Verbose {
 
         CountMatrix rateMatrix = new CountMatrix(datasetHandler, binSize);
         rateMatrix.setWindowWidth(window_width);
-
-        try {
-            if (DatasetTransformer.needsTransform(dataset)) {
-                rateMatrix = DatasetTransformer.applyTransform(
-                        randomData, rateMatrix, dataset);
-            }
-        } catch (Throwable e) {
-            throw new GenerationException(e);
-        }
-
         return rateMatrix;
     }
 
