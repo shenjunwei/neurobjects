@@ -1,4 +1,4 @@
-name: test_full_shuffle
+name: test_col_swap
 spikes_dir: data/test/spikes/
 contacts_file: data/test/real_contacts.txt
 
@@ -7,7 +7,9 @@ params:
 
   bin_size: 0.250
   window_width: 10
-  surrogate: full_shuffle 0.1 0.5 1.0
+  surrogate: col_swap 0.1 0.5 1.0
+    #- neuron_swap 0.5
+    #- matrix_swap 0.9
 
 datasets:
   - name: dataset_name

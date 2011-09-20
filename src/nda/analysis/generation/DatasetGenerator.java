@@ -239,7 +239,7 @@ public abstract class DatasetGenerator implements Verbose {
             double pctSurrogates = (Double) dataset.getParameter("pct_surrogate");
 
             try {
-                rateMatrix = QualityTests.withColumnShuffle(
+                rateMatrix = QualityTests.withColumnSwap(
                         randomData, rateMatrix, pctSurrogates);
             } catch (Throwable e) {
                 throw new GenerationException(e);

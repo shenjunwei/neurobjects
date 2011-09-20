@@ -29,7 +29,7 @@ public class GeneratorSetupTest {
     private GeneratorSetup test_drop;
     private GeneratorSetup test_uniform_sur;
     private GeneratorSetup test_poisson_sur;
-    private GeneratorSetup test_fshuffle_sur;
+    private GeneratorSetup test_col_swap_sur;
 
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
@@ -38,7 +38,7 @@ public class GeneratorSetupTest {
     private static String dropSetupFilepath = "data/test/test2_dropping.yml";
     private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
     private static String poissonSurSetupFilepath = "data/test/test_poisson_surrogates.yml";
-    private static String fShuffleSurSetupFilepath = "data/test/test_full_shuffle.yml";
+    private static String colSwapSurSetupFilepath = "data/test/test_col_swap.yml";
 
 
     @Before
@@ -48,7 +48,7 @@ public class GeneratorSetupTest {
         test_drop = new GeneratorSetup(dropSetupFilepath);
         test_uniform_sur = new GeneratorSetup(surrogateSetupFilepath);
         test_poisson_sur = new GeneratorSetup(poissonSurSetupFilepath);
-        test_fshuffle_sur = new GeneratorSetup(fShuffleSurSetupFilepath);
+        test_col_swap_sur = new GeneratorSetup(colSwapSurSetupFilepath);
     }
 
 
@@ -207,7 +207,7 @@ public class GeneratorSetupTest {
     public void testNeuronDropSetup() {
         assertEquals(40, test_drop.getDatasets().size());
 
-        String[] ps = { "p1", "p2", "p3" };
+        String[] ps = { "_p1", "_p2", "_p3" };
         Map<String, Integer> count = new HashMap<String, Integer>();
 
         for (String p : ps) count.put(p, 0);
@@ -222,9 +222,9 @@ public class GeneratorSetupTest {
             assertNotNull(dataset.getParameter("num_drop"));
         }
 
-        assertEquals((Integer) 12, count.get("p1"));
-        assertEquals((Integer) 12, count.get("p2"));
-        assertEquals((Integer) 16, count.get("p3"));
+        assertEquals((Integer) 12, count.get("_p1"));
+        assertEquals((Integer) 12, count.get("_p2"));
+        assertEquals((Integer) 16, count.get("_p3"));
     }
 
 
@@ -232,7 +232,7 @@ public class GeneratorSetupTest {
     public void testUniformSurrogateSetup() {
         assertEquals(39, test_uniform_sur.getDatasets().size());
 
-        String[] ps = { "p1", "p2", "p3" };
+        String[] ps = { "_p1", "_p2", "_p3" };
         Map<String, Integer> count = new HashMap<String, Integer>();
 
         for (String p : ps) count.put(p, 0);
@@ -248,9 +248,9 @@ public class GeneratorSetupTest {
             assertEquals("uniform", dataset.getParameter("surrogate_type"));
         }
 
-        assertEquals((Integer) 12, count.get("p1"));
-        assertEquals((Integer) 12, count.get("p2"));
-        assertEquals((Integer) 15, count.get("p3"));
+        assertEquals((Integer) 12, count.get("_p1"));
+        assertEquals((Integer) 12, count.get("_p2"));
+        assertEquals((Integer) 15, count.get("_p3"));
     }
 
 
@@ -258,7 +258,7 @@ public class GeneratorSetupTest {
     public void testPoissonSurrogateSetup() {
         assertEquals(39, test_poisson_sur.getDatasets().size());
 
-        String[] ps = { "p1", "p2", "p3" };
+        String[] ps = { "_p1", "_p2", "_p3" };
         Map<String, Integer> count = new HashMap<String, Integer>();
 
         for (String p : ps) count.put(p, 0);
@@ -274,22 +274,22 @@ public class GeneratorSetupTest {
             assertEquals("poisson", dataset.getParameter("surrogate_type"));
         }
 
-        assertEquals((Integer) 12, count.get("p1"));
-        assertEquals((Integer) 12, count.get("p2"));
-        assertEquals((Integer) 15, count.get("p3"));
+        assertEquals((Integer) 12, count.get("_p1"));
+        assertEquals((Integer) 12, count.get("_p2"));
+        assertEquals((Integer) 15, count.get("_p3"));
     }
 
 
     @Test
     public void testFullShuffleSurrogateSetup() {
-        assertEquals(27, test_fshuffle_sur.getDatasets().size());
+        assertEquals(27, test_col_swap_sur.getDatasets().size());
 
-        String[] ps = { "p1", "p2", "p3" };
+        String[] ps = { "_p1", "_p2", "_p3" };
         Map<String, Integer> count = new HashMap<String, Integer>();
         for (String p : ps) count.put(p, 0);
         int[] pct_count = { 0, 0, 0 };
 
-        for (GeneratorSetup.Dataset dataset : test_fshuffle_sur.getDatasets()) {
+        for (GeneratorSetup.Dataset dataset : test_col_swap_sur.getDatasets()) {
             for (String p : ps) {
                 if (dataset.getName().contains(p)) {
                     count.put(p, count.get(p) + 1);
@@ -297,9 +297,9 @@ public class GeneratorSetupTest {
                 }
             }
 
-            assertTrue(dataset.getName().contains("sur_fshuffle"));
+            assertTrue(dataset.getName().contains("sur_col_swap"));
             assertNotNull(dataset.getParameter("pct_surrogate"));
-            assertEquals("full_shuffle", dataset.getParameter("surrogate_type"));
+            assertEquals("col_swap", dataset.getParameter("surrogate_type"));
 
             double pct = (Double) dataset.getParameter("pct_surrogate");
             if (pct == 0.1)
@@ -312,9 +312,9 @@ public class GeneratorSetupTest {
                 fail("Wrong pct");
         }
 
-        assertEquals((Integer) 9, count.get("p1"));
-        assertEquals((Integer) 9, count.get("p2"));
-        assertEquals((Integer) 9, count.get("p3"));
+        assertEquals((Integer) 9, count.get("_p1"));
+        assertEquals((Integer) 9, count.get("_p2"));
+        assertEquals((Integer) 9, count.get("_p3"));
 
         for (int c : pct_count) assertEquals(9, c);
     }
