@@ -2,7 +2,6 @@ package nda.analysis.generation;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -285,8 +284,6 @@ public abstract class DatasetGenerator implements Verbose {
         for (int i = 0; i < test; ++i)
             test_inds[i] = (Integer) test_objs[i];
 
-        Arrays.sort(train_inds);
-        Arrays.sort(test_inds);
         return new int[][] { train_inds, test_inds };
     }
 
