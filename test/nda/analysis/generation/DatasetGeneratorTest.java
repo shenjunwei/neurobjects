@@ -338,24 +338,6 @@ public class DatasetGeneratorTest {
 
 
     @Test
-    public void testNeuronDropRateMatrix() throws Exception {
-        drop_generator.loadHandlers();
-
-        assertEquals(12, drop_generator.setup.getDatasets().size());
-        assertEquals(10, drop_generator.globalSpikeHandler.getNumberOfSpikeTrains());
-
-        for (GeneratorSetup.Dataset dataset : drop_generator.setup.getDatasets()) {
-            assertNotNull(dataset.getParameter("neuron_drop"));
-            assertNotNull(dataset.getParameter("num_drop"));
-            int num_drop = (Integer) dataset.getParameter("num_drop");
-
-            SpikeRateMatrixI rateMatrix = drop_generator.buildDatasetRateMatrix(dataset);
-            assertEquals(4 - num_drop, rateMatrix.numRows());
-        }
-    }
-
-
-    @Test
     public void testNeuronDropDatasets() throws Exception {
         drop_generator.loadHandlers();
 
