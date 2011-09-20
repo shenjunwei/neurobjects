@@ -61,6 +61,7 @@ public class DatasetGeneratorTest {
     private static String poissonSurSetupFilepath = "data/test/test_poisson_surrogates.yml";
     private static String colSwapSurSetupFilepath = "data/test/test_col_swap.yml";
     private static String neuronSwapSurSetupFilepath = "data/test/test_neuron_swap.yml";
+    private static String matrixSwapSurSetupFilepath = "data/test/test_matrix_swap.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -71,6 +72,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator poisson_sur_gen;
     private MockDatasetGenerator col_swap_sur_gen;
     private MockDatasetGenerator neuron_swap_sur_gen;
+    private MockDatasetGenerator matrix_swap_sur_gen;
 
 
     @Before
@@ -101,6 +103,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup neuron_swap_setup = new GeneratorSetup(neuronSwapSurSetupFilepath);
         neuron_swap_sur_gen = new MockDatasetGenerator(neuron_swap_setup);
+
+        GeneratorSetup matrix_swap_setup = new GeneratorSetup(matrixSwapSurSetupFilepath);
+        matrix_swap_sur_gen = new MockDatasetGenerator(matrix_swap_setup);
     }
 
 
@@ -463,6 +468,30 @@ public class DatasetGeneratorTest {
             assertTrue(dataset.getName().contains("sur_neuron_swap"));
 
             for (PatternHandler set : neuron_swap_sur_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+            }
+        }
+    }
+
+
+    @Test
+    public void testMatrixSwapSurrogateDatasets() throws Exception {
+        matrix_swap_sur_gen.loadHandlers();
+
+        assertEquals(27, matrix_swap_sur_gen.setup.getDatasets().size());
+        assertEquals(10, matrix_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : matrix_swap_sur_gen.setup.getDatasets()) {
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNotNull(dataset.getParameter("pct_surrogate"));
+            assertEquals("matrix_swap", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("sur_matrix_swap"));
+
+            for (PatternHandler set : matrix_swap_sur_gen.buildDataset(dataset)) {
                 if (dataset.getParameter("areas").equals("hp") ||
                         dataset.getParameter("areas").equals("s1"))
                     assertEquals(30, set.getDimension());
