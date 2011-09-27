@@ -23,6 +23,10 @@ import java.util.Set;
  *  @date 17Mai2010
  */
 public interface BehaviorHandlerI {
+
+    public Set<String> getLabelSet();
+
+
     /**
      * \brief Returns a list of intervals tagged with a give label.
      * 
@@ -40,7 +44,10 @@ public interface BehaviorHandlerI {
      *         behavior description.
      * @author Nivaldo Vasconcelos
      */
-    public List<Interval> getIntervals(String label);
+    public List<Interval> getContactIntervals(String label);
+
+
+    public String getLabel(double time);
 
 
     /**
@@ -64,11 +71,5 @@ public interface BehaviorHandlerI {
      * @return a 2D vector with the big interval [a,b].
      * @author Nivaldo Vasconcelos
      * */
-    public Interval getEnclosingInterval(List<String> labels);
-
-
-    public String getLabel(double time);
-
-
-    public Set<String> getLabelSet();
+    public Interval getExpositionInterval();
 }

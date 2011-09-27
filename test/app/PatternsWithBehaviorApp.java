@@ -113,7 +113,7 @@ public class PatternsWithBehaviorApp {
 
         for (String label : labels) {
             System.out.println("Label: " + label);
-            for (Interval interval : behaviorHandler.getIntervals(label))
+            for (Interval interval : behaviorHandler.getContactIntervals(label))
                 addPatterns(patternHandler, rateMatrix, interval, label);
         }
 

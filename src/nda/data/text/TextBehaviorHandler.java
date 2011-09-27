@@ -140,12 +140,10 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
      * @author Nivaldo Vasconcelos
      * */
     @Override
-    public Interval getEnclosingInterval(List<String> labels) {
+    public Interval getExpositionInterval() {
         Interval global = null;
 
-        for (String label : labels) {
-            List<Interval> list = getIntervals(label);
-
+        for (List<Interval> list : behavior.values()) {
             Interval interval = list.get(0);
             interval = interval.enclose(list.get(list.size()-1));
 
@@ -179,7 +177,7 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
      * @author Nivaldo Vasconcelos
      */
     @Override
-    public List<Interval> getIntervals(String label) {
+    public List<Interval> getContactIntervals(String label) {
         return behavior.get(label);
     }
 

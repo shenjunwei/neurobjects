@@ -28,7 +28,7 @@ public class ShowBehaviorFileApp {
         // Print the labels and its intervals
         for (String label : labels) {
             System.out.printf("Label \"%s\" is defined for intervals: %s\n",
-                    label, handler.getIntervals(label));
+                    label, handler.getContactIntervals(label));
         }
     }
 }
