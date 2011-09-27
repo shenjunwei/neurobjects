@@ -342,6 +342,16 @@ public class CountMatrix implements SpikeRateMatrixI {
     }
 
 
+    public double getTimeForBin(int bin) {
+        return histogram.getTimeForBin(bin);
+    }
+
+
+    public int getBinForTime(double time) {
+        return histogram.getBinFor(time);
+    }
+
+
     @Override
     public boolean containsWindow(Interval interval) {
         return getInterval().contains(interval);

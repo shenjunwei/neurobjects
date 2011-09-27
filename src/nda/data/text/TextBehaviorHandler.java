@@ -103,7 +103,7 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
         for (String label : behavior.keySet()) {
             List<Interval> list = behavior.get(label);
 
-            Collections.sort(list, new Interval.ElementComparator());
+            Collections.sort(list, new Interval.ElementComparator(0));
             behavior.put(label, list);
         }
     }
