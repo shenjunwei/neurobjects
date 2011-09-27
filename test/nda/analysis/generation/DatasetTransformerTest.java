@@ -64,13 +64,9 @@ public class DatasetTransformerTest {
         for (int k = 1; k < 10; ++k) {
             CountMatrix dropped = DatasetTransformer.withNeuronDrop(random, cm_all, k);
 
-            assertEquals(cm_all.numColumns(), dropped.numColumns());
-            assertEquals(cm_all.getBinSize(), dropped.getBinSize(), 1e-8);
-            assertEquals(cm_all.getWindowWidth(), dropped.getWindowWidth());
-            assertEquals(cm_all.getCurrentColumn(), dropped.getCurrentColumn());
-            assertEquals(cm_all.getInterval(), dropped.getInterval());
-            assertEquals(cm_all.getTitle(), dropped.getTitle());
+            assertSameParameters(cm_all, dropped);
             assertEquals(cm_all.numRows()-k, dropped.numRows());
+            assertEquals(cm_all.numColumns(), dropped.numColumns());
 
             Set<Integer> pos_set = new HashSet<Integer>();
 
@@ -102,13 +98,8 @@ public class DatasetTransformerTest {
             CountMatrix sur_matrix = DatasetTransformer.withRandomSurrogates(
                     random, cm_all, k, "uniform");
 
-            assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
-            assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
-            assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
-            assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
-            assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
-            assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
-            assertEquals(cm_all.numRows(), sur_matrix.numRows());
+            assertSameParameters(cm_all, sur_matrix);
+            assertSameDimensions(cm_all, sur_matrix);
 
             int num_diff = 0;
             for (int i = 0; i < sur_matrix.numRows(); ++i) {
@@ -137,13 +128,8 @@ public class DatasetTransformerTest {
             CountMatrix sur_matrix = DatasetTransformer.withRandomSurrogates(
                     random, cm_all, k, "poisson");
 
-            assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
-            assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
-            assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
-            assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
-            assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
-            assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
-            assertEquals(cm_all.numRows(), sur_matrix.numRows());
+            assertSameParameters(cm_all, sur_matrix);
+            assertSameDimensions(cm_all, sur_matrix);
 
             int num_diff = 0;
             for (int i = 0; i < sur_matrix.numRows(); ++i) {
@@ -173,14 +159,8 @@ public class DatasetTransformerTest {
         for (double pct : pct_values) {
             CountMatrix sur_matrix = DatasetTransformer.withColumnSwap(random, cm_all, pct);
 
-            assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
-            assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
-            assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
-            assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
-            assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
-            assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
-            assertEquals(cm_all.numRows(), sur_matrix.numRows());
-            assertEquals(cm_all.getNeuronNames(), sur_matrix.getNeuronNames());
+            assertSameParameters(cm_all, sur_matrix);
+            assertSameDimensions(cm_all, sur_matrix);
 
             for (int r = 0; r < cm_all.numRows(); ++r) {
                 int[] row_a = cm_all.getRow(r);
@@ -225,14 +205,8 @@ public class DatasetTransformerTest {
                 CountMatrix sur_matrix = DatasetTransformer.withNeuronSwap(
                         random, cm_all, numSurrogates, pct);
 
-                assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
-                assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
-                assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
-                assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
-                assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
-                assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
-                assertEquals(cm_all.numRows(), sur_matrix.numRows());
-                assertEquals(cm_all.getNeuronNames(), sur_matrix.getNeuronNames());
+                assertSameParameters(cm_all, sur_matrix);
+                assertSameDimensions(cm_all, sur_matrix);
 
                 int diff_rows = 0;
                 int numSwaps = (int) Math.round(pct * cm_all.numColumns());
@@ -278,14 +252,8 @@ public class DatasetTransformerTest {
         for (double pct : pct_values) {
             CountMatrix sur_matrix = DatasetTransformer.withMatrixSwap(random, cm_all, pct);
 
-            assertEquals(cm_all.numColumns(), sur_matrix.numColumns());
-            assertEquals(cm_all.getBinSize(), sur_matrix.getBinSize(), 1e-8);
-            assertEquals(cm_all.getWindowWidth(), sur_matrix.getWindowWidth());
-            assertEquals(cm_all.getCurrentColumn(), sur_matrix.getCurrentColumn());
-            assertEquals(cm_all.getInterval(), sur_matrix.getInterval());
-            assertEquals(cm_all.getTitle(), sur_matrix.getTitle());
-            assertEquals(cm_all.numRows(), sur_matrix.numRows());
-            assertEquals(cm_all.getNeuronNames(), sur_matrix.getNeuronNames());
+            assertSameParameters(cm_all, sur_matrix);
+            assertSameDimensions(cm_all, sur_matrix);
 
             int num_diff = 0;
             for (int r = 0; r < sur_matrix.numRows(); ++r)
@@ -297,5 +265,21 @@ public class DatasetTransformerTest {
             assertTrue(num_diff >= (numSwaps / 7));
             assertTrue(num_diff <= (numSwaps*2));
         }
+    }
+
+
+    private void assertSameParameters(CountMatrix a, CountMatrix b) {
+        assertEquals(a.getBinSize(), b.getBinSize(), 1e-8);
+        assertEquals(a.getWindowWidth(), b.getWindowWidth());
+        assertEquals(a.getCurrentColumn(), b.getCurrentColumn());
+        assertEquals(a.getInterval(), b.getInterval());
+        assertEquals(a.getTitle(), b.getTitle());
+    }
+
+
+    private void assertSameDimensions(CountMatrix a, CountMatrix b) {
+        assertEquals(a.numColumns(), b.numColumns());
+        assertEquals(a.numRows(), b.numRows());
+        assertEquals(a.getNeuronNames(), b.getNeuronNames());
     }
 }

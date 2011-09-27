@@ -58,6 +58,9 @@ public class DatasetTransformer {
     }
 
 
+    /**
+     * neuron_drop(K)
+     */
     protected static CountMatrix withNeuronDrop(
             RandomData random, CountMatrix originalMatrix, int numDrop) {
 
@@ -86,6 +89,9 @@ public class DatasetTransformer {
     }
 
 
+    /**
+     * uniform(K) or poisson(K)
+     */
     protected static CountMatrix withRandomSurrogates(
             RandomData random, CountMatrix originalMatrix, int numSurrogates, String type) {
 
@@ -112,6 +118,9 @@ public class DatasetTransformer {
     }
 
 
+    /**
+     * col_swap(P)
+     */
     protected static CountMatrix withColumnSwap(
             RandomData random, CountMatrix originalMatrix, double pct) {
 
@@ -125,6 +134,9 @@ public class DatasetTransformer {
     }
 
 
+    /**
+     * neuron_swap(K,P)
+     */
     protected static CountMatrix withNeuronSwap(
             RandomData random, CountMatrix originalMatrix, int numSurrogates, double pct) {
 
@@ -146,7 +158,10 @@ public class DatasetTransformer {
     }
 
 
-    public static CountMatrix withMatrixSwap(
+    /**
+     * matrix_swap(P)
+     */
+    protected static CountMatrix withMatrixSwap(
             RandomData random, CountMatrix originalMatrix, double pct) {
 
         CountMatrix newMatrix = new CountMatrix(originalMatrix);
