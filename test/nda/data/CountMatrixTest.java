@@ -316,7 +316,7 @@ public class CountMatrixTest {
     @Test
     public void testFoodPatterns() throws Exception {
         BehaviorHandlerI behavior = new TextBehaviorHandler("data/test/real_contacts.txt");
-        List<Interval> intervals = behavior.getIntervals("food");
+        List<Interval> intervals = behavior.getContactIntervals("food");
 
         cm_s1.setWindowWidth(10);
 

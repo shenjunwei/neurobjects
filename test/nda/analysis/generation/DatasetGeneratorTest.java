@@ -530,7 +530,7 @@ public class DatasetGeneratorTest {
 
         loop:
             for (String label : class_attr.getLabels())
-                for (Interval interval : generator.globalBehaviorHandler.getIntervals(label))
+                for (Interval interval : generator.globalBehaviorHandler.getContactIntervals(label))
                     for (double[] p2 : rateMatrix.getPatterns(interval))
                         if (nda.util.ArrayUtils.equals(pattern, p2)) {
                             any = true;

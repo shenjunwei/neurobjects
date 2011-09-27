@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -39,20 +38,20 @@ public class TextBehaviorHandlerTest {
 
 
     /**
-     * Test method for {@link nda.data.text.TextBehaviorHandler#getIntervals(java.lang.String)}.
+     * Test method for {@link nda.data.text.TextBehaviorHandler#getContactIntervals(java.lang.String)}.
      */
     @Test
     public void testGetIntervals() {
-        assertEquals(1, b1.getIntervals("ball").size());
-        assertEquals(3, b1.getIntervals("urchin").size());
-        assertEquals(6, b2.getIntervals("ball").size());
-        assertEquals(9, b2.getIntervals("brush").size());
+        assertEquals(1, b1.getContactIntervals("ball").size());
+        assertEquals(3, b1.getContactIntervals("urchin").size());
+        assertEquals(6, b2.getContactIntervals("ball").size());
+        assertEquals(9, b2.getContactIntervals("brush").size());
 
-        assertTrue(b1.getIntervals("ball").contains(Interval.make(5808, 5812)));
-        assertTrue(b1.getIntervals("urchin").contains(Interval.make(5827, 5832)));
-        assertTrue(b2.getIntervals("brush").contains(Interval.make(3642, 3648)));
-        assertTrue(b2.getIntervals("food").contains(Interval.make(4712, 4754)));
-        assertTrue(b2.getIntervals("ball").contains(Interval.make(3630, 3631)));
+        assertTrue(b1.getContactIntervals("ball").contains(Interval.make(5808, 5812)));
+        assertTrue(b1.getContactIntervals("urchin").contains(Interval.make(5827, 5832)));
+        assertTrue(b2.getContactIntervals("brush").contains(Interval.make(3642, 3648)));
+        assertTrue(b2.getContactIntervals("food").contains(Interval.make(4712, 4754)));
+        assertTrue(b2.getContactIntervals("ball").contains(Interval.make(3630, 3631)));
     }
 
 
@@ -60,12 +59,9 @@ public class TextBehaviorHandlerTest {
      * Test method for {@link nda.data.text.TextBehaviorHandler#getEnclosingInterval(java.util.List)}.
      */
     @Test
-    public void testGetEnclosingInterval() {
-        List<String> l1 = Arrays.asList("ball", "urchin");
-        List<String> l2 = Arrays.asList("brush", "food");
-
-        assertEquals(Interval.make(5808, 5837), b1.getEnclosingInterval(l1));
-        assertEquals(Interval.make(5813, 6293), b1.getEnclosingInterval(l2));
+    public void testGetExpositionInterval() {
+        assertEquals(Interval.make(5808, 6293), b1.getExpositionInterval());
+        assertEquals(Interval.make(3610, 4754), b2.getExpositionInterval());
     }
 
 
@@ -89,12 +85,12 @@ public class TextBehaviorHandlerTest {
     @Test
     public void testGE4Contacts() {
         for (String lb_1 : ge4_bh.getLabelSet()) {
-            List<Interval> intervals_1 = ge4_bh.getIntervals(lb_1);
+            List<Interval> intervals_1 = ge4_bh.getContactIntervals(lb_1);
 
             for (String lb_2 : ge4_bh.getLabelSet()) {
                 if (lb_2.equals(lb_1)) continue;
 
-                List<Interval> intervals_2 = ge4_bh.getIntervals(lb_2);
+                List<Interval> intervals_2 = ge4_bh.getContactIntervals(lb_2);
 
                 for (Interval i1 : intervals_1)
                     for (Interval i2 : intervals_2) {

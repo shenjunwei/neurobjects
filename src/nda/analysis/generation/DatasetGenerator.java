@@ -180,7 +180,7 @@ public abstract class DatasetGenerator implements Verbose {
         for (String label : labels) {
             List<double[]> patterns = new ArrayList<double[]>();
 
-            for (Interval interval : globalBehaviorHandler.getIntervals(label))
+            for (Interval interval : globalBehaviorHandler.getContactIntervals(label))
                 patterns.addAll(rateMatrix.getPatterns(interval));
 
             int numTrain = numTrainPerLabel;
