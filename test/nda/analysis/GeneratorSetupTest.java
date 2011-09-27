@@ -26,6 +26,7 @@ import nda.analysis.generation.GeneratorSetup;
 public class GeneratorSetupTest {
     private GeneratorSetup ge5_setup;
     private GeneratorSetup test_setup;
+    private GeneratorSetup test_mparams_setup;
     private GeneratorSetup test_drop;
     private GeneratorSetup test_uniform_sur;
     private GeneratorSetup test_poisson_sur;
@@ -37,6 +38,7 @@ public class GeneratorSetupTest {
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
     private static String testSetupFilepath = "data/test/test_setup.yml";
     private static String testSetupMPFilepath = "data/test/test_multiple_params.yml";
+    private static String testMultiparams = "data/test/test_multi_params.yml";
     private static String dropSetupFilepath = "data/test/test2_dropping.yml";
     private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
     private static String poissonSurSetupFilepath = "data/test/test_poisson_surrogates.yml";
@@ -50,6 +52,7 @@ public class GeneratorSetupTest {
         ge5_setup = new GeneratorSetup(ge5SetupFilepath);
         test_setup = new GeneratorSetup(testSetupFilepath);
         test_drop = new GeneratorSetup(dropSetupFilepath);
+        test_mparams_setup = new GeneratorSetup(testMultiparams);
         test_uniform_sur = new GeneratorSetup(surrogateSetupFilepath);
         test_poisson_sur = new GeneratorSetup(poissonSurSetupFilepath);
         test_col_swap_sur = new GeneratorSetup(colSwapSurSetupFilepath);
@@ -393,5 +396,41 @@ public class GeneratorSetupTest {
         assertEquals((Integer) 9, count.get("_p3"));
 
         for (int c : pct_count) assertEquals(9, c);
+    }
+
+
+    @Test
+    public void testMultiParams() {
+        int numDatasets = 1
+        *2  // areas
+        *2  // bin size
+        *3  // widths
+        *2  // num surrogates
+        *4  // uniform e poisson (per neuron)
+        *4; // objects
+
+        assertEquals(numDatasets, test_mparams_setup.getDatasets().size());
+
+        Map<Object,Integer> counts = new HashMap<Object, Integer>();
+        String[] params = { "areas", "bin_size", "window_width", "surrogate" };
+
+        for (GeneratorSetup.Dataset dataset : test_mparams_setup.getDatasets()) {
+            for (String param : params) {
+                Object value = dataset.getParameter(param);
+                if (counts.get(value) == null)
+                    counts.put(value, 1);
+                else
+                    counts.put(value, counts.get(value)+1);
+            }
+        }
+
+        for (Object value : counts.keySet()) {
+            if (value.equals("HP") || value.equals("S1") || value instanceof Double)
+                assertEquals((Integer) (numDatasets/2), counts.get(value));
+            else if (value instanceof Integer)
+                assertEquals((Integer) (numDatasets/3), counts.get(value));
+            else
+                assertEquals((Integer) (numDatasets/2), counts.get(value));
+        }
     }
 }

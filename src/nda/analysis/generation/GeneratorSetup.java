@@ -103,39 +103,110 @@ public class GeneratorSetup {
     }
 
 
-    /**
-     * @TODO Handle cases where other parameters, besides 'neurons', are composite
-     *       Should call a recursive function
-     */
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getParameterChoices() {
-        List<Map<String, Object>> paramChoices = new ArrayList<Map<String,Object>>();
-
         Map<String, Object> paramsMap = (Map<String, Object>) topMap.get("params");
-        Object areaChoices = paramsMap.get("areas");
 
-        int choiceId = 1;
+        List<Map<String, Object>> allChoices = new ArrayList<Map<String,Object>>();
+        allChoices.add(new HashMap<String, Object>());
+        List<Map<String,Object>> allChoicesCopy;
 
-        if (areaChoices instanceof List<?>) {
-            for (String area : (List<String>) areaChoices) {
-                Map<String, Object> choice = new HashMap<String, Object>();
-                choice.put("areas", area);
-
-                for (String paramName : paramsMap.keySet())
-                    if (!paramName.equals("areas"))
-                        choice.put(paramName, paramsMap.get(paramName));
-
-                choice.put("_id", choiceId++);
-                paramChoices.add(choice);
+        // Parse areas
+        Object areas = paramsMap.get("areas");
+        allChoicesCopy = new ArrayList<Map<String,Object>>(allChoices);
+        allChoices.clear();
+        for (Map<String, Object> choice : allChoicesCopy) {
+            if (areas instanceof List<?>) {
+                for (String area : (List<String>) areas) {
+                    Map<String,Object> newChoice = new HashMap<String, Object>(choice);
+                    newChoice.put("areas", area);
+                    allChoices.add(newChoice);
+                }
             }
+            else {
+                choice.put("areas", areas);
+                allChoices.add(choice);
+            }
+        }
 
-            return paramChoices;
+        // Parse bin sizes
+        Object bin_sizes = paramsMap.get("bin_size");
+        allChoicesCopy = new ArrayList<Map<String,Object>>(allChoices);
+        allChoices.clear();
+        for (Map<String, Object> choice : allChoicesCopy) {
+            if (bin_sizes instanceof List<?>) {
+                for (double bin_size : (List<Double>) bin_sizes) {
+                    Map<String,Object> newChoice = new HashMap<String, Object>(choice);
+                    newChoice.put("bin_size", bin_size);
+                    allChoices.add(newChoice);
+                }
+            }
+            else {
+                choice.put("bin_size", bin_sizes);
+                allChoices.add(choice);
+            }
         }
-        else {
-            paramsMap.put("_id", 1);
-            paramChoices.add(paramsMap);
-            return paramChoices;
+
+        // Parse window widths
+        Object widths = paramsMap.get("window_width");
+        allChoicesCopy = new ArrayList<Map<String,Object>>(allChoices);
+        allChoices.clear();
+        for (Map<String, Object> choice : allChoicesCopy) {
+            if (widths instanceof List<?>) {
+                for (int width : (List<Integer>) widths) {
+                    Map<String,Object> newChoice = new HashMap<String, Object>(choice);
+                    newChoice.put("window_width", width);
+                    allChoices.add(newChoice);
+                }
+            }
+            else {
+                choice.put("window_width", widths);
+                allChoices.add(choice);
+            }
         }
+
+        // Parse neuron drop
+        Object drops = paramsMap.get("neuron_drop");
+        allChoicesCopy = new ArrayList<Map<String,Object>>(allChoices);
+        allChoices.clear();
+        for (Map<String, Object> choice : allChoicesCopy) {
+            if (drops instanceof List<?>) {
+                for (boolean neuron_drop : (List<Boolean>) drops) {
+                    Map<String,Object> newChoice = new HashMap<String, Object>(choice);
+                    newChoice.put("neuron_drop", neuron_drop);
+                    allChoices.add(newChoice);
+                }
+            }
+            else {
+                if (drops != null) choice.put("neuron_drop", drops);
+                allChoices.add(choice);
+            }
+        }
+
+        // Parse surrogate
+        Object surrogates = paramsMap.get("surrogate");
+        allChoicesCopy = new ArrayList<Map<String,Object>>(allChoices);
+        allChoices.clear();
+        for (Map<String, Object> choice : allChoicesCopy) {
+            if (surrogates instanceof List<?>) {
+                for (String surrogate : (List<String>) surrogates) {
+                    Map<String,Object> newChoice = new HashMap<String, Object>(choice);
+                    newChoice.put("surrogate", surrogate);
+                    allChoices.add(newChoice);
+                }
+            }
+            else {
+                if (surrogates != null) choice.put("surrogate", surrogates);
+                allChoices.add(choice);
+            }
+        }
+
+        // Store a unique id for each choice
+        int id = 1;
+        for (Map<String, Object> choice : allChoices)
+            choice.put("_id", id++);
+
+        return allChoices;
     }
 
 

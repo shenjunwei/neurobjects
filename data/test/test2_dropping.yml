@@ -7,7 +7,7 @@ params:
 
   bin_size: 0.250
   window_width: 10
-  neuron_drop: 0.8
+  neuron_drop: true
 
 datasets:
   - name: dataset_name

@@ -1,0 +1,24 @@
+name: test_multi_params
+
+spikes_dir: data/test/spikes/
+contacts_file: data/test/behaviors/test_contacts.txt
+output_dir: data/test/datasets/test_data/
+
+params:
+  areas: [HP, S1]
+  bin_size: [0.050, 0.100]
+  window_width: [5, 10, 15]
+  surrogate:
+    - uniform
+    - poisson
+
+datasets:
+  - name: ge4
+
+    rounds: 1
+    train_ratio: 0.8
+
+    1_vs_n:
+      labels: [ball, brush, food, urchin]
+      class_ratio: 2
+      total_positives: 3
