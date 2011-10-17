@@ -152,8 +152,8 @@ public class GeneratorSetupTest {
      */
     @Test
     public void testGetDatasets() {
-        assertEquals(9, test_setup.getDatasets().size());
-        assertEquals(5, ge5_setup.getDatasets().size());
+        assertEquals(8, test_setup.getDatasets().size());
+        assertEquals(4, ge5_setup.getDatasets().size());
     }
 
 
