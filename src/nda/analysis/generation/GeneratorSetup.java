@@ -272,7 +272,16 @@ public class GeneratorSetup {
             double class_ratio = Double.valueOf(typeMap.get("class_ratio").toString());
             int total_positives = (Integer) typeMap.get("total_positives");
 
-            for (String pos_label : labels) {
+            List<String> positive_labels;
+            if (n_labels > 2) {
+                positive_labels = labels;
+            }
+            else {
+                positive_labels = new ArrayList<String>();
+                positive_labels.add(labels.get(0));
+            }
+
+            for (String pos_label : positive_labels) {
                 String name;
                 if (datasetMap.containsKey("name"))
                     name = (String) datasetMap.get("name");

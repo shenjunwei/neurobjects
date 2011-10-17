@@ -37,7 +37,7 @@ public class DatasetGeneratorTest {
 
     // Should be updated when the seed above changes or any of the
     // generators are modified. This one was based on commit 3049aba.
-    byte[] INTEGRITY_HASH = {-50,70,-26,119,-98,-2,-73,105,113,-78,93,-118,-96,-21,-33,-18};
+    byte[] INTEGRITY_HASH = {-118,-91,-106,-94,45,-67,-59,78,41,123,-55,-113,16,-82,-56,-60};
     // in the future, we should separate the hash for all generators
     byte[] HASH_COL_SWAP_D = {46,70,14,53,-75,17,2,-73,-92,-66,45,124,26,-99,77,-95};
     byte[] HASH_POISSON_D = {-9,-2,27,8,90,78,87,98,-6,-78,-24,21,61,-37,123,27};
