@@ -63,7 +63,7 @@ public abstract class DatasetGenerator implements Verbose {
     public abstract void generate() throws GenerationException;
 
 
-    protected void loadHandlers() throws GenerationException {
+    public void loadHandlers() throws GenerationException {
         try {
             String spikeDir = setup.getSpikesDirectory();
             globalSpikeHandler = new TextSpikeHandler(spikeDir);
@@ -85,7 +85,7 @@ public abstract class DatasetGenerator implements Verbose {
      * This method generates dataset.getNumberRounds() * 2 PatternHandler's.
      * Each round has a train relation and a test relation.
      */
-    protected List<PatternHandler> buildDataset(GeneratorSetup.Dataset dataset)
+    public List<PatternHandler> buildDataset(GeneratorSetup.Dataset dataset)
     throws GenerationException {
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);

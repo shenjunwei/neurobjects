@@ -27,14 +27,21 @@ def generate(data_dir, animal):
   print 'Generate datasets for', animal
 
   config_path, _, _ = get_paths(data_dir, animal)
-  os.system('java -Xmx7000m -jar ~/workspace/neurobjects/dist/dataset-generator.jar -v -parallel ' + config_path)
+  os.system('java -Xmx1500m -jar ~/workspace/neurobjects/dist/dataset-generator.jar -v ' + config_path)
 
 
 def evaluate(data_dir, animal):
   print 'Evaluating datasets for', animal
  
   config_path, evaluator_path, _ = get_paths(data_dir, animal)
-  os.system('java -Xmx1000m -jar ~/workspace/neurobjects/dist/dataset-evaluator.jar -v ' +
+  os.system('java -Xmx1500m -jar ~/workspace/neurobjects/dist/dataset-evaluator.jar -v ' +
+            config_path + ' ' + evaluator_path)
+
+def fast_eval(data_dir, animal):
+  print 'Evaluating datasets for', animal, '(fast mode)'
+
+  config_path, evaluator_path, _ = get_paths(data_dir, animal)
+  os.system('java -Xmx 1500m -jar ~/workspace/neurobjects/dist/fast-evaluator.jar -v ' +
             config_path + ' ' + evaluator_path)
 
 
@@ -49,4 +56,6 @@ if __name__ == '__main__':
       generate(data_dir, animal)
     elif command == 'evaluate':
       evaluate(data_dir, animal)
+    elif command == 'fast_eval':
+      fast_eval(data_dir, animal)
 
