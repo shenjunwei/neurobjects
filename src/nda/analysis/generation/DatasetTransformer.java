@@ -86,12 +86,12 @@ public class DatasetTransformer {
                 return withMatrixSwap(random, rateMatrix, pctSurrogates);
             }
         }
-        // poisson_d
+        // poisson_d, uniform_d, average_d
         else if (dataset.getParameter("dist_surrogate") != null) {
             String sur_type = (String) dataset.getParameter("surrogate_type");
             double distSurrogates = (Double) dataset.getParameter("dist_surrogate");
 
-            return withRandomDistSurrogates(random, rateMatrix, sur_type, distSurrogates);
+            return withDistSurrogates(random, rateMatrix, sur_type, distSurrogates);
         }
         else {
             throw new IllegalArgumentException("Dataset doesn't need a transform");
@@ -240,7 +240,7 @@ public class DatasetTransformer {
     /**
      * poisson_d(D)
      */
-    protected static CountMatrix withRandomDistSurrogates(
+    protected static CountMatrix withDistSurrogates(
             RandomData random, CountMatrix originalMatrix, String type, double dist) {
 
         double t0 = originalMatrix.getInterval().start();
@@ -429,19 +429,7 @@ public class DatasetTransformer {
             for (int st_c = 0; st_c < numColumns; st_c += dist) {
                 int end_c = Math.min(st_c+dist-1, numColumns-1);
 
-                if (type.equals("poisson_d")) {
-                    long sum = 0;
-                    for (int c = st_c; c <= end_c; ++c)
-                        sum += matrix[r][c];
-
-                    double window_avg = sum / (double)(end_c-st_c+1);
-                    for (int c = st_c; c <= end_c; ++c)
-                        if (window_avg > 0)
-                            surrogate[r][c] = (int) random.nextPoisson(window_avg);
-                        else
-                            surrogate[r][c] = 0;
-                }
-                else {
+                if (type.equals("uniform_d")) {
                     int window_min = Integer.MAX_VALUE, window_max = Integer.MIN_VALUE;
                     for (int c = st_c; c <= end_c; ++c) {
                         window_min = Math.min(window_min, matrix[r][c]);
@@ -453,6 +441,27 @@ public class DatasetTransformer {
                             surrogate[r][c] = random.nextInt(window_min, window_max);
                         else
                             surrogate[r][c] = window_min;
+                }
+                else if (type.equals("poisson_d") || type.equals("mean_d")) {
+                    long sum = 0;
+                    for (int c = st_c; c <= end_c; ++c)
+                        sum += matrix[r][c];
+
+                    double window_avg = sum / (double)(end_c-st_c+1);
+                    for (int c = st_c; c <= end_c; ++c) {
+                        if (type.equals("poisson_d")) {
+                            if (window_avg > 0)
+                                surrogate[r][c] = (int) random.nextPoisson(window_avg);
+                            else
+                                surrogate[r][c] = 0;
+                        }
+                        else {
+                            surrogate[r][c] = (int) Math.round(window_avg);
+                        }
+                    }
+                }
+                else {
+                    throw new IllegalArgumentException("Illegal type value");
                 }
             }
         }
