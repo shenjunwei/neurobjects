@@ -88,10 +88,12 @@ public class DatasetGeneratorApp {
             catch (FileNotFoundException e) {
                 System.out.println("File " + setupFilepath + " doesn't exist");
                 System.out.println(e.getMessage());
+                System.exit(3);
             }
             catch (InvalidSetupFileException e) {
                 System.out.println("The setup file " + setupFilepath + " is invalid.");
                 System.out.println(e.getMessage());
+                System.exit(2);
             }
             catch (GenerationException e) {
                 System.out.println(
@@ -99,6 +101,7 @@ public class DatasetGeneratorApp {
                         + " for file " + setupFilepath + " (some files may "
                         + "have been created).");
                 System.out.println(e.getMessage());
+                System.exit(1);
             }
         }
 

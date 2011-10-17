@@ -101,15 +101,18 @@ public class FastDatasetEvaluatorApp {
             }
             catch (FileNotFoundException e) {
                 System.out.println("Setup file doesn't exist: " + e.getMessage());
+                System.exit(3);
             }
             catch (InvalidSetupFileException e) {
                 System.out.println("Setup file is invalid: " + e.getMessage());
+                System.exit(2);
             }
             catch (Exception e) {
                 System.out.println(
                         "An error ocurred when evaluating the dataset files"
                         + " for file " + eva_setup_path);
                 System.out.println(e.getMessage());
+                System.exit(1);
             }
         }
 
