@@ -7,7 +7,9 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math.random.RandomData;
 
+import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
+import nda.data.Interval;
 import nda.data.SpikeTrain;
 import nda.data.text.TextSpikeHandler;
 import nda.util.RandomUtils;
@@ -50,7 +52,7 @@ public class DatasetTransformer {
 
     public static CountMatrix applyRateMatrixTransform(
             RandomData random, CountMatrix rateMatrix,
-            GeneratorSetup.Dataset dataset) {
+            GeneratorSetup.Dataset dataset, BehaviorHandlerI behavior) {
 
         // neuron dropping
         if (dataset.getParameter("num_drop") != null) {
@@ -81,6 +83,9 @@ public class DatasetTransformer {
             else if (dataset.getParameter("surrogate_type").equals("col_swap_d")) {
                 double distSurrogates = (Double) dataset.getParameter("dist_surrogate");
                 return withColumnSwapDist(random, rateMatrix, pctSurrogates, distSurrogates);
+            }
+            else if (dataset.getParameter("surrogate_type").equals("contact_swap")) {
+                return withContactSwap(random, rateMatrix, behavior, pctSurrogates);
             }
             else {
                 return withMatrixSwap(random, rateMatrix, pctSurrogates);
@@ -276,6 +281,38 @@ public class DatasetTransformer {
     }
 
 
+    /**
+     * contact_swap(P)
+     */
+    protected static CountMatrix withContactSwap(
+            RandomData random, CountMatrix originalMatrix,
+            BehaviorHandlerI behavior, double pct) {
+
+        // Get contact indexes
+        List<Integer> contact_inds = new ArrayList<Integer>();
+
+        for (String label : behavior.getLabelSet()) {
+            for (Interval interval : behavior.getContactIntervals(label)) {
+                interval = interval.intersection(originalMatrix.getInterval());
+                if (!interval.isEmpty()) {
+                    int i1 = originalMatrix.getBinForTime(interval.start());
+                    int i2 = originalMatrix.getBinForTime(interval.end());
+                    contact_inds.add(i1);
+                    contact_inds.add(i2);
+                }
+            }
+        }
+
+        CountMatrix newMatrix = new CountMatrix(originalMatrix);
+
+        int[][] old_values = originalMatrix.getMatrix();
+        int[][] new_values = matrixIntervalsSwap(random, old_values, contact_inds, pct);
+
+        newMatrix.setMatrixValues(new_values);
+        return newMatrix;
+    }
+
+
 
     /*
      * Helper methods for the transforms
@@ -287,7 +324,7 @@ public class DatasetTransformer {
 
         int[] surrogate = new int[array.length];
         for (int i = 0; i < array.length; ++i)
-            surrogate[i] = random.nextInt(min, max);
+            surrogate[i] = RandomUtils.nextInt(random, min, max);
 
         return surrogate;
     }
@@ -317,8 +354,8 @@ public class DatasetTransformer {
             surrogate[r] = matrix[r].clone();
 
         for (int k = 0; k < numSwaps; ++k) {
-            int i = random.nextInt(0, numColumns-1);
-            int j = random.nextInt(0, numColumns-1);
+            int i = RandomUtils.nextInt(random, 0, numColumns-1);
+            int j = RandomUtils.nextInt(random, 0, numColumns-1);
 
             for (int r = 0; r < numRows; ++r) {
                 int tmp = surrogate[r][i];
@@ -341,8 +378,8 @@ public class DatasetTransformer {
         int[] surrogate = array.clone();
 
         for (int k = 0; k < numSwaps; ++k) {
-            int i = random.nextInt(0, numColumns-1);
-            int j = random.nextInt(0, numColumns-1);
+            int i = RandomUtils.nextInt(random, 0, numColumns-1);
+            int j = RandomUtils.nextInt(random, 0, numColumns-1);
 
             int tmp = surrogate[i];
             surrogate[i] = surrogate[j];
@@ -366,10 +403,11 @@ public class DatasetTransformer {
             surrogate[r] = matrix[r].clone();
 
         for (int k = 0; k < numSwaps; ++k) {
-            int a = random.nextInt(0, numRows-1);
-            int b = random.nextInt(0, numColumns-1);
-            int c = random.nextInt(0, numRows-1);
-            int d = random.nextInt(0, numColumns-1);
+
+            int a = RandomUtils.nextInt(random, 0, numRows-1);
+            int b = RandomUtils.nextInt(random, 0, numColumns-1);
+            int c = RandomUtils.nextInt(random, 0, numRows-1);
+            int d = RandomUtils.nextInt(random, 0, numColumns-1);
 
             int tmp = surrogate[a][b];
             surrogate[a][b] = surrogate[c][d];
@@ -400,10 +438,7 @@ public class DatasetTransformer {
             for (int i : swap_inds) {
                 int a = Math.max(0, i-dist);
                 int b = Math.min(i+dist, numColumns-1);
-                int j;
-
-                if (a != b) j = random.nextInt(a, b);
-                else j = a;
+                int j = RandomUtils.nextInt(random, a, b);
 
                 int tmp = surrogate[r][i];
                 surrogate[r][i] = surrogate[r][j];
@@ -481,5 +516,39 @@ public class DatasetTransformer {
         }
 
         Arrays.sort(array);
+    }
+
+
+    private static int[][] matrixIntervalsSwap(
+            RandomData random, int[][] matrix,
+            List<Integer> intervals, double pct) {
+
+        if (pct < 0 || pct > 1)
+            throw new IllegalArgumentException("Invalid pct value: " + pct);
+
+        int numRows = matrix.length;
+
+        int[][] surrogate = new int[numRows][];
+        for (int r = 0; r < numRows; ++r)
+            surrogate[r] = matrix[r].clone();
+
+        for (int i = 0; i < intervals.size()-1; i += 2) {
+            int c1 = intervals.get(i);
+            int c2 = intervals.get(i+1);
+            int numSwaps = (int)((c2-c1+1)*numRows*pct);
+
+            for (int k = 0; k < numSwaps; ++k) {
+                int rA = RandomUtils.nextInt(random, 0, numRows-1);
+                int rB = RandomUtils.nextInt(random, 0, numRows-1);
+                int cA = RandomUtils.nextInt(random, c1, c2);
+                int cB = RandomUtils.nextInt(random, c1, c2);
+
+                int tmp = surrogate[rA][cA];
+                surrogate[rA][cA] = surrogate[rB][cB];
+                surrogate[rB][cB] = tmp;
+            }
+        }
+
+        return surrogate;
     }
 }

@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.math.random.RandomData;
@@ -14,8 +16,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;
+import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
 import nda.util.ArrayUtils;
 
@@ -37,6 +41,7 @@ public class DatasetTransformerTest {
     private static RandomData random;
     private static final String spikeDir = "data/test/spikes/";
     private static TextSpikeHandler handler_all;
+    private static BehaviorHandlerI behavior;
 
     private CountMatrix cm_all;
 
@@ -44,6 +49,8 @@ public class DatasetTransformerTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         handler_all = new TextSpikeHandler(spikeDir, "*");
+        behavior = new TextBehaviorHandler("data/test/real_contacts.txt");
+
         random = new RandomDataImpl();
         ((RandomDataImpl)random).reSeed(RANDOM_SEED);
     }
@@ -469,6 +476,68 @@ public class DatasetTransformerTest {
             }
 
             assertTrue(num_diff >= (2*numRows)/3);
+        }
+    }
+
+
+    @Test
+    public void testContactSwapSurrogates() {
+        double[] pct_values = { 0.0, 0.3, 0.5, 0.8, 1.0 };
+
+        List<Integer> contact_inds = new ArrayList<Integer>();
+        for (String label : behavior.getLabelSet()) {
+            for (Interval interval : behavior.getContactIntervals(label)) {
+                int c1 = cm_all.getBinForTime(interval.start());
+                int c2 = cm_all.getBinForTime(interval.end());
+                contact_inds.add(c1);
+                contact_inds.add(c2);
+            }
+        }
+
+        for (double pct : pct_values) {
+            CountMatrix sur_matrix = DatasetTransformer.withContactSwap(
+                    random, cm_all, behavior, pct);
+
+            assertSameParameters(cm_all, sur_matrix);
+            assertSameDimensions(cm_all, sur_matrix);
+
+            int numContactCols = 0;
+            int numDiffContactCols = 0;
+            int numContactEls = 0;
+            int numDiffContactEls = 0;
+
+            for (int c = 0; c < cm_all.numColumns(); ++c) {
+                boolean found = false;
+                for (int i = 0; i < contact_inds.size()-1 && !found; i += 2)
+                    if (c >= contact_inds.get(i) && c <= contact_inds.get(i+1))
+                        found = true;
+
+                if (!found) {
+                    for (int r = 0; r < cm_all.numRows(); ++r)
+                        assertEquals(cm_all.get(r, c), sur_matrix.get(r, c));
+                }
+                else {
+                    ++numContactCols;
+                    for (int r = 0; r < cm_all.numRows(); ++r) {
+                        if (cm_all.get(r, c) != sur_matrix.get(r, c)) {
+                            ++numDiffContactCols;
+                            break;
+                        }
+                    }
+
+                    numContactEls += cm_all.numRows();
+                    for (int r = 0; r < cm_all.numRows(); ++r)
+                        if (cm_all.get(r, c) != sur_matrix.get(r, c))
+                            ++numDiffContactEls;
+                }
+            }
+
+            assertTrue(numDiffContactCols <= numContactCols);
+            assertTrue(numDiffContactCols >= (int)((7/8.)*pct*numContactCols));
+
+            assertTrue(numDiffContactEls <= numContactEls);
+            assertTrue(numDiffContactEls <= 2*(int)(pct*numContactEls));
+            assertTrue(numDiffContactEls >= (int)((1/7.)*pct*numContactEls));
         }
     }
 
