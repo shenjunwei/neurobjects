@@ -108,7 +108,8 @@ public abstract class DatasetGenerator implements Verbose {
 
                 if (DatasetTransformer.needsRateMatrixTransform(dataset))
                     roundMatrix = DatasetTransformer.applyRateMatrixTransform(
-                            randomData, datasetMatrix, dataset);
+                            randomData, datasetMatrix,
+                            dataset, globalBehaviorHandler);
                 else
                     roundMatrix = datasetMatrix;
 

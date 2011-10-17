@@ -328,7 +328,8 @@ public class GeneratorSetup {
                             ((String) paramsMap.get("surrogate")).startsWith("poisson_d") ||
                             ((String) paramsMap.get("surrogate")).startsWith("uniform_d") ||
                             ((String) paramsMap.get("surrogate")).startsWith("spike_jitter") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("mean_d"));
+                            ((String) paramsMap.get("surrogate")).startsWith("mean_d") ||
+                            ((String) paramsMap.get("surrogate")).startsWith("contact_swap"));
 
                 boolean doSurrogate = doNeuronSurrogate || doFullSurrogate;
 
