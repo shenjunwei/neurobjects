@@ -58,6 +58,11 @@ public class DatasetTransformer {
                 return withMatrixSwap(random, rateMatrix, pctSurrogates);
             }
         }
+        // poisson_d
+        else if (dataset.getParameter("dist_surrogate") != null) {
+            double distSurrogates = (Double) dataset.getParameter("dist_surrogate");
+            return withPoissonDistSurrogates(random, rateMatrix, distSurrogates);
+        }
         else {
             throw new IllegalArgumentException("Dataset doesn't need a transform");
         }
@@ -202,6 +207,30 @@ public class DatasetTransformer {
     }
 
 
+    /**
+     * poisson_d(D)
+     */
+    protected static CountMatrix withPoissonDistSurrogates(
+            RandomData random, CountMatrix originalMatrix, double dist) {
+
+        double t0 = originalMatrix.getInterval().start();
+        double t1 = t0 + dist;
+        int dist_bins = originalMatrix.getBinForTime(t1); // dist in bin units
+
+        if (dist_bins <= 0)
+            throw new IllegalArgumentException("Invalid value for dist: " + dist);
+
+        // shuffle matrix
+        CountMatrix newMatrix = new CountMatrix(originalMatrix);
+
+        int[][] old_values = originalMatrix.getMatrix();
+        int[][] new_values = matrixPoissonDist(random, old_values, dist_bins);
+
+        newMatrix.setMatrixValues(new_values);
+        return newMatrix;
+    }
+
+
 
     /*
      * Helper methods for the transforms
@@ -334,6 +363,37 @@ public class DatasetTransformer {
                 int tmp = surrogate[r][i];
                 surrogate[r][i] = surrogate[r][j];
                 surrogate[r][j] = tmp;
+            }
+        }
+
+        return surrogate;
+    }
+
+
+    private static int[][] matrixPoissonDist(
+            RandomData random, int[][] matrix, int dist) {
+
+        int numRows = matrix.length;
+        int numColumns = matrix[0].length;
+
+        int[][] surrogate = new int[numRows][];
+        for (int r = 0; r < numRows; ++r)
+            surrogate[r] = new int[numColumns];
+
+        for (int r = 0; r < numRows; ++r) {
+            for (int st_c = 0; st_c < numColumns; st_c += dist) {
+                int end_c = Math.min(st_c+dist-1, numColumns-1);
+
+                long sum = 0;
+                for (int c = st_c; c <= end_c; ++c)
+                    sum += matrix[r][c];
+
+                double window_avg = sum / (double)(end_c-st_c+1);
+                for (int c = st_c; c <= end_c; ++c)
+                    if (window_avg > 0)
+                        surrogate[r][c] = (int) random.nextPoisson(window_avg);
+                    else
+                        surrogate[r][c] = 0;
             }
         }
 

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 26, 2011 at 02:25 PM
+-- Generation Time: Sep 27, 2011 at 09:44 AM
 -- Server version: 5.1.53
 -- PHP Version: 5.3.5
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `results` (
   `bin_size` double NOT NULL,
   `window_size` int(11) NOT NULL,
   `neuron_drop` int(11) DEFAULT NULL,
-  `surrogate` enum('uniform','poisson','col_swap','neuron_swap','matrix_swap','col_swap_d') DEFAULT NULL,
+  `surrogate` enum('uniform','poisson','col_swap','neuron_swap','matrix_swap','col_swap_d','poisson_d') DEFAULT NULL,
   `num_surrogate` int(11) DEFAULT NULL,
   `pct_surrogate` double DEFAULT NULL,
   `dist_surrogate` double DEFAULT NULL,
