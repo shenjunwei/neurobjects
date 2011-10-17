@@ -28,11 +28,11 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `results` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `animal` varchar(15) NOT NULL,
-  `area` varchar(15) NOT NULL,
-  `object` varchar(15) NOT NULL,
+  `animal` varchar(25) NOT NULL,
+  `area` varchar(25) NOT NULL,
+  `object` varchar(25) NOT NULL,
   `round` int(11) NOT NULL,
-  `model` varchar(30) NOT NULL,
+  `model` varchar(40) NOT NULL,
   `bin_size` double NOT NULL,
   `window_size` int(11) NOT NULL,
   `neuron_drop` int(11) DEFAULT NULL,
