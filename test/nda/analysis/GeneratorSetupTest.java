@@ -38,6 +38,7 @@ public class GeneratorSetupTest {
     private GeneratorSetup test_poisson_d_sur;
     private GeneratorSetup test_uniform_d_sur;
     private GeneratorSetup test_spike_jitter_sur;
+    private GeneratorSetup test_mean_d_sur;
 
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
@@ -54,6 +55,7 @@ public class GeneratorSetupTest {
     private static String poissonDistSurSetupFilepath = "data/test/test_poisson_d.yml";
     private static String uniformDistSurSetupFilepath = "data/test/test_uniform_d.yml";
     private static String spikeJitterSurSetupFilepath = "data/test/test_spike_jitter.yml";
+    private static String meanDistSurSetupFilepath = "data/test/test_mean_d.yml";
 
 
     @Before
@@ -71,6 +73,7 @@ public class GeneratorSetupTest {
         test_poisson_d_sur = new GeneratorSetup(poissonDistSurSetupFilepath);
         test_uniform_d_sur = new GeneratorSetup(uniformDistSurSetupFilepath);
         test_spike_jitter_sur = new GeneratorSetup(spikeJitterSurSetupFilepath);
+        test_mean_d_sur = new GeneratorSetup(meanDistSurSetupFilepath);
     }
 
 
@@ -594,6 +597,44 @@ public class GeneratorSetupTest {
             assertNull(dataset.getParameter("pct_surrogate"));
             assertNotNull(dataset.getParameter("dist_surrogate"));
             assertEquals("spike_jitter", dataset.getParameter("surrogate_type"));
+
+            double dist = (Double) dataset.getParameter("dist_surrogate");
+            if (dist == 0.3)
+                dist_count[0]++;
+            else if (dist == 2.5)
+                dist_count[1]++;
+            else if (dist == 5.0)
+                dist_count[2]++;
+            else
+                fail("Wrong dist");
+        }
+
+        for (int c : count.values()) assertEquals(27/3, c);
+        for (int c : dist_count) assertEquals(27/3, c);
+    }
+
+
+    @Test
+    public void testMeanDistSurrogateSetup() {
+        assertEquals(27, test_mean_d_sur.getDatasets().size());
+
+        String[] ps = { "_p1", "_p2", "_p3" };
+        Map<String, Integer> count = new HashMap<String, Integer>();
+        for (String p : ps) count.put(p, 0);
+        int[] dist_count = { 0, 0, 0 };
+
+        for (GeneratorSetup.Dataset dataset : test_mean_d_sur.getDatasets()) {
+            for (String p : ps) {
+                if (dataset.getName().contains(p)) {
+                    count.put(p, count.get(p) + 1);
+                    break;
+                }
+            }
+
+            assertTrue(dataset.getName().contains("sur_mean_d"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("dist_surrogate"));
+            assertEquals("mean_d", dataset.getParameter("surrogate_type"));
 
             double dist = (Double) dataset.getParameter("dist_surrogate");
             if (dist == 0.3)

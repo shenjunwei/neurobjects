@@ -316,7 +316,7 @@ public class DatasetTransformerTest {
         double[] dist_values = { 0.3, 0.5, 1.0, 2.5, 5.0, 10, 15, 20 };
 
         for (double dist : dist_values) {
-            CountMatrix sur_matrix = DatasetTransformer.withRandomDistSurrogates(
+            CountMatrix sur_matrix = DatasetTransformer.withDistSurrogates(
                     random, cm_all, "poisson_d", dist);
 
             assertSameParameters(cm_all, sur_matrix);
@@ -357,7 +357,7 @@ public class DatasetTransformerTest {
         double[] dist_values = { 0.5, 0.6, 1.0, 2.5, 5.0, 10, 15, 20 };
 
         for (double dist : dist_values) {
-            CountMatrix sur_matrix = DatasetTransformer.withRandomDistSurrogates(
+            CountMatrix sur_matrix = DatasetTransformer.withDistSurrogates(
                     random, cm_all, "uniform_d", dist);
 
             assertSameParameters(cm_all, sur_matrix);
@@ -424,6 +424,51 @@ public class DatasetTransformerTest {
                 for (int j = 0; j < old_times.length; ++j)
                     assertEquals(old_times[j], new_times[j], dist);
             }
+        }
+    }
+
+
+    @Test
+    public void testMeanDistSurrogates() throws Exception {
+        double[] dist_values = { 0.5, 0.6, 1.0, 2.5, 5.0, 10, 15, 20 };
+
+        for (double dist : dist_values) {
+            CountMatrix sur_matrix = DatasetTransformer.withDistSurrogates(
+                    random, cm_all, "mean_d", dist);
+
+            assertSameParameters(cm_all, sur_matrix);
+            assertSameDimensions(cm_all, sur_matrix);
+
+            int numRows = sur_matrix.numRows();
+            int numColumns = sur_matrix.numColumns();
+
+            int num_diff = 0;
+            for (int r = 0; r < numRows; ++r) {
+                int[] row_a = cm_all.getRow(r);
+                int[] row_b = sur_matrix.getRow(r);
+
+                if (!ArrayUtils.equals(row_a, row_b))
+                    num_diff++;
+
+                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 0.3);
+
+                double t0 = sur_matrix.getInterval().start();
+                double t1 = t0 + dist;
+                int dist_bins = sur_matrix.getBinForTime(t1);
+
+                for (int st_c = 0; st_c < numColumns; st_c += dist_bins) {
+                    int end_c = Math.min(st_c+dist_bins-1, numColumns-1);
+
+                    int[] window_a = Arrays.copyOfRange(row_a, st_c, end_c+1);
+                    int[] window_b = Arrays.copyOfRange(row_b, st_c, end_c+1);
+
+                    int mean = (int) Math.round(ArrayUtils.getAverage(window_a));
+                    for (int value : window_b)
+                        assertEquals(mean, value);
+                }
+            }
+
+            assertTrue(num_diff >= (2*numRows)/3);
         }
     }
 

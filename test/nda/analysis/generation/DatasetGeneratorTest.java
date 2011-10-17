@@ -43,6 +43,7 @@ public class DatasetGeneratorTest {
     byte[] HASH_POISSON_D = {-9,-2,27,8,90,78,87,98,-6,-78,-24,21,61,-37,123,27};
     byte[] HASH_UNIFORM_D = {77,-42,43,-113,-41,-41,-77,-45,-89,-49,36,61,96,-128,79,-44};
     byte[] HASH_SPIKE_JITTER = {-59,85,-73,-80,-106,-127,71,34,-47,-12,-100,105,-126,-12,-54,106};
+    byte[] HASH_MEAN_D = {119,20,-76,38,123,95,64,23,25,52,-121,-48,-85,-13,-126,73};
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -77,6 +78,7 @@ public class DatasetGeneratorTest {
     private static String poissonDistSurSetupFilepath = "data/test/test_poisson_d.yml";
     private static String uniformDistSurSetupFilepath = "data/test/test_uniform_d.yml";
     private static String spikeJitterSurSetupFilepath = "data/test/test_spike_jitter.yml";
+    private static String meanDistSurSetupFilepath = "data/test/test_mean_d.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -91,6 +93,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator poisson_d_sur_gen;
     private MockDatasetGenerator uniform_d_sur_gen;
     private MockDatasetGenerator spike_jitter_sur_gen;
+    private MockDatasetGenerator mean_d_sur_gen;
 
 
     @Before
@@ -133,6 +136,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup spike_jitter_setup = new GeneratorSetup(spikeJitterSurSetupFilepath);
         spike_jitter_sur_gen = new MockDatasetGenerator(spike_jitter_setup);
+
+        GeneratorSetup mean_d_setup = new GeneratorSetup(meanDistSurSetupFilepath);
+        mean_d_sur_gen = new MockDatasetGenerator(mean_d_setup);
     }
 
 
@@ -669,6 +675,42 @@ public class DatasetGeneratorTest {
 
         byte[] hash = digest.digest();
         assertTrue(nda.util.ArrayUtils.equals(HASH_SPIKE_JITTER, hash));
+    }
+
+
+    @Test
+    public void testMeanDistSurrogateDatasets() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        mean_d_sur_gen.loadHandlers();
+
+        assertEquals(27, mean_d_sur_gen.setup.getDatasets().size());
+        assertEquals(10, mean_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : mean_d_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("dist_surrogate"));
+            assertEquals("mean_d", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("sur_mean_d"));
+
+            for (PatternHandler set : mean_d_sur_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+
+                String str = set.toWekaFormat();
+                digest.update(str.getBytes("UTF-8"));
+            }
+        }
+
+        byte[] hash = digest.digest();
+        assertTrue(nda.util.ArrayUtils.equals(HASH_MEAN_D, hash));
     }
 
 
