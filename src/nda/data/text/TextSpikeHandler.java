@@ -25,6 +25,17 @@ public class TextSpikeHandler implements SpikeHandlerI {
     protected final static String DEFAULT_FILTER = "";
 
 
+    public TextSpikeHandler(TextSpikeHandler handler) {
+        animalName = handler.animalName;
+        spikeFilter = handler.spikeFilter;
+        dataDir = handler.dataDir;
+        spikeInterval = handler.spikeInterval;
+
+        neurons = new ArrayList<SpikeTrain>(handler.neurons.size());
+        for (SpikeTrain spikeTrain : handler.neurons)
+            neurons.add(new TextSpikeTrain(spikeTrain));
+    }
+
     public TextSpikeHandler(String dir)
     throws InvalidDataFileException, InvalidDataDirectoryException {
         this(dir, DEFAULT_FILTER);

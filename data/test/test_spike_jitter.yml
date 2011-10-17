@@ -1,0 +1,20 @@
+name: test_spike_jitter
+spikes_dir: data/test/spikes/
+contacts_file: data/test/real_contacts.txt
+
+params:
+  areas: [hp, s1, v1]
+
+  bin_size: 0.250
+  window_width: 10
+  surrogate: spike_jitter 0.3 2.5 5.0
+
+datasets:
+  - name: dataset_name
+    rounds: 1
+    train_ratio: 0.8
+
+    1_vs_n:
+      labels: [ball, food, urchin]
+      class_ratio: 2
+      total_positives: 3

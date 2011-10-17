@@ -1,6 +1,7 @@
 package nda.analysis.generation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +42,7 @@ public class DatasetGeneratorTest {
     byte[] HASH_COL_SWAP_D = {46,70,14,53,-75,17,2,-73,-92,-66,45,124,26,-99,77,-95};
     byte[] HASH_POISSON_D = {-9,-2,27,8,90,78,87,98,-6,-78,-24,21,61,-37,123,27};
     byte[] HASH_UNIFORM_D = {77,-42,43,-113,-41,-41,-77,-45,-89,-49,36,61,96,-128,79,-44};
+    byte[] HASH_SPIKE_JITTER = {-59,85,-73,-80,-106,-127,71,34,-47,-12,-100,105,-126,-12,-54,106};
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -74,6 +76,7 @@ public class DatasetGeneratorTest {
     private static String colSwapDistSurSetupFilepath = "data/test/test_col_swap_d.yml";
     private static String poissonDistSurSetupFilepath = "data/test/test_poisson_d.yml";
     private static String uniformDistSurSetupFilepath = "data/test/test_uniform_d.yml";
+    private static String spikeJitterSurSetupFilepath = "data/test/test_spike_jitter.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -87,6 +90,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator col_swap_d_sur_gen;
     private MockDatasetGenerator poisson_d_sur_gen;
     private MockDatasetGenerator uniform_d_sur_gen;
+    private MockDatasetGenerator spike_jitter_sur_gen;
 
 
     @Before
@@ -126,6 +130,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup uniform_d_setup = new GeneratorSetup(uniformDistSurSetupFilepath);
         uniform_d_sur_gen = new MockDatasetGenerator(uniform_d_setup);
+
+        GeneratorSetup spike_jitter_setup = new GeneratorSetup(spikeJitterSurSetupFilepath);
+        spike_jitter_sur_gen = new MockDatasetGenerator(spike_jitter_setup);
     }
 
 
@@ -365,6 +372,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, drop_generator.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : drop_generator.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("neuron_drop"));
             assertNotNull(dataset.getParameter("num_drop"));
 
@@ -386,6 +396,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, surrogate_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : surrogate_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("surrogate"));
             assertNotNull(dataset.getParameter("num_surrogate"));
             assertEquals("uniform", dataset.getParameter("surrogate_type"));
@@ -412,6 +425,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, poisson_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : poisson_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("surrogate"));
             assertNotNull(dataset.getParameter("num_surrogate"));
             assertEquals("poisson", dataset.getParameter("surrogate_type"));
@@ -438,6 +454,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, col_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : col_swap_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("surrogate"));
             assertNotNull(dataset.getParameter("pct_surrogate"));
             assertEquals("col_swap", dataset.getParameter("surrogate_type"));
@@ -462,6 +481,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, neuron_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : neuron_swap_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("surrogate"));
             assertNotNull(dataset.getParameter("num_surrogate"));
             assertNotNull(dataset.getParameter("pct_surrogate"));
@@ -487,6 +509,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, matrix_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : matrix_swap_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("surrogate"));
             assertNotNull(dataset.getParameter("pct_surrogate"));
             assertEquals("matrix_swap", dataset.getParameter("surrogate_type"));
@@ -513,6 +538,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, col_swap_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : col_swap_d_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("surrogate"));
             assertNotNull(dataset.getParameter("pct_surrogate"));
             assertNotNull(dataset.getParameter("dist_surrogate"));
@@ -546,6 +574,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, poisson_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : poisson_d_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("surrogate"));
             assertNull(dataset.getParameter("pct_surrogate"));
             assertNotNull(dataset.getParameter("dist_surrogate"));
@@ -579,6 +610,9 @@ public class DatasetGeneratorTest {
         assertEquals(10, uniform_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
 
         for (GeneratorSetup.Dataset dataset : uniform_d_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertTrue(DatasetTransformer.needsRateMatrixTransform(dataset));
+
             assertNotNull(dataset.getParameter("surrogate"));
             assertNull(dataset.getParameter("pct_surrogate"));
             assertNotNull(dataset.getParameter("dist_surrogate"));
@@ -599,6 +633,42 @@ public class DatasetGeneratorTest {
 
         byte[] hash = digest.digest();
         assertTrue(nda.util.ArrayUtils.equals(HASH_UNIFORM_D, hash));
+    }
+
+
+    @Test
+    public void testSpikeJitterSurrogateDatasets() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        spike_jitter_sur_gen.loadHandlers();
+
+        assertEquals(27, spike_jitter_sur_gen.setup.getDatasets().size());
+        assertEquals(10, spike_jitter_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : spike_jitter_sur_gen.setup.getDatasets()) {
+            assertTrue(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertFalse(DatasetTransformer.needsRateMatrixTransform(dataset));
+
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("dist_surrogate"));
+            assertEquals("spike_jitter", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("sur_spike_jitter"));
+
+            for (PatternHandler set : spike_jitter_sur_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+
+                String str = set.toWekaFormat();
+                digest.update(str.getBytes("UTF-8"));
+            }
+        }
+
+        byte[] hash = digest.digest();
+        assertTrue(nda.util.ArrayUtils.equals(HASH_SPIKE_JITTER, hash));
     }
 
 
