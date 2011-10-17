@@ -112,6 +112,11 @@ public class SQLScriptReport implements EvaluationReportI {
                             row.add("" + result.getParameter("pct_surrogate"));
                             row.add("" + result.getParameter("dist_surrogate"));
                         }
+                        else if (type.equals("poisson_d")) {
+                            row.add(null);
+                            row.add(null);
+                            row.add("" + result.getParameter("dist_surrogate"));
+                        }
                     }
                     else {
                         row.add(null);

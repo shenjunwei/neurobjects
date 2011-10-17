@@ -25,7 +25,7 @@ import nda.util.ArrayUtils;
  */
 public class DatasetTransformerTest {
     // Make the test reproducible
-    private static long RANDOM_SEED = -4234200573864204844L;
+    private static long RANDOM_SEED = 2322995294324404246L;
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -305,6 +305,47 @@ public class DatasetTransformerTest {
                 if (dist != 0.0) {
                     assertTrue(num_diff > numSwaps/1000);
                     assertTrue(num_diff <= numSwaps*2);
+                }
+            }
+        }
+    }
+
+
+    @Test
+    public void testPoissonDistSurrogates() throws Exception {
+        double[] dist_values = { 0.3, 0.5, 1.0, 2.5, 5.0, 10, 15, 20 };
+
+        for (double dist : dist_values) {
+            CountMatrix sur_matrix = DatasetTransformer.withPoissonDistSurrogates(
+                    random, cm_all, dist);
+
+            assertSameParameters(cm_all, sur_matrix);
+            assertSameDimensions(cm_all, sur_matrix);
+
+            int numRows = sur_matrix.numRows();
+            int numColumns = sur_matrix.numColumns();
+
+            for (int r = 0; r < numRows; ++r) {
+                int[] row_a = cm_all.getRow(r);
+                int[] row_b = sur_matrix.getRow(r);
+
+                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-2);
+
+                double t0 = sur_matrix.getInterval().start();
+                double t1 = t0 + dist;
+                int dist_bins = sur_matrix.getBinForTime(t1);
+
+                if (dist_bins > 10) {
+                    for (int st_c = 0; st_c < numColumns; st_c += dist_bins) {
+                        int end_c = Math.min(st_c+dist_bins-1, numColumns-1);
+
+                        int[] window_a = Arrays.copyOfRange(row_a, st_c, end_c+1);
+                        int[] window_b = Arrays.copyOfRange(row_b, st_c, end_c+1);
+
+                        assertEquals(
+                                ArrayUtils.getAverage(window_a),
+                                ArrayUtils.getAverage(window_b), 1.5);
+                    }
                 }
             }
         }
