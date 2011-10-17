@@ -32,7 +32,7 @@ public abstract class ParallelGenerator extends DatasetGenerator {
 
 
     @Override
-    protected void loadHandlers() throws GenerationException {
+    public void loadHandlers() throws GenerationException {
         super.loadHandlers();
         globalCountMatrixCache = Collections.synchronizedMap(globalCountMatrixCache);
     }

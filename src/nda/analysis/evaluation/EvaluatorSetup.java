@@ -67,7 +67,21 @@ public class EvaluatorSetup {
 
 
     public List<NamedClassifier> getClassifiers() {
-        return classifiers;
+        List<NamedClassifier> copies = new ArrayList<NamedClassifier>(classifiers.size());
+
+        try {
+            for (NamedClassifier n_classifier : classifiers) {
+                NamedClassifier copy = new NamedClassifier(
+                        n_classifier.getName(),
+                        Classifier.makeCopy(n_classifier.getClassifier()));
+
+                copies.add(copy);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+
+        return copies;
     }
 
 
