@@ -325,7 +325,8 @@ public class GeneratorSetup {
                     paramsMap.containsKey("surrogate") && (
                             ((String) paramsMap.get("surrogate")).startsWith("col_swap") ||
                             ((String) paramsMap.get("surrogate")).startsWith("matrix_swap") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("poisson_d"));
+                            ((String) paramsMap.get("surrogate")).startsWith("poisson_d") ||
+                            ((String) paramsMap.get("surrogate")).startsWith("uniform_d"));
 
                 boolean doSurrogate = doNeuronSurrogate || doFullSurrogate;
 
@@ -424,7 +425,7 @@ public class GeneratorSetup {
                             Dataset sub_dataset = new Dataset(dataset);
                             sub_dataset.name = dataset.name + "_sur_" + sur_type + i;
 
-                            if (sur_type.equals("poisson_d"))
+                            if (sur_type.equals("poisson_d") || sur_type.equals("uniform_d"))
                                 sub_dataset.localParams.put("dist_surrogate", pct);
                             else
                                 sub_dataset.localParams.put("pct_surrogate", pct);

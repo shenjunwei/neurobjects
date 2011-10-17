@@ -40,6 +40,7 @@ public class DatasetGeneratorTest {
     // in the future, we should separate the hash for all generators
     byte[] HASH_COL_SWAP_D = {46,70,14,53,-75,17,2,-73,-92,-66,45,124,26,-99,77,-95};
     byte[] HASH_POISSON_D = {-9,-2,27,8,90,78,87,98,-6,-78,-24,21,61,-37,123,27};
+    byte[] HASH_UNIFORM_D = {77,-42,43,-113,-41,-41,-77,-45,-89,-49,36,61,96,-128,79,-44};
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -72,6 +73,7 @@ public class DatasetGeneratorTest {
     private static String matrixSwapSurSetupFilepath = "data/test/test_matrix_swap.yml";
     private static String colSwapDistSurSetupFilepath = "data/test/test_col_swap_d.yml";
     private static String poissonDistSurSetupFilepath = "data/test/test_poisson_d.yml";
+    private static String uniformDistSurSetupFilepath = "data/test/test_uniform_d.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -84,6 +86,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator matrix_swap_sur_gen;
     private MockDatasetGenerator col_swap_d_sur_gen;
     private MockDatasetGenerator poisson_d_sur_gen;
+    private MockDatasetGenerator uniform_d_sur_gen;
 
 
     @Before
@@ -120,6 +123,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup poisson_d_setup = new GeneratorSetup(poissonDistSurSetupFilepath);
         poisson_d_sur_gen = new MockDatasetGenerator(poisson_d_setup);
+
+        GeneratorSetup uniform_d_setup = new GeneratorSetup(uniformDistSurSetupFilepath);
+        uniform_d_sur_gen = new MockDatasetGenerator(uniform_d_setup);
     }
 
 
@@ -560,6 +566,39 @@ public class DatasetGeneratorTest {
 
         byte[] hash = digest.digest();
         assertTrue(nda.util.ArrayUtils.equals(HASH_POISSON_D, hash));
+    }
+
+
+    @Test
+    public void testUniformDistSurrogateDatasets() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        uniform_d_sur_gen.loadHandlers();
+
+        assertEquals(27, uniform_d_sur_gen.setup.getDatasets().size());
+        assertEquals(10, uniform_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : uniform_d_sur_gen.setup.getDatasets()) {
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("dist_surrogate"));
+            assertEquals("uniform_d", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("sur_uniform_d"));
+
+            for (PatternHandler set : uniform_d_sur_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+
+                String str = set.toWekaFormat();
+                digest.update(str.getBytes("UTF-8"));
+            }
+        }
+
+        byte[] hash = digest.digest();
+        assertTrue(nda.util.ArrayUtils.equals(HASH_UNIFORM_D, hash));
     }
 
 

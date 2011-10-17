@@ -60,8 +60,10 @@ public class DatasetTransformer {
         }
         // poisson_d
         else if (dataset.getParameter("dist_surrogate") != null) {
+            String sur_type = (String) dataset.getParameter("surrogate_type");
             double distSurrogates = (Double) dataset.getParameter("dist_surrogate");
-            return withPoissonDistSurrogates(random, rateMatrix, distSurrogates);
+
+            return withRandomDistSurrogates(random, rateMatrix, sur_type, distSurrogates);
         }
         else {
             throw new IllegalArgumentException("Dataset doesn't need a transform");
@@ -210,8 +212,8 @@ public class DatasetTransformer {
     /**
      * poisson_d(D)
      */
-    protected static CountMatrix withPoissonDistSurrogates(
-            RandomData random, CountMatrix originalMatrix, double dist) {
+    protected static CountMatrix withRandomDistSurrogates(
+            RandomData random, CountMatrix originalMatrix, String type, double dist) {
 
         double t0 = originalMatrix.getInterval().start();
         double t1 = t0 + dist;
@@ -224,7 +226,7 @@ public class DatasetTransformer {
         CountMatrix newMatrix = new CountMatrix(originalMatrix);
 
         int[][] old_values = originalMatrix.getMatrix();
-        int[][] new_values = matrixPoissonDist(random, old_values, dist_bins);
+        int[][] new_values = matrixRandomDist(random, old_values, type, dist_bins);
 
         newMatrix.setMatrixValues(new_values);
         return newMatrix;
@@ -370,8 +372,8 @@ public class DatasetTransformer {
     }
 
 
-    private static int[][] matrixPoissonDist(
-            RandomData random, int[][] matrix, int dist) {
+    private static int[][] matrixRandomDist(
+            RandomData random, int[][] matrix, String type, int dist) {
 
         int numRows = matrix.length;
         int numColumns = matrix[0].length;
@@ -384,16 +386,31 @@ public class DatasetTransformer {
             for (int st_c = 0; st_c < numColumns; st_c += dist) {
                 int end_c = Math.min(st_c+dist-1, numColumns-1);
 
-                long sum = 0;
-                for (int c = st_c; c <= end_c; ++c)
-                    sum += matrix[r][c];
+                if (type.equals("poisson_d")) {
+                    long sum = 0;
+                    for (int c = st_c; c <= end_c; ++c)
+                        sum += matrix[r][c];
 
-                double window_avg = sum / (double)(end_c-st_c+1);
-                for (int c = st_c; c <= end_c; ++c)
-                    if (window_avg > 0)
-                        surrogate[r][c] = (int) random.nextPoisson(window_avg);
-                    else
-                        surrogate[r][c] = 0;
+                    double window_avg = sum / (double)(end_c-st_c+1);
+                    for (int c = st_c; c <= end_c; ++c)
+                        if (window_avg > 0)
+                            surrogate[r][c] = (int) random.nextPoisson(window_avg);
+                        else
+                            surrogate[r][c] = 0;
+                }
+                else {
+                    int window_min = Integer.MAX_VALUE, window_max = Integer.MIN_VALUE;
+                    for (int c = st_c; c <= end_c; ++c) {
+                        window_min = Math.min(window_min, matrix[r][c]);
+                        window_max = Math.max(window_max, matrix[r][c]);
+                    }
+
+                    for (int c = st_c; c <= end_c; ++c)
+                        if (window_min != window_max)
+                            surrogate[r][c] = random.nextInt(window_min, window_max);
+                        else
+                            surrogate[r][c] = window_min;
+                }
             }
         }
 
