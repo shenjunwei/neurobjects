@@ -33,6 +33,7 @@ public class GeneratorSetupTest {
     private GeneratorSetup test_col_swap_sur;
     private GeneratorSetup test_neuron_swap_sur;
     private GeneratorSetup test_matrix_swap_sur;
+    private GeneratorSetup test_col_swap_d_sur;
 
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
@@ -45,6 +46,7 @@ public class GeneratorSetupTest {
     private static String colSwapSurSetupFilepath = "data/test/test_col_swap.yml";
     private static String neuronSwapSurSetupFilepath = "data/test/test_neuron_swap.yml";
     private static String matrixSwapSurSetupFilepath = "data/test/test_matrix_swap.yml";
+    private static String colSwapDistSurSetupFilepath = "data/test/test_col_swap_d.yml";
 
 
     @Before
@@ -58,6 +60,7 @@ public class GeneratorSetupTest {
         test_col_swap_sur = new GeneratorSetup(colSwapSurSetupFilepath);
         test_neuron_swap_sur = new GeneratorSetup(neuronSwapSurSetupFilepath);
         test_matrix_swap_sur = new GeneratorSetup(matrixSwapSurSetupFilepath);
+        test_col_swap_d_sur = new GeneratorSetup(colSwapDistSurSetupFilepath);
     }
 
 
@@ -432,5 +435,54 @@ public class GeneratorSetupTest {
             else
                 assertEquals((Integer) (numDatasets/2), counts.get(value));
         }
+    }
+
+    @Test
+    public void testColSwapDistSurrogateSetup() {
+        assertEquals(81, test_col_swap_d_sur.getDatasets().size());
+
+        String[] ps = { "_p1", "_p2", "_p3" };
+        Map<String, Integer> count = new HashMap<String, Integer>();
+        for (String p : ps) count.put(p, 0);
+        int[] pct_count = { 0, 0, 0 };
+        int[] dist_count = { 0, 0, 0 };
+
+        for (GeneratorSetup.Dataset dataset : test_col_swap_d_sur.getDatasets()) {
+            for (String p : ps) {
+                if (dataset.getName().contains(p)) {
+                    count.put(p, count.get(p) + 1);
+                    break;
+                }
+            }
+
+            assertTrue(dataset.getName().contains("sur_col_swap"));
+            assertNotNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("dist_surrogate"));
+            assertEquals("col_swap_d", dataset.getParameter("surrogate_type"));
+
+            double pct = (Double) dataset.getParameter("pct_surrogate");
+            if (pct == 0.1)
+                pct_count[0]++;
+            else if (pct == 0.5)
+                pct_count[1]++;
+            else if (pct == 1.0)
+                pct_count[2]++;
+            else
+                fail("Wrong pct");
+
+            double dist = (Double) dataset.getParameter("dist_surrogate");
+            if (dist == 0.0)
+                dist_count[0]++;
+            else if (dist == 2.5)
+                dist_count[1]++;
+            else if (dist == 5.0)
+                dist_count[2]++;
+            else
+                fail("Wrong dist");
+        }
+
+        for (int c : count.values()) assertEquals(81/3, c);
+        for (int c : pct_count) assertEquals(81/3, c);
+        for (int c : dist_count) assertEquals(81/3, c);
     }
 }

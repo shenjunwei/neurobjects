@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 17, 2011 at 07:04 PM
+-- Generation Time: Sep 26, 2011 at 02:25 PM
 -- Server version: 5.1.53
 -- PHP Version: 5.3.5
 
@@ -36,9 +36,10 @@ CREATE TABLE IF NOT EXISTS `results` (
   `bin_size` double NOT NULL,
   `window_size` int(11) NOT NULL,
   `neuron_drop` int(11) DEFAULT NULL,
-  `surrogate` enum('uniform','poisson','col_swap','neuron_swap','matrix_swap') DEFAULT NULL,
+  `surrogate` enum('uniform','poisson','col_swap','neuron_swap','matrix_swap','col_swap_d') DEFAULT NULL,
   `num_surrogate` int(11) DEFAULT NULL,
   `pct_surrogate` double DEFAULT NULL,
+  `dist_surrogate` double DEFAULT NULL,
   `num_instances` int(11) NOT NULL,
   `correct_instances` int(11) NOT NULL,
   `auroc` double NOT NULL,
@@ -50,9 +51,9 @@ CREATE TABLE IF NOT EXISTS `results` (
   `no_fp` int(11) NOT NULL,
   `no_fn` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `CONTEXT` (`animal`,`area`,`object`,`round`,`model`,`bin_size`,`window_size`,`neuron_drop`,`surrogate`,`num_surrogate`,`pct_surrogate`),
+  UNIQUE KEY `CONTEXT` (`animal`,`area`,`object`,`round`,`model`,`bin_size`,`window_size`,`neuron_drop`,`surrogate`,`num_surrogate`,`pct_surrogate`,`dist_surrogate`),
   KEY `MAIN` (`animal`,`area`,`object`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Reference results table.' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Reference table, never changes.' AUTO_INCREMENT=1 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

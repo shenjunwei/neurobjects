@@ -268,6 +268,49 @@ public class DatasetTransformerTest {
     }
 
 
+    @Test
+    public void testColumnSwapDistSurrogates() throws Exception {
+        double[] pct_values = { 0.0, 0.2, 0.5, 0.8, 1.0 };
+        double[] dist_values = { 0.0, 2.5, 5.3, 22 };
+
+        for (double pct : pct_values) for (double dist : dist_values) {
+            CountMatrix sur_matrix = DatasetTransformer.withColumnSwapDist(
+                    random, cm_all, pct, dist);
+
+            assertSameParameters(cm_all, sur_matrix);
+            assertSameDimensions(cm_all, sur_matrix);
+
+            int numRows = sur_matrix.numRows();
+            int numColumns = sur_matrix.numColumns();
+            int numSwaps = (int) Math.round(pct * numColumns);
+
+            for (int r = 0; r < numRows; ++r) {
+                int[] row_a = cm_all.getRow(r);
+                int[] row_b = sur_matrix.getRow(r);
+
+                if (numSwaps == 0 || dist == 0.0) {
+                    assertTrue(ArrayUtils.equals(row_a, row_b));
+                    continue;
+                }
+
+                assertEquals(ArrayUtils.getMin(row_a), ArrayUtils.getMin(row_b));
+                assertEquals(ArrayUtils.getMax(row_a), ArrayUtils.getMax(row_b));
+                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-8);
+
+                int num_diff = 0;
+                for (int c = 0; c < numColumns; ++c)
+                    if (row_a[c] != row_b[c])
+                        num_diff++;
+
+                if (dist != 0.0) {
+                    assertTrue(num_diff > numSwaps/1000);
+                    assertTrue(num_diff <= numSwaps*2);
+                }
+            }
+        }
+    }
+
+
     private void assertSameParameters(CountMatrix a, CountMatrix b) {
         assertEquals(a.getBinSize(), b.getBinSize(), 1e-8);
         assertEquals(a.getWindowWidth(), b.getWindowWidth());

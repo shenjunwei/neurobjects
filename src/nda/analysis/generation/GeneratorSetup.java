@@ -388,15 +388,45 @@ public class GeneratorSetup {
                     String[] tokens = sur_spec.split(" ");
                     String sur_type = tokens[0];
 
-                    for (int i = 1; i < tokens.length; ++i) {
-                        double pct = Double.valueOf(tokens[i]);
+                    if (sur_type.equals("col_swap_d")) {
+                        List<Double> pcts = new ArrayList<Double>();
+                        List<Double> dists = new ArrayList<Double>();
+                        List<Double> current = null;
 
-                        Dataset sub_dataset = new Dataset(dataset);
-                        sub_dataset.name = dataset.name + "_sur_" + sur_type + i;
-                        sub_dataset.localParams.put("pct_surrogate", pct);
-                        sub_dataset.localParams.put("surrogate_type", sur_type);
+                        for (int i = 1; i < tokens.length; ++i) {
+                            String token = tokens[i];
+                            if (token.equals("p="))
+                                current = pcts;
+                            else if (token.equals("d="))
+                                current = dists;
+                            else
+                                current.add(Double.valueOf(token));
+                        }
 
-                        datasets.add(sub_dataset);
+                        int id = 1;
+                        for (double pct : pcts) {
+                            for (double dist : dists) {
+                                Dataset sub_dataset = new Dataset(dataset);
+                                sub_dataset.name = dataset.name + "_sur_" + sur_type + id++;
+                                sub_dataset.localParams.put("pct_surrogate", pct);
+                                sub_dataset.localParams.put("dist_surrogate", dist);
+                                sub_dataset.localParams.put("surrogate_type", sur_type);
+
+                                datasets.add(sub_dataset);
+                            }
+                        }
+                    }
+                    else {
+                        for (int i = 1; i < tokens.length; ++i) {
+                            double pct = Double.valueOf(tokens[i]);
+
+                            Dataset sub_dataset = new Dataset(dataset);
+                            sub_dataset.name = dataset.name + "_sur_" + sur_type + i;
+                            sub_dataset.localParams.put("pct_surrogate", pct);
+                            sub_dataset.localParams.put("surrogate_type", sur_type);
+
+                            datasets.add(sub_dataset);
+                        }
                     }
                 }
                 else {
