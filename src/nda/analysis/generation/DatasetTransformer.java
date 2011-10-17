@@ -47,10 +47,16 @@ public class DatasetTransformer {
         else if (dataset.getParameter("pct_surrogate") != null) {
             double pctSurrogates = (Double) dataset.getParameter("pct_surrogate");
 
-            if (dataset.getParameter("surrogate_type").equals("col_swap"))
+            if (dataset.getParameter("surrogate_type").equals("col_swap")) {
                 return withColumnSwap(random, rateMatrix, pctSurrogates);
-            else
+            }
+            else if (dataset.getParameter("surrogate_type").equals("col_swap_d")) {
+                double distSurrogates = (Double) dataset.getParameter("dist_surrogate");
+                return withColumnSwapDist(random, rateMatrix, pctSurrogates, distSurrogates);
+            }
+            else {
                 return withMatrixSwap(random, rateMatrix, pctSurrogates);
+            }
         }
         else {
             throw new IllegalArgumentException("Dataset doesn't need a transform");
@@ -174,6 +180,33 @@ public class DatasetTransformer {
     }
 
 
+    /**
+     * neuron_swap(K,P)
+     */
+    protected static CountMatrix withColumnSwapDist(
+            RandomData random, CountMatrix originalMatrix,
+            double pct, double dist) {
+
+        double t0 = originalMatrix.getInterval().start();
+        double t1 = t0 + dist;
+        int dist_bins = originalMatrix.getBinForTime(t1); // dist in bin units
+
+        // shuffle matrix
+        CountMatrix newMatrix = new CountMatrix(originalMatrix);
+
+        int[][] old_values = originalMatrix.getMatrix();
+        int[][] new_values = matrixSwapDist(random, old_values, pct, dist_bins);
+
+        newMatrix.setMatrixValues(new_values);
+        return newMatrix;
+    }
+
+
+
+    /*
+     * Helper methods for the transforms
+     */
+
     private static int[] uniformSurrogate(RandomData random, int[] array) {
         int min = nda.util.ArrayUtils.getMin(array);
         int max = nda.util.ArrayUtils.getMax(array);
@@ -267,6 +300,41 @@ public class DatasetTransformer {
             int tmp = surrogate[a][b];
             surrogate[a][b] = surrogate[c][d];
             surrogate[c][d] = tmp;
+        }
+
+        return surrogate;
+    }
+
+
+    private static int[][] matrixSwapDist(
+            RandomData random, int[][] matrix, double pct, int dist) {
+
+        if (pct < 0 || pct > 1)
+            throw new IllegalArgumentException("Invalid pct value: " + pct);
+
+        int numRows = matrix.length;
+        int numColumns = matrix[0].length;
+        int numSwaps = (int) Math.round(numColumns * pct);
+
+        int[][] surrogate = new int[numRows][];
+        for (int r = 0; r < numRows; ++r)
+            surrogate[r] = matrix[r].clone();
+
+        for (int r = 0; r < numRows; ++r) {
+            int[] swap_inds = RandomUtils.randomNSample(random, numColumns, numSwaps);
+
+            for (int i : swap_inds) {
+                int a = Math.max(0, i-dist);
+                int b = Math.min(i+dist, numColumns-1);
+                int j;
+
+                if (a != b) j = random.nextInt(a, b);
+                else j = a;
+
+                int tmp = surrogate[r][i];
+                surrogate[r][i] = surrogate[r][j];
+                surrogate[r][j] = tmp;
+            }
         }
 
         return surrogate;

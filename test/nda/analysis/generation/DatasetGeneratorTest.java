@@ -36,6 +36,8 @@ public class DatasetGeneratorTest {
     // Should be updated when the seed above changes or any of the
     // generators are modified. This one was based on commit 3049aba.
     byte[] INTEGRITY_HASH = {-50,70,-26,119,-98,-2,-73,105,113,-78,93,-118,-96,-21,-33,-18};
+    // in the future, we should separate the hash for all generators
+    byte[] HASH_COL_SWAP_D = {46,70,14,53,-75,17,2,-73,-92,-66,45,124,26,-99,77,-95};
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -66,6 +68,7 @@ public class DatasetGeneratorTest {
     private static String colSwapSurSetupFilepath = "data/test/test_col_swap.yml";
     private static String neuronSwapSurSetupFilepath = "data/test/test_neuron_swap.yml";
     private static String matrixSwapSurSetupFilepath = "data/test/test_matrix_swap.yml";
+    private static String colSwapDistSurSetupFilepath = "data/test/test_col_swap_d.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -76,6 +79,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator col_swap_sur_gen;
     private MockDatasetGenerator neuron_swap_sur_gen;
     private MockDatasetGenerator matrix_swap_sur_gen;
+    private MockDatasetGenerator col_swap_d_sur_gen;
 
 
     @Before
@@ -106,6 +110,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup matrix_swap_setup = new GeneratorSetup(matrixSwapSurSetupFilepath);
         matrix_swap_sur_gen = new MockDatasetGenerator(matrix_swap_setup);
+
+        GeneratorSetup col_swap_d_setup = new GeneratorSetup(colSwapDistSurSetupFilepath);
+        col_swap_d_sur_gen = new MockDatasetGenerator(col_swap_d_setup);
     }
 
 
@@ -480,6 +487,39 @@ public class DatasetGeneratorTest {
                     assertEquals(40, set.getDimension());
             }
         }
+    }
+
+
+    @Test
+    public void testColSwapDistSurrogateDatasets() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        col_swap_d_sur_gen.loadHandlers();
+
+        assertEquals(81, col_swap_d_sur_gen.setup.getDatasets().size());
+        assertEquals(10, col_swap_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : col_swap_d_sur_gen.setup.getDatasets()) {
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNotNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("dist_surrogate"));
+            assertEquals("col_swap_d", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("sur_col_swap_d"));
+
+            for (PatternHandler set : col_swap_d_sur_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+
+                String str = set.toWekaFormat();
+                digest.update(str.getBytes("UTF-8"));
+            }
+        }
+
+        byte[] hash = digest.digest();
+        assertTrue(nda.util.ArrayUtils.equals(HASH_COL_SWAP_D, hash));
     }
 
 
