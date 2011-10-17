@@ -23,6 +23,18 @@ import nda.util.FileUtils;
  * @see Wiki page: SpikeDataFileFormat.
  */
 class TextSpikeTrain extends SpikeTrain {
+
+    /**
+     * Copy constructor.
+     *
+     * @param st SpikeTrain
+     */
+    public TextSpikeTrain(SpikeTrain st) {
+        spikeTimes = st.getTimes().clone();
+        setInitialValues(st.getName());
+    }
+
+
     /**
      * Construct a spike train from a 1D vector of activation times.
      * 

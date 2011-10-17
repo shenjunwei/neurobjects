@@ -87,24 +87,34 @@ public abstract class DatasetGenerator implements Verbose {
      */
     public List<PatternHandler> buildDataset(GeneratorSetup.Dataset dataset)
     throws GenerationException {
+
         int estimate = dataset.getNumberRounds() * 2;
         List<PatternHandler> patterns = new ArrayList<PatternHandler>(estimate);
 
-        // areas, bin_size, window_width do dataset
-        // globalSpikeHandler do generator
-        CountMatrix datasetMatrix = getDatasetRateMatrix(dataset);
+        // assumes that there is only one surrogate type per dataset
+        if (DatasetTransformer.needsSpikeTrainTransform(dataset)) {
 
-        for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
-            CountMatrix roundMatrix;
+            for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
+                CountMatrix roundMatrix = getDatasetRateMatrix(dataset);
+                patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix));
+            }
+        }
+        else {
+            // Usa o globalSpikeHandler do generator, criado em loadHandlers
+            CountMatrix datasetMatrix = getDatasetRateMatrix(dataset);
 
-            if (DatasetTransformer.needsTransform(dataset))
-                roundMatrix = DatasetTransformer.applyTransform(
-                        randomData, datasetMatrix, dataset);
-            else
-                roundMatrix = datasetMatrix;
+            for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
+                CountMatrix roundMatrix;
 
-            // usa o globalBehaviorHandler do generator
-            patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix));
+                if (DatasetTransformer.needsRateMatrixTransform(dataset))
+                    roundMatrix = DatasetTransformer.applyRateMatrixTransform(
+                            randomData, datasetMatrix, dataset);
+                else
+                    roundMatrix = datasetMatrix;
+
+                // usa o globalBehaviorHandler do generator
+                patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix));
+            }
         }
 
         return patterns;
@@ -218,12 +228,19 @@ public abstract class DatasetGenerator implements Verbose {
     protected CountMatrix getDatasetRateMatrix(GeneratorSetup.Dataset dataset)
     throws GenerationException {
 
+        boolean hasSpikeTransform = DatasetTransformer.needsSpikeTrainTransform(dataset);
+
         int params_id = dataset.getParameterChoiceId();
         CountMatrix rateMatrix = globalCountMatrixCache.get(params_id);
 
-        if (rateMatrix == null) {
+        if (hasSpikeTransform || rateMatrix == null) {
             String neuronFilter = (String) dataset.getParameter("areas");
             SpikeHandlerI datasetHandler = globalSpikeHandler.withFilter(neuronFilter);
+
+            if (hasSpikeTransform) {
+                datasetHandler = DatasetTransformer.applySpikeTrainTransform(
+                        randomData, (TextSpikeHandler) datasetHandler, dataset);
+            }
 
             double binSize = (Double) dataset.getParameter("bin_size");
             int window_width = (Integer) dataset.getParameter("window_width");
@@ -231,7 +248,9 @@ public abstract class DatasetGenerator implements Verbose {
             rateMatrix = new CountMatrix(datasetHandler, binSize);
             rateMatrix.setWindowWidth(window_width);
 
-            globalCountMatrixCache.put(params_id, rateMatrix);
+            if (!hasSpikeTransform) {
+                globalCountMatrixCache.put(params_id, rateMatrix);
+            }
         }
 
         return rateMatrix;

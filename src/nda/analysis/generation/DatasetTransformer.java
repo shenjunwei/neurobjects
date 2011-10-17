@@ -1,12 +1,15 @@
 package nda.analysis.generation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math.random.RandomData;
 
 import nda.data.CountMatrix;
+import nda.data.SpikeTrain;
+import nda.data.text.TextSpikeHandler;
 import nda.util.RandomUtils;
 
 
@@ -14,13 +17,38 @@ import nda.util.RandomUtils;
  * @author Giuliano Vilela
  */
 public class DatasetTransformer {
-    public static boolean needsTransform(GeneratorSetup.Dataset dataset) {
-        return (dataset.getParameter("neuron_drop") != null ||
-                dataset.getParameter("surrogate") != null);
+
+    public static boolean needsSpikeTrainTransform(GeneratorSetup.Dataset dataset) {
+        return dataset.getParameter("surrogate") != null &&
+        dataset.getParameter("surrogate_type").equals("spike_jitter");
     }
 
 
-    public static CountMatrix applyTransform(
+    public static boolean needsRateMatrixTransform(GeneratorSetup.Dataset dataset) {
+        return (dataset.getParameter("neuron_drop") != null ||
+                dataset.getParameter("surrogate") != null &&
+                !dataset.getParameter("surrogate_type").equals("spike_jitter"));
+    }
+
+
+    public static TextSpikeHandler applySpikeTrainTransform(
+            RandomData random, TextSpikeHandler spikeHandler,
+            GeneratorSetup.Dataset dataset) {
+
+        if (!needsSpikeTrainTransform(dataset))
+            throw new IllegalArgumentException("Dataset doesn't need a transform");
+
+        if (dataset.getParameter("surrogate_type").equals("spike_jitter")) {
+            double dist = (Double) dataset.getParameter("dist_surrogate");
+            return withSpikeJitter(random, spikeHandler, dist);
+        }
+        else {
+            throw new IllegalArgumentException("Illegal surrogate_type value");
+        }
+    }
+
+
+    public static CountMatrix applyRateMatrixTransform(
             RandomData random, CountMatrix rateMatrix,
             GeneratorSetup.Dataset dataset) {
 
@@ -233,6 +261,21 @@ public class DatasetTransformer {
     }
 
 
+    /**
+     * spike_jitter(D)
+     */
+    protected static TextSpikeHandler withSpikeJitter(
+            RandomData random, TextSpikeHandler spikeHandler, double dist) {
+
+        TextSpikeHandler newHandler = new TextSpikeHandler(spikeHandler);
+
+        for (SpikeTrain spikeTrain : newHandler.getAllSpikeTrains())
+            applyJitter(random, spikeTrain.getTimes(), dist);
+
+        return newHandler;
+    }
+
+
 
     /*
      * Helper methods for the transforms
@@ -415,5 +458,19 @@ public class DatasetTransformer {
         }
 
         return surrogate;
+    }
+
+
+    private static void applyJitter(RandomData random, double[] array, double eps) {
+        for (int i = 0; i < array.length; ++i) {
+            double value = array[i];
+            double min = Math.max(value-eps, 0);
+            double max = value+eps;
+
+            if (min != max)
+                array[i] = random.nextUniform(min, max);
+        }
+
+        Arrays.sort(array);
     }
 }
