@@ -1,0 +1,12 @@
+#summary How to add a new surrogate
+
+= How to add a new surrogate =
+*TODO: completar o texto e colocar em inglês*
+
+  # Tratar o setup file
+    * GeneratorSetup
+    * GeneratorSetupTest
+  # Colocar o seu surrogado no DatasetTransformer
+    * Fazer um needsBehaviorHandlerTransform
+  # Se necessario, adaptar o DatasetGenerator para fazer transformações no BehaviorHandler
+    * Escreve os testes no DatasetGeneratorTest
