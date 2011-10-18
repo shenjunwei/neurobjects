@@ -114,7 +114,8 @@ public class SQLScriptReport implements EvaluationReportI {
                             row.add("" + result.getParameter("dist_surrogate"));
                         }
                         else if (type.equals("poisson_d") || type.equals("uniform_d") ||
-                                type.equals("spike_jitter") || type.equals("mean_d")) {
+                                type.equals("spike_jitter") || type.equals("mean_d") ||
+                                type.equals("contact_shift")) {
                             row.add(null);
                             row.add(null);
                             row.add("" + result.getParameter("dist_surrogate"));

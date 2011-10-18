@@ -82,6 +82,19 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
     }
 
 
+    public TextBehaviorHandler(BehaviorHandlerI handler) {
+        filepath = null;
+        behavior = new HashMap<String, List<Interval>>();
+
+        for (String label : handler.getLabelSet()) {
+            List<Interval> intervals = handler.getContactIntervals(label);
+            List<Interval> new_intervals = new ArrayList<Interval>();
+            new_intervals.addAll(intervals);
+            behavior.put(label, new_intervals);
+        }
+    }
+
+
     /** \brief Adds a time interval with a given label to animal behavior description
      * 
      * @param interval a 2 position double array where which must contain the time interval
@@ -179,6 +192,12 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
     @Override
     public List<Interval> getContactIntervals(String label) {
         return behavior.get(label);
+    }
+
+
+    @Override
+    public void setContactIntervals(String label, List<Interval> intervals) {
+        behavior.put(label, intervals);
     }
 
 

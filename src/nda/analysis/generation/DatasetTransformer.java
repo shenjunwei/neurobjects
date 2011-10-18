@@ -11,6 +11,7 @@ import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;
 import nda.data.SpikeTrain;
+import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
 import nda.util.RandomUtils;
 
@@ -29,7 +30,14 @@ public class DatasetTransformer {
     public static boolean needsRateMatrixTransform(GeneratorSetup.Dataset dataset) {
         return (dataset.getParameter("neuron_drop") != null ||
                 dataset.getParameter("surrogate") != null &&
-                !dataset.getParameter("surrogate_type").equals("spike_jitter"));
+                !dataset.getParameter("surrogate_type").equals("spike_jitter") &&
+                !dataset.getParameter("surrogate_type").equals("contact_shift"));
+    }
+
+
+    public static boolean needsBehaviorHandlerTransform(GeneratorSetup.Dataset dataset) {
+        return (dataset.getParameter("surrogate") != null &&
+                dataset.getParameter("surrogate_type").equals("contact_shift"));
     }
 
 
@@ -97,6 +105,22 @@ public class DatasetTransformer {
             double distSurrogates = (Double) dataset.getParameter("dist_surrogate");
 
             return withDistSurrogates(random, rateMatrix, sur_type, distSurrogates);
+        }
+        else {
+            throw new IllegalArgumentException("Dataset doesn't need a transform");
+        }
+    }
+
+
+    public static BehaviorHandlerI applyBehaviorHandlerTransform(
+            RandomData random, GeneratorSetup.Dataset dataset,
+            BehaviorHandlerI behavior) {
+
+        String sur_type = (String) dataset.getParameter("surrogate_type");
+
+        if (sur_type.equals("contact_shift")) {
+            double t0 = (Double) dataset.getParameter("dist_surrogate");
+            return withContactShift(random, behavior, t0);
         }
         else {
             throw new IllegalArgumentException("Dataset doesn't need a transform");
@@ -312,6 +336,35 @@ public class DatasetTransformer {
         return newMatrix;
     }
 
+
+    /**
+     * contact_shift(T0)
+     */
+    protected static BehaviorHandlerI withContactShift(
+            RandomData random, BehaviorHandlerI old_behavior, double new_t0) {
+
+        BehaviorHandlerI behavior = new TextBehaviorHandler(old_behavior);
+
+        double old_t0 = behavior.getExpositionInterval().start();
+        double offset = new_t0 - old_t0;
+
+        for (String label : behavior.getLabelSet()) {
+            List<Interval> intervals = behavior.getContactIntervals(label);
+            List<Interval> new_intervals = new ArrayList<Interval>(intervals.size());
+
+            for (Interval interval : intervals) {
+                double a = interval.start();
+                double b = interval.end();
+
+                Interval shift = Interval.make(a+offset, b+offset);
+                new_intervals.add(shift);
+            }
+
+            behavior.setContactIntervals(label, new_intervals);
+        }
+
+        return behavior;
+    }
 
 
     /*

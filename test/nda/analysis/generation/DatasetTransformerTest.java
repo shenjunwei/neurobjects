@@ -542,6 +542,43 @@ public class DatasetTransformerTest {
     }
 
 
+    @Test
+    public void testContactShiftSurrogates() {
+        double[] t0_values = { 0, 300, 400, 1000, 5000 };
+
+        for (double t0 : t0_values) {
+            BehaviorHandlerI shift_behavior = DatasetTransformer.withContactShift(
+                    random, behavior, t0);
+
+            assertEquals(behavior.getLabelSet(), shift_behavior.getLabelSet());
+
+            Interval old_expo = behavior.getExpositionInterval();
+            Interval new_expo = shift_behavior.getExpositionInterval();
+
+            assertEquals(t0, new_expo.start(), 1e-8);
+            assertEquals(old_expo.duration(), new_expo.duration(), 1e-8);
+
+            double offset = new_expo.start() - old_expo.start();
+            assertTrue(offset != 0);
+
+            for (String label : behavior.getLabelSet()) {
+                List<Interval> old_intervals = behavior.getContactIntervals(label);
+                List<Interval> new_intervals = shift_behavior.getContactIntervals(label);
+
+                assertEquals(old_intervals.size(), new_intervals.size());
+
+                for (int i = 0; i < new_intervals.size(); ++i) {
+                    Interval old_int = old_intervals.get(i);
+                    Interval new_int = new_intervals.get(i);
+
+                    assertEquals(old_int.start()+offset, new_int.start(), 1e-8);
+                    assertEquals(old_int.end()+offset, new_int.end(), 1e-8);
+                }
+            }
+        }
+    }
+
+
     private void assertSameParameters(CountMatrix a, CountMatrix b) {
         assertEquals(a.getBinSize(), b.getBinSize(), 1e-8);
         assertEquals(a.getWindowWidth(), b.getWindowWidth());

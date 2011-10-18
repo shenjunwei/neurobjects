@@ -45,6 +45,7 @@ public class DatasetGeneratorTest {
     byte[] HASH_SPIKE_JITTER = {-59,85,-73,-80,-106,-127,71,34,-47,-12,-100,105,-126,-12,-54,106};
     byte[] HASH_MEAN_D = {119,20,-76,38,123,95,64,23,25,52,-121,-48,-85,-13,-126,73};
     byte[] HASH_CONTACT_SWAP = {39,-12,123,0,14,-24,-88,-92,-36,-71,126,-109,48,14,-126,2};
+    byte[] HASH_CONTACT_SHIFT = {-37,-10,91,5,-113,-48,-122,-99,31,113,-10,-91,76,-102,127,-97};
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -81,6 +82,7 @@ public class DatasetGeneratorTest {
     private static String spikeJitterSurSetupFilepath = "data/test/test_spike_jitter.yml";
     private static String meanDistSurSetupFilepath = "data/test/test_mean_d.yml";
     private static String contactSwapSurSetupFilepath = "data/test/test_contact_swap.yml";
+    private static String contactShiftSurSetupFilepath = "data/test/test_contact_shift2.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -97,6 +99,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator spike_jitter_sur_gen;
     private MockDatasetGenerator mean_d_sur_gen;
     private MockDatasetGenerator contact_swap_sur_gen;
+    private MockDatasetGenerator contact_shift_sur_gen;
 
 
     @Before
@@ -145,6 +148,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup contact_swap_setup = new GeneratorSetup(contactSwapSurSetupFilepath);
         contact_swap_sur_gen = new MockDatasetGenerator(contact_swap_setup);
+
+        GeneratorSetup contact_shift_setup = new GeneratorSetup(contactShiftSurSetupFilepath);
+        contact_shift_sur_gen = new MockDatasetGenerator(contact_shift_setup);
     }
 
 
@@ -190,7 +196,9 @@ public class DatasetGeneratorTest {
                 PatternHandler testSet = new PatternHandler(
                         "test", rateMatrix, classNames);
 
-                generator.addInstancesFromClass(class_attr, rateMatrix,
+                generator.addInstancesFromClass(
+                        class_attr, rateMatrix,
+                        generator.globalBehaviorHandler,
                         trainSet, testSet);
 
                 assertTrue(classNames.containsAll(trainSet.getLabelSet()));
@@ -229,7 +237,7 @@ public class DatasetGeneratorTest {
 
             for (int round = 0; round < 10; ++round) {
                 List<PatternHandler> sets = generator.buildDatasetSingleRound(
-                        dataset, round, rateMatrix);
+                        dataset, round, rateMatrix, generator.globalBehaviorHandler);
 
                 assertEquals(2, sets.size());
                 PatternHandler trainSet = sets.get(0);
@@ -753,6 +761,39 @@ public class DatasetGeneratorTest {
 
         byte[] hash = digest.digest();
         assertTrue(nda.util.ArrayUtils.equals(HASH_CONTACT_SWAP, hash));
+    }
+
+
+    @Test
+    public void testContactShiftSurrogateDatasets() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        contact_shift_sur_gen.loadHandlers();
+
+        assertEquals(9, contact_shift_sur_gen.setup.getDatasets().size());
+        assertEquals(10, contact_shift_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+
+        for (GeneratorSetup.Dataset dataset : contact_shift_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertFalse(DatasetTransformer.needsRateMatrixTransform(dataset));
+            assertTrue(DatasetTransformer.needsBehaviorHandlerTransform(dataset));
+
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNotNull(dataset.getParameter("dist_surrogate"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertEquals("contact_shift", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("contact_shift"));
+
+            for (PatternHandler set : contact_shift_sur_gen.buildDataset(dataset)) {
+                assertEquals(40, set.getDimension());
+
+                String str = set.toWekaFormat();
+                digest.update(str.getBytes("UTF-8"));
+            }
+        }
+
+        byte[] hash = digest.digest();
+        assertTrue(nda.util.ArrayUtils.equals(HASH_CONTACT_SHIFT, hash));
     }
 
 

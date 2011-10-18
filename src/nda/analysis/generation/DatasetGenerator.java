@@ -96,7 +96,7 @@ public abstract class DatasetGenerator implements Verbose {
 
             for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
                 CountMatrix roundMatrix = getDatasetRateMatrix(dataset);
-                patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix));
+                patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix, globalBehaviorHandler));
             }
         }
         else {
@@ -105,7 +105,6 @@ public abstract class DatasetGenerator implements Verbose {
 
             for (int round = 1; round <= dataset.getNumberRounds(); ++round) {
                 CountMatrix roundMatrix;
-
                 if (DatasetTransformer.needsRateMatrixTransform(dataset))
                     roundMatrix = DatasetTransformer.applyRateMatrixTransform(
                             randomData, datasetMatrix,
@@ -113,8 +112,16 @@ public abstract class DatasetGenerator implements Verbose {
                 else
                     roundMatrix = datasetMatrix;
 
+
+                BehaviorHandlerI roundHandler;
+                if (DatasetTransformer.needsBehaviorHandlerTransform(dataset))
+                    roundHandler = DatasetTransformer.applyBehaviorHandlerTransform(
+                            randomData, dataset, globalBehaviorHandler);
+                else
+                    roundHandler = globalBehaviorHandler;
+
                 // usa o globalBehaviorHandler do generator
-                patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix));
+                patterns.addAll(buildDatasetSingleRound(dataset, round, roundMatrix, roundHandler));
             }
         }
 
@@ -129,7 +136,7 @@ public abstract class DatasetGenerator implements Verbose {
      */
     protected List<PatternHandler> buildDatasetSingleRound(
             GeneratorSetup.Dataset dataset, int round,
-            SpikeRateMatrixI rateMatrix)
+            SpikeRateMatrixI rateMatrix, BehaviorHandlerI behavior)
             throws GenerationException {
 
         Set<String> labels = new HashSet<String>();
@@ -146,7 +153,7 @@ public abstract class DatasetGenerator implements Verbose {
         PatternHandler testSet = new PatternHandler(testSetName, rateMatrix, labels);
 
         for (GeneratorSetup.Class class_attr : dataset.getClasses()) {
-            addInstancesFromClass(class_attr, rateMatrix, trainSet, testSet);
+            addInstancesFromClass(class_attr, rateMatrix, behavior, trainSet, testSet);
         }
 
         List<PatternHandler> sets = new ArrayList<PatternHandler>(2);
@@ -165,6 +172,7 @@ public abstract class DatasetGenerator implements Verbose {
     protected void addInstancesFromClass(
             GeneratorSetup.Class class_attr,
             SpikeRateMatrixI rateMatrix,
+            BehaviorHandlerI behavior,
             PatternHandler trainSet, PatternHandler testSet)
     throws GenerationException {
 
@@ -191,7 +199,7 @@ public abstract class DatasetGenerator implements Verbose {
         for (String label : labels) {
             List<double[]> patterns = new ArrayList<double[]>();
 
-            for (Interval interval : globalBehaviorHandler.getContactIntervals(label))
+            for (Interval interval : behavior.getContactIntervals(label))
                 patterns.addAll(rateMatrix.getPatterns(interval));
 
             int numTrain = numTrainPerLabel;
