@@ -338,7 +338,8 @@ public class GeneratorSetup {
                             ((String) paramsMap.get("surrogate")).startsWith("uniform_d") ||
                             ((String) paramsMap.get("surrogate")).startsWith("spike_jitter") ||
                             ((String) paramsMap.get("surrogate")).startsWith("mean_d") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("contact_swap"));
+                            ((String) paramsMap.get("surrogate")).startsWith("contact_swap") ||
+                            ((String) paramsMap.get("surrogate")).startsWith("contact_shift"));
 
                 boolean doSurrogate = doNeuronSurrogate || doFullSurrogate;
 
@@ -438,7 +439,8 @@ public class GeneratorSetup {
                             sub_dataset.name = dataset.name + "_sur_" + sur_type + i;
 
                             if (sur_type.equals("poisson_d") || sur_type.equals("uniform_d") ||
-                                    sur_type.equals("spike_jitter") || sur_type.equals("mean_d"))
+                                    sur_type.equals("spike_jitter") || sur_type.equals("mean_d") ||
+                                    sur_type.equals("contact_shift"))
                                 sub_dataset.localParams.put("dist_surrogate", pct);
                             else
                                 sub_dataset.localParams.put("pct_surrogate", pct);

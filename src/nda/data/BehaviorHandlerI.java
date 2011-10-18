@@ -46,6 +46,8 @@ public interface BehaviorHandlerI {
      */
     public List<Interval> getContactIntervals(String label);
 
+    public void setContactIntervals(String label, List<Interval> intervals);
+
 
     public String getLabel(double time);
 
