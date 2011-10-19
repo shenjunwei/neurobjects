@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math.random.RandomData;
+import org.apache.commons.math.random.RandomDataImpl;
 
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
@@ -23,15 +24,21 @@ public class DatasetTransformer {
 
     public static boolean needsSpikeTrainTransform(GeneratorSetup.Dataset dataset) {
         return dataset.getParameter("surrogate") != null &&
-        dataset.getParameter("surrogate_type").equals("spike_jitter");
+                dataset.getParameter("surrogate_type").equals("spike_jitter");
     }
 
+    // Victor
+    public static boolean needsVarianceContactsTransform(GeneratorSetup.Dataset dataset) {
+        return dataset.getParameter("surrogate") != null &&
+                dataset.getParameter("surrogate_type").equals("var_contacts");
+    }
 
     public static boolean needsRateMatrixTransform(GeneratorSetup.Dataset dataset) {
         return (dataset.getParameter("neuron_drop") != null ||
                 dataset.getParameter("surrogate") != null &&
                 !dataset.getParameter("surrogate_type").equals("spike_jitter") &&
-                !dataset.getParameter("surrogate_type").equals("contact_shift"));
+                !dataset.getParameter("surrogate_type").equals("contact_shift") &&
+                !dataset.getParameter("surrogate_type").equals("var_contacts"));
     }
 
 
@@ -56,7 +63,6 @@ public class DatasetTransformer {
             throw new IllegalArgumentException("Illegal surrogate_type value");
         }
     }
-
 
     public static CountMatrix applyRateMatrixTransform(
             RandomData random, CountMatrix rateMatrix,
@@ -126,6 +132,24 @@ public class DatasetTransformer {
             throw new IllegalArgumentException("Dataset doesn't need a transform");
         }
     }
+
+    // Victor
+    public static BehaviorHandlerI applyVarianceContactsTransform(
+            RandomData random, GeneratorSetup.Dataset dataset,
+            BehaviorHandlerI behavior) {
+
+        String sur_type = (String) dataset.getParameter("surrogate_type");
+
+        if (sur_type.equals("var_contacts")) {
+            double t0 = (Double) dataset.getParameter("val_surrogate");
+            String var_type = (String) dataset.getParameter("method_surrogate");
+            return withVarianceContacts(random, behavior, t0, var_type);
+        }
+        else {
+            throw new IllegalArgumentException("Dataset doesn't need a transform");
+        }
+    }
+
 
 
     /**
@@ -366,6 +390,42 @@ public class DatasetTransformer {
         return behavior;
     }
 
+    // Victor
+    protected static BehaviorHandlerI withVarianceContacts(
+            RandomData random, BehaviorHandlerI old_behavior, double new_t0, String var_type) {
+
+        BehaviorHandlerI behavior = new TextBehaviorHandler(old_behavior);
+
+        RandomData rand = new RandomDataImpl();
+
+		double offset;
+		try{
+			offset = rand.nextGaussian(0, new_t0); // Distribuiçao Normal, efeito aditivo
+		} catch(Exception e){
+			offset = 0.0;
+		}
+		
+        for (String label : behavior.getLabelSet()) {
+            List<Interval> intervals = behavior.getContactIntervals(label);
+            List<Interval> new_intervals = new ArrayList<Interval>(intervals.size());
+
+            for (Interval interval : intervals) {
+                double a = interval.start();
+                double b = interval.end();
+
+                Interval shift;
+                if(var_type.equals("ab")) shift = Interval.make(a+offset, b+offset);
+                else if(var_type.equals("a")) shift = Interval.make(a+offset, b);
+                else shift = Interval.make(a, b+offset);
+
+                new_intervals.add(shift);
+            }
+
+            behavior.setContactIntervals(label, new_intervals);
+        }
+
+        return behavior;
+    }
 
     /*
      * Helper methods for the transforms
