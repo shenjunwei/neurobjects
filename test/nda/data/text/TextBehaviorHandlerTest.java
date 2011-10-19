@@ -22,7 +22,7 @@ import nda.data.Interval;
 public class TextBehaviorHandlerTest {
     private final static String filepath1 = "data/test/behaviors/test_contacts.txt";
     private final static String filepath2 = "data/test/behaviors/ge5_contacts.txt";
-    private final static String filepath3 = "data/real/ge4/ge4_contacts.txt";
+    private final static String filepath3 = "data/test/behaviors/ge4_contacts.txt";
 
     private BehaviorHandlerI b1;
     private BehaviorHandlerI b2;
