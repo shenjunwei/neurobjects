@@ -7,12 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import nda.data.SpikeRateMatrixI;
-
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
+
+import nda.data.SpikeRateMatrixI;
 
 
 /**

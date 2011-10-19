@@ -321,25 +321,26 @@ public class GeneratorSetup {
 
 
                 boolean doNeuronDrop =
-                    paramsMap.containsKey("neuron_drop") &&
-                    !paramsMap.get("neuron_drop").equals(false);
+                        paramsMap.containsKey("neuron_drop") &&
+                        !paramsMap.get("neuron_drop").equals(false);
 
                 boolean doNeuronSurrogate =
-                    paramsMap.containsKey("surrogate") && (
-                            paramsMap.get("surrogate").equals("uniform") ||
-                            paramsMap.get("surrogate").equals("poisson") ||
-                            ((String)paramsMap.get("surrogate")).startsWith("neuron_swap"));
+                        paramsMap.containsKey("surrogate") && (
+                                paramsMap.get("surrogate").equals("uniform") ||
+                                paramsMap.get("surrogate").equals("poisson") ||
+                                ((String)paramsMap.get("surrogate")).startsWith("neuron_swap"));
 
                 boolean doFullSurrogate =
-                    paramsMap.containsKey("surrogate") && (
-                            ((String) paramsMap.get("surrogate")).startsWith("col_swap") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("matrix_swap") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("poisson_d") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("uniform_d") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("spike_jitter") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("mean_d") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("contact_swap") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("contact_shift"));
+                        paramsMap.containsKey("surrogate") && (
+                                ((String) paramsMap.get("surrogate")).startsWith("col_swap") ||
+                                ((String) paramsMap.get("surrogate")).startsWith("matrix_swap") ||
+                                ((String) paramsMap.get("surrogate")).startsWith("poisson_d") ||
+                                ((String) paramsMap.get("surrogate")).startsWith("uniform_d") ||
+                                ((String) paramsMap.get("surrogate")).startsWith("spike_jitter") ||
+                                ((String) paramsMap.get("surrogate")).startsWith("mean_d") ||
+                                ((String) paramsMap.get("surrogate")).startsWith("contact_swap") ||
+                                ((String) paramsMap.get("surrogate")).startsWith("contact_shift") ||
+                                ((String) paramsMap.get("surrogate")).startsWith("var_contacts"));
 
                 boolean doSurrogate = doNeuronSurrogate || doFullSurrogate;
 
@@ -429,6 +430,21 @@ public class GeneratorSetup {
 
                                 datasets.add(sub_dataset);
                             }
+                        }
+                    }
+                    else if(sur_type.equals("var_contacts")){
+                        String var_type = tokens[1];
+
+                        for (int i = 2; i < tokens.length; ++i) {
+                            double pct = Double.valueOf(tokens[i]);
+                            Dataset sub_dataset = new Dataset(dataset);
+
+                            sub_dataset.localParams.put("method_surrogate", var_type);
+                            sub_dataset.localParams.put("surrogate_type", sur_type);
+                            sub_dataset.name = dataset.name + "_sur_" + sur_type + (i-1);
+                            sub_dataset.localParams.put("val_surrogate", pct);
+
+                            datasets.add(sub_dataset);
                         }
                     }
                     else {
