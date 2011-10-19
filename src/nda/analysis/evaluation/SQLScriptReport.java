@@ -65,7 +65,7 @@ public class SQLScriptReport implements EvaluationReportI {
                     List<String> row = new ArrayList<String>();
 
                     /* id */
-                    row.add("auto");
+                    row.add("0");
                     /* subject */
                     row.add(dataset.getSetup().getName());
                     /* neurons */
@@ -119,6 +119,17 @@ public class SQLScriptReport implements EvaluationReportI {
                             row.add(null);
                             row.add(null);
                             row.add("" + result.getParameter("dist_surrogate"));
+                        }
+                        else if (type.equals("var_contacts")) {
+                            int method;
+
+                            if(result.getParameter("method_surrogate").equals("ab")) method = 1;
+                            else if(result.getParameter("method_surrogate").equals("a")) method = 2;
+                            else method = 3;
+
+                            row.add("" + method);
+                            row.add(null);
+                            row.add("" + result.getParameter("val_surrogate"));
                         }
                     }
                     else {

@@ -398,13 +398,8 @@ public class DatasetTransformer {
 
         RandomData rand = new RandomDataImpl();
 
-		double offset;
-		try{
-			offset = rand.nextGaussian(0, new_t0); // Distribuiçao Normal, efeito aditivo
-		} catch(Exception e){
-			offset = 0.0;
-		}
-		
+        double offset1, offset2;
+
         for (String label : behavior.getLabelSet()) {
             List<Interval> intervals = behavior.getContactIntervals(label);
             List<Interval> new_intervals = new ArrayList<Interval>(intervals.size());
@@ -414,10 +409,30 @@ public class DatasetTransformer {
                 double b = interval.end();
 
                 Interval shift;
-                if(var_type.equals("ab")) shift = Interval.make(a+offset, b+offset);
-                else if(var_type.equals("a")) shift = Interval.make(a+offset, b);
-                else shift = Interval.make(a, b+offset);
 
+                try{
+                    offset1 = rand.nextGaussian(0, new_t0); // Distribuiçao Normal, efeito aditivo
+                    offset2 = rand.nextGaussian(0, new_t0); // Distribuiçao Normal, efeito aditivo
+                } catch(Exception e){
+                    offset1 = 0.0;
+                    offset2 = 0.0;
+                }
+
+                if(var_type.equals("ab")){
+                    if(a+offset1 >= b+offset2) continue; // Elimina intervalo.
+                    shift = Interval.make(a+offset1, b+offset2);
+                }
+                else if(var_type.equals("a")){
+                    if(a+offset1 >= b) continue; // Elimina intervalo.
+                    shift = Interval.make(a+offset1, b);
+                }
+                else{
+                    if(a >= b+offset2) continue; // Elimina intervalo.
+                    shift = Interval.make(a, b+offset2);
+                }
+
+                System.out.printf("%f | (%f,%f) | (%f,%f)", new_t0, a, b, shift.start(), shift.end());
+                System.out.println();
                 new_intervals.add(shift);
             }
 
