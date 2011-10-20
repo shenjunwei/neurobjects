@@ -41,7 +41,7 @@ def fast_eval(data_dir, animal):
   print 'Evaluating datasets for', animal, '(fast mode)'
 
   config_path, evaluator_path, _ = get_paths(data_dir, animal)
-  os.system('java -Xmx 1500m -jar ~/workspace/neurobjects/dist/fast-evaluator.jar -v ' +
+  os.system('java -Xmx1500m -jar ~/workspace/neurobjects/dist/fast-evaluator.jar -v ' +
             config_path + ' ' + evaluator_path)
 
 
@@ -58,4 +58,3 @@ if __name__ == '__main__':
       evaluate(data_dir, animal)
     elif command == 'fast_eval':
       fast_eval(data_dir, animal)
-
