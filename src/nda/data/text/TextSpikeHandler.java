@@ -7,7 +7,7 @@ import java.util.List;
 
 import nda.data.Interval;
 import nda.data.SpikeHandlerI;
-import nda.data.SpikeTrain;
+import nda.data.SpikeTrainI;
 
 
 /**
@@ -20,7 +20,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
     protected String spikeFilter;
     protected String dataDir;
     protected Interval spikeInterval;
-    protected List<SpikeTrain> neurons;
+    protected List<SpikeTrainI> neurons;
 
     protected final static String DEFAULT_FILTER = "";
     protected final static String TEXT_SPIKE_DATA_EXTENSION = ".spk";
@@ -32,8 +32,8 @@ public class TextSpikeHandler implements SpikeHandlerI {
         dataDir = handler.dataDir;
         spikeInterval = handler.spikeInterval;
 
-        neurons = new ArrayList<SpikeTrain>(handler.neurons.size());
-        for (SpikeTrain spikeTrain : handler.neurons)
+        neurons = new ArrayList<SpikeTrainI>(handler.neurons.size());
+        for (SpikeTrainI spikeTrain : handler.neurons)
             neurons.add(new TextSpikeTrain(spikeTrain));
     }
 
@@ -81,15 +81,15 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
 
     @Override
-    public SpikeTrain getSpikeTrain(int i) {
+    public SpikeTrainI getSpikeTrain(int i) {
         return neurons.get(i);
     }
 
 
     @Override
-    public SpikeTrain getSpikeTrain(String name) {
-        for (SpikeTrain spikeTrain : neurons)
-            if (spikeTrain.getName().equalsIgnoreCase(name))
+    public SpikeTrainI getSpikeTrain(String name) {
+        for (SpikeTrainI spikeTrain : neurons)
+            if (spikeTrain.getNeuronName().equalsIgnoreCase(name))
                 return spikeTrain;
 
         return null;
@@ -109,10 +109,10 @@ public class TextSpikeHandler implements SpikeHandlerI {
         if (newFilter.equals(spikeFilter))
             return this;
 
-        List<SpikeTrain> newNeurons = new ArrayList<SpikeTrain>();
+        List<SpikeTrainI> newNeurons = new ArrayList<SpikeTrainI>();
 
-        for (SpikeTrain spikeTrain : neurons) {
-            String spikeName = spikeTrain.getName();
+        for (SpikeTrainI spikeTrain : neurons) {
+            String spikeName = spikeTrain.getNeuronName();
 
             if (filterMatch(spikeName, newFilter, false))
                 newNeurons.add(spikeTrain);
@@ -139,25 +139,25 @@ public class TextSpikeHandler implements SpikeHandlerI {
     public List<String> getNeuronNames() {
         List<String> names = new ArrayList<String>(neurons.size());
 
-        for (SpikeTrain spikeTrain : neurons)
-            names.add(spikeTrain.getName());
+        for (SpikeTrainI spikeTrain : neurons)
+            names.add(spikeTrain.getNeuronName());
 
         return names;
     }
 
 
     @Override
-    public List<SpikeTrain> getAllSpikeTrains() {
+    public List<SpikeTrainI> getAllSpikeTrains() {
         return neurons;
     }
 
 
     @Override
-    public List<SpikeTrain> getAllSpikeTrains(Interval interval) {
-        List<SpikeTrain> trains = new ArrayList<SpikeTrain>(neurons.size());
+    public List<SpikeTrainI> getAllSpikeTrains(Interval interval) {
+        List<SpikeTrainI> trains = new ArrayList<SpikeTrainI>(neurons.size());
 
-        for (SpikeTrain spikeTrain : neurons) {
-            SpikeTrain intervalSt = spikeTrain.extractInterval(interval);
+        for (SpikeTrainI spikeTrain : neurons) {
+            SpikeTrainI intervalSt = spikeTrain.extractInterval(interval);
             if (!intervalSt.isEmpty())
                 trains.add(intervalSt);
         }
@@ -174,10 +174,10 @@ public class TextSpikeHandler implements SpikeHandlerI {
         double first = Double.POSITIVE_INFINITY;
         double last = Double.NEGATIVE_INFINITY;
 
-        for (SpikeTrain spikeTrain : neurons) {
+        for (SpikeTrainI spikeTrain : neurons) {
             if (!spikeTrain.isEmpty()) {
-                first = Math.min(first, spikeTrain.getFirst());
-                last = Math.max(last, spikeTrain.getLast());
+                first = Math.min(first, spikeTrain.getFirstSpike());
+                last = Math.max(last, spikeTrain.getLastSpike());
             }
         }
 
@@ -205,7 +205,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
         String[] files = listDirectory(dataDir);
         Arrays.sort(files);
 
-        neurons = new ArrayList<SpikeTrain>();
+        neurons = new ArrayList<SpikeTrainI>();
 
         for (String filename : files) {
             if (!filterMatch(filename, spikeFilter, true))
@@ -215,7 +215,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
             String filepath = new File(dataDir, filename).getAbsolutePath();
 
             try {
-                SpikeTrain spikeTrain = new TextSpikeTrain(filepath, name, spikeInterval);
+                SpikeTrainI spikeTrain = new TextSpikeTrain(filepath, name, spikeInterval);
                 neurons.add(spikeTrain);
             } catch (MissingDataFileException e) {
                 /*

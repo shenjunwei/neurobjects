@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import nda.data.Interval;
-import nda.data.SpikeTrain;
+import nda.data.SpikeTrainI;
 import nda.util.ArrayUtils;
 import nda.util.FileUtils;
 
@@ -22,34 +24,27 @@ import nda.util.FileUtils;
  * @date 18 Mai 2010
  * @see Wiki page: SpikeDataFileFormat.
  */
-class TextSpikeTrain extends SpikeTrain {
+public class TextSpikeTrain extends AbstractList<Double> implements SpikeTrainI {
+
+    private String neuronName;
+    private double[] spikeTimes;
+
 
     /**
-     * Copy constructor.
-     *
-     * @param st SpikeTrain
+     * Internal use only.
      */
-    public TextSpikeTrain(SpikeTrain st) {
-        spikeTimes = st.getTimes().clone();
-        setInitialValues(st.getName());
+    TextSpikeTrain(double[] times, String name) {
+        neuronName = name;
+        spikeTimes = times;
     }
 
 
     /**
-     * Construct a spike train from a 1D vector of activation times.
-     * 
-     * This constructor is only used internally by TextSpikeTrain. The user can only
-     * get a TextSpikeTrain by using the higher level methods that read a text file. It
-     * receives a 1D vector containing the spike times in ascending order and a string
-     * containing the name of this spike train.
-     * 
-     * @param times Vector with spike times to be stored. Note that this TextSpikeTrain
-     * will actually hold the reference to time_v.
-     * @param name String with the name of the spike train.
+     * Copy constructor.
      */
-    protected TextSpikeTrain(double[] times, String name) {
-        spikeTimes = times;
-        setInitialValues(name);
+    public TextSpikeTrain(SpikeTrainI st) {
+        neuronName = st.getNeuronName();
+        spikeTimes = Arrays.copyOf(st.getTimes(), st.size());
     }
 
 
@@ -124,27 +119,35 @@ class TextSpikeTrain extends SpikeTrain {
      * SpikeTrain.extractInterval. The resulting TextSpikeTrain will have a custom name.
      * 
      * @param filepath Full path to a text data file containing spike times
-     * @param spikeName Name to be used by this TextSpikeTrain
+     * @param name Name to be used by this TextSpikeTrain
      * @param interval Desired time window to be read
      * 
      * @throws MissingDataFileException If filepath doesn't exist
      * @throws InvalidDataFileException If filepath can't be read or isn't a valid spike
      * train text data file.
      */
-    public TextSpikeTrain(String filepath, String spikeName, Interval interval)
+    public TextSpikeTrain(String filepath, String name, Interval interval)
     throws MissingDataFileException, InvalidDataFileException {
 
-        fillFromFile(filepath, interval);
-        setInitialValues(spikeName);
+        neuronName = FileUtils.parseFileName(name);
+        readSpikes(filepath, interval);
     }
 
 
     @Override
-    public SpikeTrain extractInterval(Interval interval) {
-        double[] new_times = ArrayUtils.extractInterval(
+    public String toString() {
+        return neuronName;
+    }
+
+
+    @Override
+    public SpikeTrainI extractInterval(Interval interval) {
+        interval = interval.intersection(getInterval());
+
+        double[] times = ArrayUtils.extractInterval(
                 spikeTimes, interval.start(), interval.end());
 
-        return new TextSpikeTrain(new_times, neuronName + "@" + interval);
+        return new TextSpikeTrain(times, neuronName + "@" + interval);
     }
 
 
@@ -158,17 +161,20 @@ class TextSpikeTrain extends SpikeTrain {
      * @throws MissingDataFileException If filepath doesn't exist
      * @throws InvalidDataFileException If filepath isn't a valid spike train data file
      */
-    protected void fillFromFile(String filepath, Interval interval)
+    protected void readSpikes(String filepath, Interval interval)
     throws MissingDataFileException, InvalidDataFileException {
 
-        ArrayList<Double> timesList = new ArrayList<Double>(500);
+        if (!interval.isValid())
+            throw new IllegalArgumentException("Interval is invalid");
+
+        ArrayList<Double> timesList = new ArrayList<Double>(1000);
 
         try {
             BufferedReader in = new BufferedReader(new FileReader(filepath));
             String str;
             double spikeTime = 0;
 
-            while (((str = in.readLine()) != null) && (spikeTime < interval.end())) {
+            while (((str = in.readLine()) != null) && (spikeTime <= interval.end())) {
                 if (str.trim().isEmpty())
                     continue;
 
@@ -201,7 +207,78 @@ class TextSpikeTrain extends SpikeTrain {
     }
 
 
-    protected void setInitialValues(String spikeStr) {
-        neuronName = FileUtils.parseFileName(spikeStr);
+    /**
+     * @see nda.data.SpikeTrainI#getTimes()
+     */
+    @Override
+    public double[] getTimes() {
+        return spikeTimes;
+    }
+
+
+    /**
+     * @see nda.data.SpikeTrainI#getNeuronName()
+     */
+    @Override
+    public String getNeuronName() {
+        return neuronName;
+    }
+
+
+    /**
+     * @see nda.data.SpikeTrainI#getNeuronArea()
+     */
+    @Override
+    public String getNeuronArea() {
+        int pos = neuronName.indexOf('_');
+        if (pos != -1)
+            return neuronName.substring(0, pos);
+        else
+            return null;
+    }
+
+
+    /**
+     * @see nda.data.SpikeTrainI#getFirstSpike()
+     */
+    @Override
+    public double getFirstSpike() {
+        return spikeTimes[0];
+    }
+
+
+    /**
+     * @see nda.data.SpikeTrainI#getLastSpike()
+     */
+    @Override
+    public double getLastSpike() {
+        return spikeTimes[spikeTimes.length-1];
+    }
+
+
+    /**
+     * @see nda.data.SpikeTrainI#getInterval()
+     */
+    @Override
+    public Interval getInterval() {
+        return Interval.make(getFirstSpike(), getLastSpike());
+    }
+
+
+    /**
+     * @see java.util.AbstractList#get(int)
+     */
+    @Override
+    public Double get(int index) {
+        return spikeTimes[index];
+    }
+
+
+    /**
+     * @see java.util.AbstractCollection#size()
+     */
+    @Override
+    public int size() {
+        return spikeTimes.length;
     }
 }

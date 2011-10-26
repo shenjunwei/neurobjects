@@ -26,7 +26,7 @@ public class HistogramTest {
 
     private final Interval i1 = Interval.make(0, 10);
 
-    private SpikeTrain st_hp;
+    private SpikeTrainI st_hp;
     private Histogram hist_hp;
 
     private final String spikeDir = "data/test/spikes/";
@@ -121,12 +121,12 @@ public class HistogramTest {
 
 
     /**
-     * Test method for {@link nda.data.Histogram#load(nda.data.SpikeTrain)}.
+     * Test method for {@link nda.data.Histogram#load(nda.data.SpikeTrainI)}.
      */
     @Test
-    public void testLoadSpikeTrain() throws Exception {
+    public void testLoadSpikeTrainI() throws Exception {
         SpikeHandlerI handler = new TextSpikeHandler(spikeDir);
-        SpikeTrain st = handler.getSpikeTrain("HP_02a");
+        SpikeTrainI st = handler.getSpikeTrain("HP_02a");
 
         Histogram hist = new Histogram(i1, 10);
         hist.load(st);
@@ -134,7 +134,7 @@ public class HistogramTest {
         assertEquals(10, hist.getNumberBins());
 
         Interval int_b0 = Interval.make(0, hist.getBinSize());
-        int b0 = st.extractInterval(int_b0).getNumberOfSpikes();
+        int b0 = st.extractInterval(int_b0).size();
         assertEquals(hist.getBinCount(0), b0);
     }
 
@@ -202,7 +202,7 @@ public class HistogramTest {
         int sum = 0;
         for (int x : counts) sum += x;
 
-        assertEquals(st_hp.getNumberOfSpikes(), sum);
+        assertEquals(st_hp.size(), sum);
     }
 
 

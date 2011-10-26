@@ -86,7 +86,7 @@ public class Histogram {
     }
 
 
-    public void load(SpikeTrain spikeTrain) {
+    public void load(SpikeTrainI spikeTrain) {
         load(spikeTrain.getTimes());
     }
 

@@ -58,7 +58,7 @@ public interface SpikeHandlerI {
      * @return The spike train with the corresponding name. If the neuron name is not
      * found under the current filter selection, return null.
      */
-    public SpikeTrain getSpikeTrain(String name);
+    public SpikeTrainI getSpikeTrain(String name);
 
 
     /**
@@ -72,7 +72,7 @@ public interface SpikeHandlerI {
      * <tt>getNumberOfSpikeTrains()-1</tt>.
      * @return The ith SpikeTrain.
      */
-    public SpikeTrain getSpikeTrain(int i);
+    public SpikeTrainI getSpikeTrain(int i);
 
 
     /**
@@ -134,7 +134,7 @@ public interface SpikeHandlerI {
      * 
      * @return The list of SpikeTrain's contained in this SpikeHandlerI.
      */
-    public List<SpikeTrain> getAllSpikeTrains();
+    public List<SpikeTrainI> getAllSpikeTrains();
 
 
     /**
@@ -154,7 +154,7 @@ public interface SpikeHandlerI {
      * 
      * @see SpikeTrain.extractInterval
      */
-    public List<SpikeTrain> getAllSpikeTrains(Interval interval);
+    public List<SpikeTrainI> getAllSpikeTrains(Interval interval);
 
 
     /**

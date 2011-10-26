@@ -2,12 +2,10 @@ package app;
 
 import static java.lang.System.out;
 import static nda.util.ArrayUtils.getAverage;
-import static nda.util.ArrayUtils.getMax;
-import static nda.util.ArrayUtils.getMin;
 
 import nda.data.Interval;
 import nda.data.SpikeHandlerI;
-import nda.data.SpikeTrain;
+import nda.data.SpikeTrainI;
 import nda.data.text.TextSpikeHandler;
 
 /**
@@ -60,19 +58,17 @@ public class ReadTextDataApp {
         SpikeHandlerI spikeHandler = new TextSpikeHandler(path, filter, interval);
 
         // Print the table header
-        out.println("Neuron | Spike min | Spike max | Spike avg | " +
-        "ISI min | ISI max | ISI avg");
+        out.println("Neuron | Spike min | Spike max | Spike avg");
 
         // For each spike train that matches the given criteria
-        for (SpikeTrain spikeTrain : spikeHandler.getAllSpikeTrains()) {
+        for (SpikeTrainI spikeTrain : spikeHandler.getAllSpikeTrains()) {
             // Load the spike train time series and inter spike intervals
             double[] times = spikeTrain.getTimes();
-            double[] isi = spikeTrain.getInterspikeInterval();
 
             // Print a row of the table
             out.printf("%s %11.3f %11.3f %11.3f %9.3f %9.3f %9.3f\n",
-                    spikeTrain.getName(), spikeTrain.getFirst(), spikeTrain.getLast(),
-                    getAverage(times), getMin(isi), getMax(isi), getAverage(isi)
+                    spikeTrain.getNeuronName(), spikeTrain.getFirstSpike(),
+                    spikeTrain.getLastSpike(), getAverage(times)
             );
         }
     }

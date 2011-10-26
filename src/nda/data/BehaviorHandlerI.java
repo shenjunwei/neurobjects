@@ -4,38 +4,44 @@ import java.util.List;
 import java.util.Set;
 
 
-
-/** \brief   Handles animal behavior informations
+/**
+ * Handles animal behavior information
  * 
- * This component should be provide the interface between the animal behavior data and the application.
- *  The animal behavior data contains information about important aspects of the animal behavior models
- *  as a set of intervals, in which each element has a bahavior label and its respective time interval.
- *  Therefore in our model the animal behavior is captured as a set of: label and a time interval. \n
- *  The label must be a string and time interval must be formed using two numbers .
- *  Ex: \n
- *  \code ball 2010 2012 \endcode
- *  means that the time interval [2010;2012] has been labeled with 'ball' tag.
- *  \code north 1000 1005.5 \endcode
- *  means that the time interval [2010;2012] has been labeled with 'north' tag.
+ * This component should provide the interface between the animal behavior data and the
+ * application. The animal behavior data contains information about important aspects of
+ * the animal behavior represented as a set of Intervals, in which the animal showed the
+ * respective behavior. Each possible behavior is represented by a String label.
+ *
+ * Therefore in our model the animal behavior is captured as a set of
+ * (label, time interval) pairs. The label must be a string and time interval must be
+ * formed using two numbers. Ex:
  * 
- *     \see Behavior Data Format Spec
- *  @author Nivaldo Vasconcelos
- *  @date 17Mai2010
+ * \code ball 2010 2012 \endcode
+ * means that the time interval [2010;2012] has been labeled with 'ball' tag.
+ * 
+ * \code north 1000 1005.5 \endcode
+ * means that the time interval [2010;2012] has been labeled with 'north' tag.
+ *
+ * @author Nivaldo Vasconcelos
  */
 public interface BehaviorHandlerI {
 
+    /**
+     * Return the set of all possible animal behaviors, represented
+     * as Strings.
+     */
     public Set<String> getLabelSet();
 
 
     /**
-     * \brief Returns a list of intervals tagged with a give label.
+     * Returns a list of intervals tagged with a given label.
      * 
-     * This method allow knows, from the animal behavior data, the list of time
-     * intervals associated with a give label. Ex: If one needs know the set of
-     * time intervals in which the time was labeled with 'north' the following
-     * call will provide:
+     * This method enables finding, from the animal behavior data, the list of time
+     * intervals associated with a given label. Ex: If one needs know the set of time
+     * intervals in which the time was labeled with 'north' the following
+     * call will suffice:
      * 
-     * \code double[] timeList = BH.getIntervals("north"); \endcode
+     * <tt>List<Interval> intervals = BH.getIntervals("north");</tt>
      * 
      * @param label
      *            label target.
