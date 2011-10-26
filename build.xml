@@ -14,7 +14,7 @@
   </path>
 
 
-  <target name="all" depends="docs,runnable-jars"/>
+  <target name="all" depends="runnable-jars"/>
 
 
   <target name="init">
@@ -52,6 +52,13 @@
  
   <target name="docs">
     <exec executable="${doxygen-cmd}" spawn="true"/>
+    <javadoc
+          access="package" author="true"
+          classpath="lib/opencsv-2.3.jar:lib/weka.jar:lib/junit-4.8.2.jar:lib/commons-cli-1.2.jar:lib/snakeyaml-1.8.jar:lib/commons-math-2.2.jar:/home/giulianoxt/bin/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar:/home/giulianoxt/bin/eclipse/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar:lib/commons-lang3-3.0.jar"
+          destdir="doc/javadoc" doctitle="Neurobjects" nodeprecated="false"
+          nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false"
+          packagenames="nda.data,nda.analysis.generation,nda.analysis,app,nda.data.text,nda.analysis.evaluation,nda.app,nda.util"
+          source="1.6" sourcepath="test:src" splitindex="true" use="true" version="true"/>
   </target>
 
 
@@ -66,7 +73,18 @@
 		</batchtest>
 	</junit>
   </target>
+	
+  <target name="package" depends="compile-src">
+  	<jar destfile="dist/neurobjects.jar" basedir="dist" excludes="*.jar"/>
 
+	<jar destfile="dist/neurobjects-with-deps.jar">
+  	 <fileset dir="dist"/>
+     <zipgroupfileset
+     	dir="lib"
+     	includes="*.jar"
+		excludes="*-source*,*-src*,*-javadoc*,jar-in-jar-loader.zip"/>
+    </jar>
+  </target>
 
   <target name="runnable-jars" depends="compile-src">
     <jar destfile="dist/dataset-generator.jar">
