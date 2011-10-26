@@ -11,7 +11,7 @@ import org.apache.commons.math.random.RandomDataImpl;
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;
-import nda.data.SpikeTrain;
+import nda.data.SpikeTrainI;
 import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
 import nda.util.RandomUtils;
@@ -24,13 +24,13 @@ public class DatasetTransformer {
 
     public static boolean needsSpikeTrainTransform(GeneratorSetup.Dataset dataset) {
         return dataset.getParameter("surrogate") != null &&
-                dataset.getParameter("surrogate_type").equals("spike_jitter");
+        dataset.getParameter("surrogate_type").equals("spike_jitter");
     }
 
     // Victor
     public static boolean needsVarianceContactsTransform(GeneratorSetup.Dataset dataset) {
         return dataset.getParameter("surrogate") != null &&
-                dataset.getParameter("surrogate_type").equals("var_contacts");
+        dataset.getParameter("surrogate_type").equals("var_contacts");
     }
 
     public static boolean needsRateMatrixTransform(GeneratorSetup.Dataset dataset) {
@@ -322,7 +322,7 @@ public class DatasetTransformer {
 
         TextSpikeHandler newHandler = new TextSpikeHandler(spikeHandler);
 
-        for (SpikeTrain spikeTrain : newHandler.getAllSpikeTrains())
+        for (SpikeTrainI spikeTrain : newHandler.getAllSpikeTrains())
             applyJitter(random, spikeTrain.getTimes(), dist);
 
         return newHandler;
@@ -411,8 +411,8 @@ public class DatasetTransformer {
                 Interval shift;
 
                 try{
-                    offset1 = rand.nextGaussian(0, new_t0); // Distribui�ao Normal, efeito aditivo
-                    offset2 = rand.nextGaussian(0, new_t0); // Distribui�ao Normal, efeito aditivo
+                    offset1 = rand.nextGaussian(0, new_t0); // Distribuição Normal, efeito aditivo
+                    offset2 = rand.nextGaussian(0, new_t0); // Distribuição Normal, efeito aditivo
                 } catch(Exception e){
                     offset1 = 0.0;
                     offset2 = 0.0;

@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import nda.data.Interval;
 import nda.data.SpikeHandlerI;
-import nda.data.SpikeTrain;
+import nda.data.SpikeTrainI;
 
 
 /**
@@ -91,7 +91,11 @@ public class TextSpikeHandlerTest {
 
         Interval global = handler.getGlobalSpikeInterval();
         assertTrue(intervalS1.contains(global));
+    }
 
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidInterval() throws Exception {
         SpikeHandlerI emptyHandler = new TextSpikeHandler(
                 spikeDirPath, filterHP, Interval.EMPTY);
 
@@ -134,9 +138,9 @@ public class TextSpikeHandlerTest {
      * Test method for {@link nda.data.text.TextSpikeHandler#getSpikeTrain(int)}.
      */
     @Test
-    public void testGetSpikeTrainInt() {
-        assertEquals("V1_04a", v1Neurons.getSpikeTrain(0).getName());
-        assertEquals("V1_09a", v1Neurons.getSpikeTrain(1).getName());
+    public void testgetSpikeTrainInt() {
+        assertEquals("V1_04a", v1Neurons.getSpikeTrain(0).getNeuronName());
+        assertEquals("V1_09a", v1Neurons.getSpikeTrain(1).getNeuronName());
     }
 
 
@@ -144,7 +148,7 @@ public class TextSpikeHandlerTest {
      * Test method for {@link nda.data.text.TextSpikeHandler#getSpikeTrain(java.lang.String)}.
      */
     @Test
-    public void testGetSpikeTrainString() {
+    public void testgetSpikeTrainString() {
         assertNotNull(hpNeurons.getSpikeTrain("HP_12b"));
         assertNotNull(hpNeurons.getSpikeTrain("HP_12a"));
         assertNotNull(v1Neurons.getSpikeTrain("V1_09a"));
@@ -209,12 +213,12 @@ public class TextSpikeHandlerTest {
      * Test method for {@link nda.data.text.TextSpikeHandler#getAllSpikeTrains()}.
      */
     @Test
-    public void testGetAllSpikeTrains() {
-        List<SpikeTrain> spikeTrains = hpNeurons.getAllSpikeTrains();
-        SpikeTrain hp12a = spikeTrains.get(1);
+    public void testgetAllSpikeTrains() {
+        List<SpikeTrainI> spikeTrains = hpNeurons.getAllSpikeTrains();
+        SpikeTrainI hp12a = spikeTrains.get(1);
 
         assertEquals(hpNeurons.getNumberOfSpikeTrains(), spikeTrains.size());
-        assertEquals("HP_12a", hp12a.getName());
+        assertEquals("HP_12a", hp12a.getNeuronName());
         assertTrue(hpNeurons.getGlobalSpikeInterval().contains(hp12a.getInterval()));
     }
 
@@ -223,14 +227,14 @@ public class TextSpikeHandlerTest {
      * Test method for {@link nda.data.text.TextSpikeHandler#getAllSpikeTrains(nda.data.Interval)}.
      */
     @Test
-    public void testGetAllSpikeTrainsInterval() {
-        List<SpikeTrain> trains = hpNeurons.getAllSpikeTrains(Interval.EMPTY);
+    public void testgetAllSpikeTrainsInterval() {
+        List<SpikeTrainI> trains = hpNeurons.getAllSpikeTrains(Interval.EMPTY);
         assertTrue(trains.isEmpty());
 
         trains = hpNeurons.getAllSpikeTrains(Interval.make(5811.5, 5811.9));
         assertEquals(2, trains.size());
-        assertEquals(1, trains.get(0).getNumberOfSpikes());
-        assertEquals(1, trains.get(1).getNumberOfSpikes());
+        assertEquals(1, trains.get(0).size());
+        assertEquals(1, trains.get(1).size());
     }
 
 
@@ -242,7 +246,7 @@ public class TextSpikeHandlerTest {
         SpikeHandlerI allNeurons = new TextSpikeHandler(spikeDirPath);
         Interval globalInterval = allNeurons.getGlobalSpikeInterval();
 
-        for (SpikeTrain st : allNeurons.getAllSpikeTrains())
+        for (SpikeTrainI st : allNeurons.getAllSpikeTrains())
             assertTrue(globalInterval.contains(st.getInterval()));
     }
 

@@ -106,8 +106,8 @@ public class CountMatrixTest {
     @Test
     public void testGetColumn() {
         int exp_sum = 0;
-        for (SpikeTrain st : handler_v1.getAllSpikeTrains())
-            exp_sum += st.getNumberOfSpikes();
+        for (SpikeTrainI st : handler_v1.getAllSpikeTrains())
+            exp_sum += st.size();
 
         int sum = 0;
         for (int c = 0; c < cm_v1.numColumns(); ++c)
@@ -126,7 +126,7 @@ public class CountMatrixTest {
         for (int r = 0; r < cm_v1.numRows(); ++r) {
             int sum = 0;
             for (int count : cm_v1.getRow(r)) sum += count;
-            assertEquals(handler_v1.getSpikeTrain(r).getNumberOfSpikes(), sum);
+            assertEquals(handler_v1.getSpikeTrain(r).size(), sum);
         }
     }
 
