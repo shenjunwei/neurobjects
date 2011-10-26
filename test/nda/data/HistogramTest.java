@@ -38,7 +38,7 @@ public class HistogramTest {
     @Before
     public void setUp() throws Exception {
         SpikeHandlerI handler = new TextSpikeHandler(spikeDir);
-        st_hp = handler.getSpikeTrain("HP_02a");
+        st_hp = handler.get("HP_02a");
         hist_hp = new Histogram(st_hp.getInterval(), 0.5);
         hist_hp.load(st_hp);
     }
@@ -126,7 +126,7 @@ public class HistogramTest {
     @Test
     public void testLoadSpikeTrainI() throws Exception {
         SpikeHandlerI handler = new TextSpikeHandler(spikeDir);
-        SpikeTrainI st = handler.getSpikeTrain("HP_02a");
+        SpikeTrainI st = handler.get("HP_02a");
 
         Histogram hist = new Histogram(i1, 10);
         hist.load(st);

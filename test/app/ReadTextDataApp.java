@@ -61,7 +61,7 @@ public class ReadTextDataApp {
         out.println("Neuron | Spike min | Spike max | Spike avg");
 
         // For each spike train that matches the given criteria
-        for (SpikeTrainI spikeTrain : spikeHandler.getAllSpikeTrains()) {
+        for (SpikeTrainI spikeTrain : spikeHandler) {
             // Load the spike train time series and inter spike intervals
             double[] times = spikeTrain.getTimes();
 

@@ -142,6 +142,9 @@ public class TextSpikeTrain extends AbstractList<Double> implements SpikeTrainI 
 
     @Override
     public SpikeTrainI extractInterval(Interval interval) {
+        if (!interval.isValid())
+            throw new IllegalArgumentException("Interval is invalid");
+
         interval = interval.intersection(getInterval());
 
         double[] times = ArrayUtils.extractInterval(

@@ -36,7 +36,7 @@ public class CountMatrix implements SpikeRateMatrixI {
     }
 
     public CountMatrix(SpikeHandlerI spikeHandler, int binCount) {
-        Interval interval = spikeHandler.getGlobalSpikeInterval();
+        Interval interval = spikeHandler.getRecordingInterval();
         histogram = new Histogram(interval, binCount);
 
         load(spikeHandler);
@@ -44,7 +44,7 @@ public class CountMatrix implements SpikeRateMatrixI {
 
 
     public CountMatrix(SpikeHandlerI spikeHandler, double binSize) {
-        Interval interval = spikeHandler.getGlobalSpikeInterval();
+        Interval interval = spikeHandler.getRecordingInterval();
         histogram = new Histogram(interval, binSize);
 
         load(spikeHandler);
@@ -52,12 +52,12 @@ public class CountMatrix implements SpikeRateMatrixI {
 
 
     protected void load(SpikeHandlerI spikeHandler) {
-        int n_rows = spikeHandler.getNumberOfSpikeTrains();
+        int n_rows = spikeHandler.size();
         int n_cols = histogram.getNumberBins();
         matrix = new int[n_rows][n_cols];
 
         for (int r = 0; r < n_rows; ++r) {
-            histogram.load(spikeHandler.getSpikeTrain(r));
+            histogram.load(spikeHandler.get(r));
             histogram.saveBinCounts(matrix[r]);
         }
 

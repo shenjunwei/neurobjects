@@ -1,6 +1,7 @@
 package nda.data.text;
 
 import java.io.File;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,11 +16,13 @@ import nda.data.SpikeTrainI;
  * 
  * @author Nivaldo Vasconcelos
  */
-public class TextSpikeHandler implements SpikeHandlerI {
+public class TextSpikeHandler extends AbstractList<SpikeTrainI> implements SpikeHandlerI {
     protected String animalName;
-    protected String spikeFilter;
+    protected String neuronFilter;
+
     protected String dataDir;
     protected Interval spikeInterval;
+
     protected List<SpikeTrainI> neurons;
 
     protected final static String DEFAULT_FILTER = "";
@@ -28,7 +31,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
     public TextSpikeHandler(TextSpikeHandler handler) {
         animalName = handler.animalName;
-        spikeFilter = handler.spikeFilter;
+        neuronFilter = handler.neuronFilter;
         dataDir = handler.dataDir;
         spikeInterval = handler.spikeInterval;
 
@@ -36,6 +39,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
         for (SpikeTrainI spikeTrain : handler.neurons)
             neurons.add(new TextSpikeTrain(spikeTrain));
     }
+
 
     public TextSpikeHandler(String dir)
     throws InvalidDataFileException, InvalidDataDirectoryException {
@@ -54,7 +58,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
         dataDir = dir;
         spikeInterval = itv;
         animalName = "<unknown>";
-        spikeFilter = filter.toLowerCase();
+        neuronFilter = filter.toLowerCase();
         readSpikes(dataDir, filter, spikeInterval);
     }
 
@@ -69,7 +73,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
 
     @Override
-    public String getSourceType() {
+    public String getDataSourceType() {
         return "txt";
     }
 
@@ -81,13 +85,13 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
 
     @Override
-    public SpikeTrainI getSpikeTrain(int i) {
+    public SpikeTrainI get(int i) {
         return neurons.get(i);
     }
 
 
     @Override
-    public SpikeTrainI getSpikeTrain(String name) {
+    public SpikeTrainI get(String name) {
         for (SpikeTrainI spikeTrain : neurons)
             if (spikeTrain.getNeuronName().equalsIgnoreCase(name))
                 return spikeTrain;
@@ -97,7 +101,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
 
     @Override
-    public int getNumberOfSpikeTrains() {
+    public int size() {
         return neurons.size();
     }
 
@@ -106,7 +110,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
     public SpikeHandlerI withFilter(String filter) {
         String newFilter = filter.toLowerCase();
 
-        if (newFilter.equals(spikeFilter))
+        if (newFilter.equals(neuronFilter))
             return this;
 
         List<SpikeTrainI> newNeurons = new ArrayList<SpikeTrainI>();
@@ -120,7 +124,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
         TextSpikeHandler newHandler = new TextSpikeHandler();
         newHandler.animalName = animalName;
-        newHandler.spikeFilter = newFilter;
+        newHandler.neuronFilter = newFilter;
         newHandler.dataDir = dataDir;
         newHandler.spikeInterval = spikeInterval;
         newHandler.neurons = newNeurons;
@@ -131,7 +135,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
     @Override
     public String getFilter() {
-        return spikeFilter;
+        return neuronFilter;
     }
 
 
@@ -147,27 +151,24 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
 
     @Override
-    public List<SpikeTrainI> getAllSpikeTrains() {
-        return neurons;
-    }
+    public SpikeHandlerI extractInterval(Interval interval) {
 
-
-    @Override
-    public List<SpikeTrainI> getAllSpikeTrains(Interval interval) {
-        List<SpikeTrainI> trains = new ArrayList<SpikeTrainI>(neurons.size());
+        TextSpikeHandler newHandler = new TextSpikeHandler(this);
+        List<SpikeTrainI> newSpikeTrains = new ArrayList<SpikeTrainI>(neurons.size());
 
         for (SpikeTrainI spikeTrain : neurons) {
             SpikeTrainI intervalSt = spikeTrain.extractInterval(interval);
             if (!intervalSt.isEmpty())
-                trains.add(intervalSt);
+                newSpikeTrains.add(intervalSt);
         }
 
-        return trains;
+        newHandler.neurons = newSpikeTrains;
+        return newHandler;
     }
 
 
     @Override
-    public Interval getGlobalSpikeInterval() {
+    public Interval getRecordingInterval() {
         if (neurons.size() == 0)
             return Interval.EMPTY;
 
