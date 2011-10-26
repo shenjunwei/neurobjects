@@ -120,10 +120,18 @@ public class TextSpikeTrainTest {
         SpikeTrainI st3 = spikeHP02a.extractInterval(it1);
         assertTrue(st3.isEmpty());
 
-        SpikeTrainI st4 = st1.extractInterval(Interval.EMPTY);
         SpikeTrainI st5 = st1.extractInterval(Interval.INF);
-        assertTrue(st4.isEmpty());
         assertTrue(st5.getInterval().contains(st1.getInterval()));
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExtractInvalidInterval() throws Exception {
+        Interval it1 = Interval.make(0.5, 5);
+        SpikeTrainI st1 = spikeTest.extractInterval(it1);
+
+        SpikeTrainI st4 = st1.extractInterval(Interval.EMPTY);
+        assertTrue(st4.isEmpty());
     }
 
 
