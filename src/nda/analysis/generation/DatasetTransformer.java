@@ -322,7 +322,7 @@ public class DatasetTransformer {
 
         TextSpikeHandler newHandler = new TextSpikeHandler(spikeHandler);
 
-        for (SpikeTrainI spikeTrain : newHandler.getAllSpikeTrains())
+        for (SpikeTrainI spikeTrain : newHandler)
             applyJitter(random, spikeTrain.getTimes(), dist);
 
         return newHandler;

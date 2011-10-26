@@ -22,7 +22,7 @@ import nda.data.text.InvalidDataFileException;
  * @author Nivaldo Vasconcelos
  * @see Wiki page: SpikeHandlerComponent.
  */
-public interface SpikeHandlerI {
+public interface SpikeHandlerI extends List<SpikeTrainI> {
     /**
      * Return the type of the data source.
      * 
@@ -33,7 +33,7 @@ public interface SpikeHandlerI {
      * @return A string representing the type of the data source. Return null if the
      * type of the data source can't be determined.
      */
-    public String getSourceType();
+    public String getDataSourceType();
 
 
     /**
@@ -58,7 +58,7 @@ public interface SpikeHandlerI {
      * @return The spike train with the corresponding name. If the neuron name is not
      * found under the current filter selection, return null.
      */
-    public SpikeTrainI getSpikeTrain(String name);
+    public SpikeTrainI get(String name);
 
 
     /**
@@ -72,15 +72,8 @@ public interface SpikeHandlerI {
      * <tt>getNumberOfSpikeTrains()-1</tt>.
      * @return The ith SpikeTrain.
      */
-    public SpikeTrainI getSpikeTrain(int i);
-
-
-    /**
-     * Return the number of spike trains in this set.
-     * 
-     * @return Number of SpikeTrain's currently loaded.
-     */
-    public int getNumberOfSpikeTrains();
+    @Override
+    public SpikeTrainI get(int i);
 
 
     /**
@@ -127,17 +120,6 @@ public interface SpikeHandlerI {
 
 
     /**
-     * Get all spike trains currently loaded.
-     * 
-     * Following the current filter selection, return all spike trains for each
-     * neuron as a list of SpikeTrains's.
-     * 
-     * @return The list of SpikeTrain's contained in this SpikeHandlerI.
-     */
-    public List<SpikeTrainI> getAllSpikeTrains();
-
-
-    /**
      * Return a given time window of every spike train in this SpikeHandlerI.
      * 
      * Following the current filter selection, return a list of new spike trains
@@ -154,7 +136,7 @@ public interface SpikeHandlerI {
      * 
      * @see SpikeTrain.extractInterval
      */
-    public List<SpikeTrainI> getAllSpikeTrains(Interval interval);
+    public SpikeHandlerI extractInterval(Interval interval);
 
 
     /**
@@ -166,5 +148,5 @@ public interface SpikeHandlerI {
      * @return Return the smallest Interval \c I such that, for every SpikeTrain \c st in
      * this handler, <tt>I.contains(st.getInterval()) == true</tt>.
      */
-    public Interval getGlobalSpikeInterval();
+    public Interval getRecordingInterval();
 }

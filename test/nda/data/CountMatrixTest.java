@@ -61,11 +61,11 @@ public class CountMatrixTest {
         CountMatrix count_m = new CountMatrix(handler_v1, 10);
 
         assertEquals(10, count_m.numColumns());
-        assertEquals(handler_v1.getNumberOfSpikeTrains(), count_m.numRows());
-        assertTrue(count_m.getInterval().contains(handler_v1.getGlobalSpikeInterval()));
+        assertEquals(handler_v1.size(), count_m.numRows());
+        assertTrue(count_m.getInterval().contains(handler_v1.getRecordingInterval()));
         assertEquals(handler_v1.getNeuronNames(), count_m.getNeuronNames());
 
-        double exp_bs = handler_v1.getGlobalSpikeInterval().duration() / 10;
+        double exp_bs = handler_v1.getRecordingInterval().duration() / 10;
         assertEquals(exp_bs, count_m.getBinSize(), EPS);
     }
 
@@ -78,11 +78,11 @@ public class CountMatrixTest {
         CountMatrix count_m = new CountMatrix(handler_test, 0.5);
 
         assertEquals(0.5, count_m.getBinSize(), EPS);
-        assertEquals(handler_test.getNumberOfSpikeTrains(), count_m.numRows());
-        assertTrue(count_m.getInterval().contains(handler_test.getGlobalSpikeInterval()));
+        assertEquals(handler_test.size(), count_m.numRows());
+        assertTrue(count_m.getInterval().contains(handler_test.getRecordingInterval()));
         assertEquals(handler_test.getNeuronNames(), count_m.getNeuronNames());
 
-        int exp_bc = (int) (handler_test.getGlobalSpikeInterval().duration() / 0.5);
+        int exp_bc = (int) (handler_test.getRecordingInterval().duration() / 0.5);
         assertEquals(exp_bc, count_m.numColumns());
     }
 
@@ -106,7 +106,7 @@ public class CountMatrixTest {
     @Test
     public void testGetColumn() {
         int exp_sum = 0;
-        for (SpikeTrainI st : handler_v1.getAllSpikeTrains())
+        for (SpikeTrainI st : handler_v1)
             exp_sum += st.size();
 
         int sum = 0;
@@ -126,7 +126,7 @@ public class CountMatrixTest {
         for (int r = 0; r < cm_v1.numRows(); ++r) {
             int sum = 0;
             for (int count : cm_v1.getRow(r)) sum += count;
-            assertEquals(handler_v1.getSpikeTrain(r).size(), sum);
+            assertEquals(handler_v1.get(r).size(), sum);
         }
     }
 
@@ -172,7 +172,7 @@ public class CountMatrixTest {
         double[] p1 = cm_test.getPattern(2.5, 2);
         checkPattern(p1, cm_test, 1, 2);
 
-        double first = handler_v1.getGlobalSpikeInterval().start();
+        double first = handler_v1.getRecordingInterval().start();
 
         double[] p2 = cm_v1.getPattern(first + cm_v1.getBinSize(), 5);
         checkPattern(p2, cm_v1, 1, 5);

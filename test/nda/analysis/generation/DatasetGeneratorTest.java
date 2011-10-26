@@ -162,7 +162,7 @@ public class DatasetGeneratorTest {
         generator.loadHandlers();
 
         assertNotNull(generator.globalSpikeHandler);
-        assertEquals(10, generator.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, generator.globalSpikeHandler.size());
 
         assertNotNull(generator.globalBehaviorHandler);
         assertEquals(4, generator.globalBehaviorHandler.getLabelSet().size());
@@ -389,7 +389,7 @@ public class DatasetGeneratorTest {
         drop_generator.loadHandlers();
 
         assertEquals(12, drop_generator.setup.getDatasets().size());
-        assertEquals(10, drop_generator.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, drop_generator.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : drop_generator.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -413,7 +413,7 @@ public class DatasetGeneratorTest {
         surrogate_gen.loadHandlers();
 
         assertEquals(39, surrogate_gen.setup.getDatasets().size());
-        assertEquals(10, surrogate_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, surrogate_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : surrogate_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -442,7 +442,7 @@ public class DatasetGeneratorTest {
         poisson_sur_gen.loadHandlers();
 
         assertEquals(39, poisson_sur_gen.setup.getDatasets().size());
-        assertEquals(10, poisson_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, poisson_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : poisson_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -471,7 +471,7 @@ public class DatasetGeneratorTest {
         col_swap_sur_gen.loadHandlers();
 
         assertEquals(27, col_swap_sur_gen.setup.getDatasets().size());
-        assertEquals(10, col_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, col_swap_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : col_swap_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -498,7 +498,7 @@ public class DatasetGeneratorTest {
         neuron_swap_sur_gen.loadHandlers();
 
         assertEquals(39, neuron_swap_sur_gen.setup.getDatasets().size());
-        assertEquals(10, neuron_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, neuron_swap_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : neuron_swap_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -526,7 +526,7 @@ public class DatasetGeneratorTest {
         matrix_swap_sur_gen.loadHandlers();
 
         assertEquals(27, matrix_swap_sur_gen.setup.getDatasets().size());
-        assertEquals(10, matrix_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, matrix_swap_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : matrix_swap_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -555,7 +555,7 @@ public class DatasetGeneratorTest {
         col_swap_d_sur_gen.loadHandlers();
 
         assertEquals(81, col_swap_d_sur_gen.setup.getDatasets().size());
-        assertEquals(10, col_swap_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, col_swap_d_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : col_swap_d_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -591,7 +591,7 @@ public class DatasetGeneratorTest {
         poisson_d_sur_gen.loadHandlers();
 
         assertEquals(27, poisson_d_sur_gen.setup.getDatasets().size());
-        assertEquals(10, poisson_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, poisson_d_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : poisson_d_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -627,7 +627,7 @@ public class DatasetGeneratorTest {
         uniform_d_sur_gen.loadHandlers();
 
         assertEquals(27, uniform_d_sur_gen.setup.getDatasets().size());
-        assertEquals(10, uniform_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, uniform_d_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : uniform_d_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -663,7 +663,7 @@ public class DatasetGeneratorTest {
         spike_jitter_sur_gen.loadHandlers();
 
         assertEquals(27, spike_jitter_sur_gen.setup.getDatasets().size());
-        assertEquals(10, spike_jitter_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, spike_jitter_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : spike_jitter_sur_gen.setup.getDatasets()) {
             assertTrue(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -699,7 +699,7 @@ public class DatasetGeneratorTest {
         mean_d_sur_gen.loadHandlers();
 
         assertEquals(27, mean_d_sur_gen.setup.getDatasets().size());
-        assertEquals(10, mean_d_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, mean_d_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : mean_d_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -735,7 +735,7 @@ public class DatasetGeneratorTest {
         contact_swap_sur_gen.loadHandlers();
 
         assertEquals(27, contact_swap_sur_gen.setup.getDatasets().size());
-        assertEquals(10, contact_swap_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, contact_swap_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : contact_swap_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
@@ -771,7 +771,7 @@ public class DatasetGeneratorTest {
         contact_shift_sur_gen.loadHandlers();
 
         assertEquals(9, contact_shift_sur_gen.setup.getDatasets().size());
-        assertEquals(10, contact_shift_sur_gen.globalSpikeHandler.getNumberOfSpikeTrains());
+        assertEquals(10, contact_shift_sur_gen.globalSpikeHandler.size());
 
         for (GeneratorSetup.Dataset dataset : contact_shift_sur_gen.setup.getDatasets()) {
             assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));

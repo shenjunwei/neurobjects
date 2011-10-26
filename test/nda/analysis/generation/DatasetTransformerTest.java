@@ -416,17 +416,17 @@ public class DatasetTransformerTest {
             assertEquals(handler_all.getFilter(), surHandler.getFilter());
 
             assertEquals(handler_all.getNeuronNames(), surHandler.getNeuronNames());
-            assertEquals(handler_all.getNumberOfSpikeTrains(), surHandler.getNumberOfSpikeTrains());
-            assertEquals(handler_all.getSourceType(), surHandler.getSourceType());
+            assertEquals(handler_all.size(), surHandler.size());
+            assertEquals(handler_all.getDataSourceType(), surHandler.getDataSourceType());
 
-            Interval oldInt = handler_all.getGlobalSpikeInterval();
-            Interval newInt = surHandler.getGlobalSpikeInterval();
+            Interval oldInt = handler_all.getRecordingInterval();
+            Interval newInt = surHandler.getRecordingInterval();
             assertEquals(oldInt.start(), newInt.start(), dist);
             assertEquals(oldInt.end(), newInt.end(), dist);
 
-            for (int i = 0; i < surHandler.getNumberOfSpikeTrains(); ++i) {
-                double[] old_times = handler_all.getSpikeTrain(i).getTimes();
-                double[] new_times = surHandler.getSpikeTrain(i).getTimes();
+            for (int i = 0; i < surHandler.size(); ++i) {
+                double[] old_times = handler_all.get(i).getTimes();
+                double[] new_times = surHandler.get(i).getTimes();
 
                 for (int j = 0; j < old_times.length; ++j)
                     assertEquals(old_times[j], new_times[j], dist);
