@@ -232,4 +232,13 @@ public class Interval {
         return Interval.make(Math.min(start, interval.start),
                 Math.max(end, interval.end));
     }
+
+
+    /**
+     * Create a new interval such that it is displaced by <tt>offset</tt> seconds
+     * in relation to the original interval.
+     */
+    public Interval shift(double offset) {
+        return Interval.make(start+offset, end+offset);
+    }
 }
