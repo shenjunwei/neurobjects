@@ -376,13 +376,8 @@ public class DatasetTransformer {
             List<Interval> intervals = behavior.getContactIntervals(label);
             List<Interval> new_intervals = new ArrayList<Interval>(intervals.size());
 
-            for (Interval interval : intervals) {
-                double a = interval.start();
-                double b = interval.end();
-
-                Interval shift = Interval.make(a+offset, b+offset);
-                new_intervals.add(shift);
-            }
+            for (Interval interval : intervals)
+                new_intervals.add(interval.shift(offset));
 
             behavior.setContactIntervals(label, new_intervals);
         }
