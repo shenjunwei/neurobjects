@@ -23,6 +23,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
     protected List<SpikeTrain> neurons;
 
     protected final static String DEFAULT_FILTER = "";
+    protected final static String TEXT_SPIKE_DATA_EXTENSION = ".spk";
 
 
     public TextSpikeHandler(TextSpikeHandler handler) {
@@ -113,7 +114,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
         for (SpikeTrain spikeTrain : neurons) {
             String spikeName = spikeTrain.getName();
 
-            if (filterMatch(spikeName, newFilter))
+            if (filterMatch(spikeName, newFilter, false))
                 newNeurons.add(spikeTrain);
         }
 
@@ -191,7 +192,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
 
         int count = 0;
         for (String filename : files)
-            if (filterMatch(filename, spikeFilter))
+            if (filterMatch(filename, spikeFilter, true))
                 count++;
 
         return count;
@@ -207,7 +208,7 @@ public class TextSpikeHandler implements SpikeHandlerI {
         neurons = new ArrayList<SpikeTrain>();
 
         for (String filename : files) {
-            if (!filterMatch(filename, spikeFilter))
+            if (!filterMatch(filename, spikeFilter, true))
                 continue;
 
             String name = filename.substring(0, filename.lastIndexOf("."));
@@ -239,8 +240,13 @@ public class TextSpikeHandler implements SpikeHandlerI {
     }
 
 
-    protected final static boolean filterMatch(String name, String filter_str) {
+    protected final static boolean filterMatch(
+            String name, String filter_str, boolean checkExtension) {
         name = name.toLowerCase();
+
+        if (checkExtension && !name.endsWith(TEXT_SPIKE_DATA_EXTENSION))
+            return false;
+
         String[] filters = filter_str.split(",");
 
         for (String filter : filters) {
