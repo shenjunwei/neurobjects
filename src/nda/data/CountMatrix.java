@@ -214,22 +214,6 @@ public class CountMatrix implements SpikeRateMatrixI {
         } catch (IllegalArgumentException e) {
             return 0;
         }
-
-        /*
-        int count = 0;
-        int bin = histogram.getBinFor(interval.start());
-        int width = getWindowWidth();
-
-        while (containsWindow(bin, width)) {
-            if (histogram.getTimeForBin(bin+width-1) > interval.end())
-                break;
-
-            ++count;
-            bin += getStep();
-        }
-
-        return count;
-         */
     }
 
 

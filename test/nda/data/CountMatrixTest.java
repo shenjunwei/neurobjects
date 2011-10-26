@@ -289,8 +289,21 @@ public class CountMatrixTest {
 
             Interval interval_test = Interval.make(st, end);
 
+            int count = 0;
+            int bin = cm_v1.getBinForTime(interval_test.start());
+            int width = cm_v1.getWindowWidth();
+
+            while (cm_v1.containsWindow(bin, width)) {
+                if (cm_v1.getTimeForBin(bin+width-1) > interval_test.end())
+                    break;
+
+                ++count;
+                bin += 1;
+            }
+
             List<double[]> patterns = cm_v1.getPatterns(interval_test);
             assertEquals(patterns.size(), cm_v1.numPatterns(interval_test));
+            assertEquals(count, patterns.size());
         }
 
         assertEquals(cm_v1.numColumns()-cm_v1.getWindowWidth()+1,
