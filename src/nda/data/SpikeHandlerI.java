@@ -1,5 +1,6 @@
 package nda.data;
 
+import java.util.Comparator;
 import java.util.List;
 
 import nda.data.text.InvalidDataFileException;
@@ -149,4 +150,7 @@ public interface SpikeHandlerI extends List<SpikeTrainI> {
      * this handler, <tt>I.contains(st.getInterval()) == true</tt>.
      */
     public Interval getRecordingInterval();
+
+
+    public void sort(Comparator<SpikeTrainI> comparator);
 }
