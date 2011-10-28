@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import nda.data.Interval;
@@ -258,5 +260,11 @@ public class TextSpikeHandler extends AbstractList<SpikeTrainI> implements Spike
         }
 
         return false;
+    }
+
+
+    @Override
+    public void sort(Comparator<SpikeTrainI> comparator) {
+        Collections.sort(neurons, comparator);
     }
 }
