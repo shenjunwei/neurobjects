@@ -10,6 +10,23 @@ import nda.data.text.MissingDataFileException;
 
 
 /**
+ * Component to calculate the probability distribution for a random 1D variable
+ * using a Histogram.
+ * 
+ * A histogram is tied to a given interval and a bin size. Values outside the interval
+ * are ignored. Internally, the histogram will use time windows with a binSize duration
+ * to estimate the function.
+ * 
+ * The bins are organized as follows:
+ * 
+ * \begincode
+ * H[0] = number of entries in the bin 0, t0 <= x < t1
+ * H[1] = number of entries in the bin 1, t1 <= x < t2
+ * .
+ * .
+ * .
+ * H[N-1] = number of entries in the bin N-1, x <= tN
+ *\endcode
  * 
  * @author Giuliano Vilela.
  */
@@ -19,27 +36,34 @@ public class Histogram {
     private int[] histogram;
 
 
+    /**
+     * Copy constructor.
+     */
     public Histogram(Histogram hist) {
         this(hist.getInterval(), hist.getBinSize());
     }
 
 
+    /**
+     * Create a Histogram with the specied interval and a bin size of 250ms.
+     */
     public Histogram(Interval interval) {
         this(interval, 0.250);
     }
 
 
+    /**
+     * Create a Histogram with the specified interval and a bin size of
+     * <tt>interval.duration() / binCount</tt>.
+     */
     public Histogram(Interval interval, int binCount) {
         double binSize = interval.duration() / binCount;
         init(interval, binCount, binSize);
     }
 
+
     /**
-     * This constructor sets several properties to start make the histogram.
-     * @param a : Begin Time, first spikeTime to search on interval.
-     * @param b : End Time, last spikeTime to search on interval.
-     * @param binSize : width of bin.
-     * @throws IllegalArgumentException
+     * Create a Histogram with the specified interval and binSize.
      */
     public Histogram (Interval interval, double binSize) {
         int binCount = (int) Math.ceil(interval.duration() / binSize);
@@ -67,8 +91,7 @@ public class Histogram {
 
 
     /**
-     * \brief Set to zero all entries of the histogram buffer.
-     * 
+     * Set to zero all entries of the histogram buffer.
      * 
      * This method is very useful when the same instance is used as histogram
      * for more than one counting process. For example, the spike counting
@@ -78,25 +101,23 @@ public class Histogram {
      * 
      * The other parameters of the histograms (number of bins of the histogram,
      * starting time, ending time, etc.) are kept unchanged.
-     * 
-     * 
      */
     public void reset() {
         Arrays.fill(histogram, 0);
     }
 
 
+    /**
+     * Process all activation times in the given SpikeTrainI.
+     */
     public void load(SpikeTrainI spikeTrain) {
         load(spikeTrain.getTimes());
     }
 
 
     /**
-     * Calculates the histogram, considering that the spikes are sorted e stored
+     * Calculates the histogram, considering that the spikes are sorted and stored
      * in a double array.
-     * 
-     * @param spike
-     *            buffer with all spikeTimes to consider on histogram.
      */
     public void load(double[] sample) {
         reset();
@@ -162,12 +183,12 @@ public class Histogram {
     }
 
 
-    /** Returns the number of entries in a given bin
+    /**
+     * Returns the number of entries in a given bin
      * 
      * @param bin bin in which should be informed the counting
      * @return the number of entries in the given bin
-     * 
-     * */
+     */
     public int getBinCount(int bin) {
         if (0 <= bin && bin < histogram.length)
             return histogram[bin];
@@ -176,24 +197,17 @@ public class Histogram {
     }
 
 
-    /** Returns all entries
-     * 
-     * H[0] = number of entries in the bin 0
-     * H[1] = number of entries in the bin 1
-     * .
-     * .
-     * .
-     * H[N-1] = number of entries in the bin N-1.
-     * 
-     * Where N is the size of the histogram.
-     * 
-     * @return a int vector with all entries in the histogram
+    /**
+     * Returns all histogram entries
      */
     public int[] getBinCounts() {
         return histogram;
     }
 
 
+    /**
+     * @return The histogram bin in which a given value should be added
+     */
     public int getBinFor(double value) {
         if (!interval.contains(value)) {
             throw new IllegalArgumentException(
@@ -210,6 +224,9 @@ public class Histogram {
     }
 
 
+    /**
+     * @return The time instant represented by this bin
+     */
     public double getTimeForBin(int bin) {
         return interval.start() + bin*binSize;
     }

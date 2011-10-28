@@ -6,11 +6,22 @@ import java.util.List;
 
 
 /**
- * @brief Create the Matrix of spike count given a interval
+ * SpikeRateMatrixI that calculates the estimate by using the spike count on various
+ * time bins.
  * 
- * Considering that the spike times are stored in data files, with a specific structure
- * (one spike time per row), this class build a matrix where the correspondent spike
- * counting is stored for that given interval.
+ * In order to create a CountMatrix, we need to specify all its parameters. They are:
+ * 
+ *   Spike trains: a CountMatrix is associated with a SpikeHandler in order to read the
+ *   activation times
+ * 
+ *   Bin size: size of the time bin used to count the spikes, measured in seconds.
+ * 
+ *   Start time: the starting point from which the pattern extraction will begin.
+ * 
+ *   Window width: length of a single part of a pattern.
+ * 
+ *   Cursor step: how many columns will the internal cursor advance each time we create a
+ *   pattern based on the cursor position.
  * 
  * @author Nivaldo Vasconcelos
  * @author Giuliano Vilela
@@ -26,6 +37,9 @@ public class CountMatrix implements SpikeRateMatrixI {
     private List<String> neuronNames;
 
 
+    /**
+     * Copy constructor.
+     */
     public CountMatrix(CountMatrix copy) {
         histogram = copy.histogram;
         matrix = copy.matrix;
@@ -35,6 +49,10 @@ public class CountMatrix implements SpikeRateMatrixI {
         neuronNames = copy.neuronNames;
     }
 
+
+    /**
+     * Create a CountMatrix with a pre defined number of bins.
+     */
     public CountMatrix(SpikeHandlerI spikeHandler, int binCount) {
         Interval interval = spikeHandler.getRecordingInterval();
         histogram = new Histogram(interval, binCount);
@@ -43,6 +61,9 @@ public class CountMatrix implements SpikeRateMatrixI {
     }
 
 
+    /**
+     * Create a CountMatrix with a pre defined bin size.
+     */
     public CountMatrix(SpikeHandlerI spikeHandler, double binSize) {
         Interval interval = spikeHandler.getRecordingInterval();
         histogram = new Histogram(interval, binSize);
@@ -87,16 +108,25 @@ public class CountMatrix implements SpikeRateMatrixI {
     }
 
 
+    /**
+     * @return the value in the specified position of the matrix
+     */
     public int get(int row, int column) {
         return matrix[row][column];
     }
 
 
+    /**
+     * @return A copy of the specified row of the matrix
+     */
     public int[] getRow(int row) {
         return matrix[row];
     }
 
 
+    /**
+     * @return A copy of the specified column of the matrix
+     */
     public int[] getColumn(int column) {
         int[] col = new int[numRows()];
 
@@ -107,6 +137,9 @@ public class CountMatrix implements SpikeRateMatrixI {
     }
 
 
+    /**
+     * @return A shallow copy of this matrix
+     */
     public int[][] getMatrix() {
         return matrix;
     }
@@ -326,11 +359,17 @@ public class CountMatrix implements SpikeRateMatrixI {
     }
 
 
+    /**
+     * @return Return the correspondent time represented by this bin
+     */
     public double getTimeForBin(int bin) {
         return histogram.getTimeForBin(bin);
     }
 
 
+    /**
+     * @return Return the correspondent bin represented by the given instant
+     */
     public int getBinForTime(double time) {
         return histogram.getBinFor(time);
     }
