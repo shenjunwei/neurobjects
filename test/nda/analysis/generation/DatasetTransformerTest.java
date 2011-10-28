@@ -120,8 +120,8 @@ public class DatasetTransformerTest {
                 if (!Arrays.equals(row_a, row_b))
                     num_diff++;
 
-                assertTrue(ArrayUtils.getMin(row_a) >= ArrayUtils.getMin(row_b));
-                assertTrue(ArrayUtils.getMax(row_a) <= ArrayUtils.getMax(row_b));
+                assertTrue(ArrayUtils.min(row_a) >= ArrayUtils.min(row_b));
+                assertTrue(ArrayUtils.max(row_a) <= ArrayUtils.max(row_b));
             }
 
             assertEquals(k, num_diff);
@@ -151,7 +151,7 @@ public class DatasetTransformerTest {
                     num_diff++;
 
                 // may fail sometimes due to randomness
-                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-1);
+                assertEquals(ArrayUtils.average(row_a), ArrayUtils.average(row_b), 1e-1);
             }
 
             assertEquals(k, num_diff);
@@ -173,9 +173,9 @@ public class DatasetTransformerTest {
                 int[] row_a = cm_all.getRow(r);
                 int[] row_b = sur_matrix.getRow(r);
 
-                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-8);
-                assertEquals(ArrayUtils.getMin(row_a), ArrayUtils.getMin(row_b));
-                assertEquals(ArrayUtils.getMax(row_a), ArrayUtils.getMax(row_b));
+                assertEquals(ArrayUtils.average(row_a), ArrayUtils.average(row_b), 1e-8);
+                assertEquals(ArrayUtils.min(row_a), ArrayUtils.min(row_b));
+                assertEquals(ArrayUtils.max(row_a), ArrayUtils.max(row_b));
 
                 if (pct == 0.0)
                     assertTrue(Arrays.equals(row_a, row_b));
@@ -222,9 +222,9 @@ public class DatasetTransformerTest {
                     int[] row_a = cm_all.getRow(r);
                     int[] row_b = sur_matrix.getRow(r);
 
-                    assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-8);
-                    assertEquals(ArrayUtils.getMin(row_a), ArrayUtils.getMin(row_b));
-                    assertEquals(ArrayUtils.getMax(row_a), ArrayUtils.getMax(row_b));
+                    assertEquals(ArrayUtils.average(row_a), ArrayUtils.average(row_b), 1e-8);
+                    assertEquals(ArrayUtils.min(row_a), ArrayUtils.min(row_b));
+                    assertEquals(ArrayUtils.max(row_a), ArrayUtils.max(row_b));
 
                     if (pct == 0.0) {
                         assertTrue(Arrays.equals(row_a, row_b));
@@ -300,9 +300,9 @@ public class DatasetTransformerTest {
                     continue;
                 }
 
-                assertEquals(ArrayUtils.getMin(row_a), ArrayUtils.getMin(row_b));
-                assertEquals(ArrayUtils.getMax(row_a), ArrayUtils.getMax(row_b));
-                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-8);
+                assertEquals(ArrayUtils.min(row_a), ArrayUtils.min(row_b));
+                assertEquals(ArrayUtils.max(row_a), ArrayUtils.max(row_b));
+                assertEquals(ArrayUtils.average(row_a), ArrayUtils.average(row_b), 1e-8);
 
                 int num_diff = 0;
                 for (int c = 0; c < numColumns; ++c)
@@ -336,7 +336,7 @@ public class DatasetTransformerTest {
                 int[] row_a = cm_all.getRow(r);
                 int[] row_b = sur_matrix.getRow(r);
 
-                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 1e-2);
+                assertEquals(ArrayUtils.average(row_a), ArrayUtils.average(row_b), 1e-2);
 
                 double t0 = sur_matrix.getInterval().start();
                 double t1 = t0 + dist;
@@ -350,8 +350,8 @@ public class DatasetTransformerTest {
                         int[] window_b = Arrays.copyOfRange(row_b, st_c, end_c+1);
 
                         assertEquals(
-                                ArrayUtils.getAverage(window_a),
-                                ArrayUtils.getAverage(window_b), 1.5);
+                                ArrayUtils.average(window_a),
+                                ArrayUtils.average(window_b), 1.5);
                     }
                 }
             }
@@ -381,8 +381,8 @@ public class DatasetTransformerTest {
                 if (!ArrayUtils.equals(row_a, row_b))
                     num_diff++;
 
-                assertTrue(ArrayUtils.getMin(row_b) >= ArrayUtils.getMin(row_a));
-                assertTrue(ArrayUtils.getMax(row_b) <= ArrayUtils.getMax(row_a));
+                assertTrue(ArrayUtils.min(row_b) >= ArrayUtils.min(row_a));
+                assertTrue(ArrayUtils.max(row_b) <= ArrayUtils.max(row_a));
 
                 double t0 = sur_matrix.getInterval().start();
                 double t1 = t0 + dist;
@@ -394,8 +394,8 @@ public class DatasetTransformerTest {
                     int[] window_a = Arrays.copyOfRange(row_a, st_c, end_c+1);
                     int[] window_b = Arrays.copyOfRange(row_b, st_c, end_c+1);
 
-                    assertTrue(ArrayUtils.getMin(window_b) >= ArrayUtils.getMin(window_a));
-                    assertTrue(ArrayUtils.getMax(window_b) <= ArrayUtils.getMax(window_a));
+                    assertTrue(ArrayUtils.min(window_b) >= ArrayUtils.min(window_a));
+                    assertTrue(ArrayUtils.max(window_b) <= ArrayUtils.max(window_a));
                 }
             }
 
@@ -457,7 +457,7 @@ public class DatasetTransformerTest {
                 if (!ArrayUtils.equals(row_a, row_b))
                     num_diff++;
 
-                assertEquals(ArrayUtils.getAverage(row_a), ArrayUtils.getAverage(row_b), 0.3);
+                assertEquals(ArrayUtils.average(row_a), ArrayUtils.average(row_b), 0.3);
 
                 double t0 = sur_matrix.getInterval().start();
                 double t1 = t0 + dist;
@@ -469,7 +469,7 @@ public class DatasetTransformerTest {
                     int[] window_a = Arrays.copyOfRange(row_a, st_c, end_c+1);
                     int[] window_b = Arrays.copyOfRange(row_b, st_c, end_c+1);
 
-                    int mean = (int) Math.round(ArrayUtils.getAverage(window_a));
+                    int mean = (int) Math.round(ArrayUtils.average(window_a));
                     for (int value : window_b)
                         assertEquals(mean, value);
                 }

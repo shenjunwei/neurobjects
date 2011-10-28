@@ -1,7 +1,7 @@
 package app;
 
 import static java.lang.System.out;
-import static nda.util.ArrayUtils.getAverage;
+import static nda.util.ArrayUtils.average;
 
 import nda.data.Interval;
 import nda.data.SpikeHandlerI;
@@ -68,7 +68,7 @@ public class ReadTextDataApp {
             // Print a row of the table
             out.printf("%s %11.3f %11.3f %11.3f %9.3f %9.3f %9.3f\n",
                     spikeTrain.getNeuronName(), spikeTrain.getFirstSpike(),
-                    spikeTrain.getLastSpike(), getAverage(times)
+                    spikeTrain.getLastSpike(), average(times)
             );
         }
     }
