@@ -442,8 +442,8 @@ public class DatasetTransformer {
      */
 
     private static int[] uniformSurrogate(RandomData random, int[] array) {
-        int min = nda.util.ArrayUtils.getMin(array);
-        int max = nda.util.ArrayUtils.getMax(array);
+        int min = nda.util.ArrayUtils.min(array);
+        int max = nda.util.ArrayUtils.max(array);
 
         int[] surrogate = new int[array.length];
         for (int i = 0; i < array.length; ++i)
@@ -454,7 +454,7 @@ public class DatasetTransformer {
 
 
     private static int[] poissonSurrogate(RandomData random, int[] array) {
-        double mean = nda.util.ArrayUtils.getAverage(array);
+        double mean = nda.util.ArrayUtils.average(array);
 
         int[] surrogate = new int[array.length];
         for (int i = 0; i < array.length; ++i)

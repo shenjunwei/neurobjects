@@ -1,9 +1,9 @@
 package nda.util;
 
-import static nda.util.ArrayUtils.getAverage;
-import static nda.util.ArrayUtils.getMax;
-import static nda.util.ArrayUtils.getMin;
-import static nda.util.ArrayUtils.getMinMax;
+import static nda.util.ArrayUtils.average;
+import static nda.util.ArrayUtils.max;
+import static nda.util.ArrayUtils.min;
+import static nda.util.ArrayUtils.minAndMax;
 import static nda.util.ArrayUtils.isSorted;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,38 +28,38 @@ public class ArrayUtilsTest {
     private double[] v2 = { 3, 1, 2 , 0, -5, 10 };
 
     /**
-     * Test method for {@link nda.util.ArrayUtils#getMinMax(double[])}.
+     * Test method for {@link nda.util.ArrayUtils#minAndMax(double[])}.
      */
     @Test
     public void testGetMinMax() {
-        Interval i = getMinMax(v1);
+        Interval i = minAndMax(v1);
         assertEquals(0, i.start(), 1e-8);
         assertEquals(9, i.end(), 1e-8);
     }
 
     /**
-     * Test method for {@link nda.util.ArrayUtils#getMin(double[])}.
+     * Test method for {@link nda.util.ArrayUtils#min(double[])}.
      */
     @Test
     public void testGetMin() {
-        assertEquals(-5, getMin(v2), 1e-8);
+        assertEquals(-5, min(v2), 1e-8);
     }
 
     /**
-     * Test method for {@link nda.util.ArrayUtils#getMax(double[])}.
+     * Test method for {@link nda.util.ArrayUtils#max(double[])}.
      */
     @Test
     public void testGetMax() {
-        assertEquals(10, getMax(v2), 1e-8);
+        assertEquals(10, max(v2), 1e-8);
     }
 
     /**
-     * Test method for {@link nda.util.ArrayUtils#getAverage(double[])}.
+     * Test method for {@link nda.util.ArrayUtils#average(double[])}.
      */
     @Test
     public void testGetAverage() {
-        assertEquals(4.5, getAverage(v1), 1e-8);
-        assertEquals(1.83333333, getAverage(v2), 1e-8);
+        assertEquals(4.5, average(v1), 1e-8);
+        assertEquals(1.83333333, average(v2), 1e-8);
     }
 
     /**

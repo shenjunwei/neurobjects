@@ -13,7 +13,7 @@ import nda.data.Interval;
  *
  */
 public final class ArrayUtils {
-    public static Interval getMinMax(double[] mat) {
+    public static Interval minAndMax(double[] mat) {
         assert mat.length != 0;
 
         double min = mat[0];
@@ -27,7 +27,7 @@ public final class ArrayUtils {
         return Interval.make(min, max);
     }
 
-    public static Interval getMinMax(int[] mat) {
+    public static Interval minAndMax(int[] mat) {
         assert mat.length != 0;
 
         int min = mat[0];
@@ -41,7 +41,7 @@ public final class ArrayUtils {
         return Interval.make(min, max);
     }
 
-    public static double getMin(double[] mat) {
+    public static double min(double[] mat) {
         assert mat.length != 0;
 
         double min = mat[0];
@@ -51,7 +51,7 @@ public final class ArrayUtils {
         return min;
     }
 
-    public static int getMin(int[] mat) {
+    public static int min(int[] mat) {
         assert mat.length != 0;
 
         int min = mat[0];
@@ -61,7 +61,7 @@ public final class ArrayUtils {
         return min;
     }
 
-    public static double getMax(double[] mat) {
+    public static double max(double[] mat) {
         assert mat.length != 0;
 
         double max = mat[0];
@@ -71,7 +71,7 @@ public final class ArrayUtils {
         return max;
     }
 
-    public static int getMax(int[] mat) {
+    public static int max(int[] mat) {
         assert mat.length != 0;
 
         int max = mat[0];
@@ -81,7 +81,7 @@ public final class ArrayUtils {
         return max;
     }
 
-    public static double getAverage(double[] mat) {
+    public static double average(double[] mat) {
         assert mat.length != 0;
 
         double sum = 0;
@@ -90,7 +90,7 @@ public final class ArrayUtils {
         return sum / mat.length;
     }
 
-    public static double getAverage(int[] mat) {
+    public static double average(int[] mat) {
         assert mat.length != 0;
 
         int sum = 0;
