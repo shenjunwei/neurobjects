@@ -16,26 +16,17 @@ import nda.data.Interval;
 
 
 /**
- * \brief Handles a animal behavior file
- * 
- * In our model the animal behavior is captured as a set of: label and a time
- * interval. \n The label must be a string and time interval must be formed
- * using two numbers . This class implements the interface BehavHandlerI when
- * the animal behavior is in a file. Please, see the \ref behaveDataSpec about
- * the specification of this kind of file.
- * 
+ * Implementation of BehaviorHandlerI that reads the animal behavior data
+ * from a text file.
  */
 public class TextBehaviorHandler implements BehaviorHandlerI {
     private String filepath;
     private Map<String, List<Interval>> behavior;
 
 
-    /** \brief Creates a BehavHandlerFile object given a filename
-     * 
-     * The file should be in a Behavior Data Format
-     * 
-     * @param filename name of file in which there is the animal behavior description
-     * @see \ref behaveDataSpec.
+    /**
+     * Create a TextBehaviorHandler that reads the information from the given
+     * text file.
      */
     public TextBehaviorHandler(String path)
     throws MissingDataFileException, InvalidDataFileException {
@@ -82,6 +73,9 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
     }
 
 
+    /**
+     * Copy constructor.
+     */
     public TextBehaviorHandler(BehaviorHandlerI handler) {
         filepath = null;
         behavior = new HashMap<String, List<Interval>>();
@@ -95,11 +89,6 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
     }
 
 
-    /** \brief Adds a time interval with a given label to animal behavior description
-     * 
-     * @param interval a 2 position double array where which must contain the time interval
-     * @param label tag to be used in that time interval
-     */
     private void addInterval(String label, Interval interval) {
         List<Interval> list = behavior.get(label);
 
@@ -122,36 +111,12 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
     }
 
 
-    /** \brief Returns view of animal behavior description.
-     * 
-     * @return a String with animal behavior description.*/
     @Override
     public String toString() {
         return behavior.toString();
     }
 
 
-    /**
-     * \brief Returns a big interval in which the animal execute a set of given
-     * behavior
-     * 
-     * Given a set of labels this method returns a interval I in which all
-     * intervals associated with each given label is contained. \n For example,
-     * consider that in animal behavior data there is the following information:
-     * \code 1010,1014,label01
-     * 1015,1020,label03
-     * 900,902,label04
-     * 900,915,label01
-     * \endcode
-     * 
-     * If the given list of labels is: {label01,label03}; should be returned the
-     * following interval: \code [900;1020] \endcode
-     * 
-     * @param labels
-     *            list of target labels
-     * @return a 2D vector with the big interval [a,b].
-     * @author Nivaldo Vasconcelos
-     * */
     @Override
     public Interval getExpositionInterval() {
         Interval global = null;
@@ -172,23 +137,6 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
     }
 
 
-    /**
-     * \brief Returns a list of intervals tagged with a give label.
-     * 
-     * This method allow knows, from the animal behavior data, the list of time
-     * intervals associated with a give label. Ex: If one needs know the set of
-     * time intervals in which the time was labeled with 'north' the following
-     * call will provide:
-     * 
-     * \code double[] timeList = BH.getIntervals("north"); \endcode
-     * 
-     * @param label
-     *            label target.
-     * @return Returns a list of intervals tagged with a give label as list of
-     *         1D vector, or a \c null if the label was not found in animal
-     *         behavior description.
-     * @author Nivaldo Vasconcelos
-     */
     @Override
     public List<Interval> getContactIntervals(String label) {
         return behavior.get(label);

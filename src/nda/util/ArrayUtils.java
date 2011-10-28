@@ -1,6 +1,3 @@
-/**
- * 
- */
 package nda.util;
 
 import java.util.Arrays;
@@ -8,9 +5,11 @@ import java.util.List;
 
 import nda.data.Interval;
 
+
 /**
- * @author giulianoxt
- *
+ * Utiliy functions for Java arrays.
+ * 
+ * @author Giuliano Vilela
  */
 public final class ArrayUtils {
     public static Interval minAndMax(double[] mat) {

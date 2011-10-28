@@ -13,22 +13,21 @@ import java.util.Set;
  * respective behavior. Each possible behavior is represented by a String label.
  *
  * Therefore in our model the animal behavior is captured as a set of
- * (label, time interval) pairs. The label must be a string and time interval must be
+ * (time interval, label) pairs. The label must be a string and time interval must be
  * formed using two numbers. Ex:
  * 
- * \code ball 2010 2012 \endcode
- * means that the time interval [2010;2012] has been labeled with 'ball' tag.
+ * \code 2010 2012 ball \endcode
+ * means that the time interval [2010;2012] has been labeled with the "ball" tag.
  * 
- * \code north 1000 1005.5 \endcode
- * means that the time interval [2010;2012] has been labeled with 'north' tag.
+ * \code 1000 1005.5 north \endcode
+ * means that the time interval [1000;1005.5] has been labeled with the "north" tag.
  *
  * @author Nivaldo Vasconcelos
  */
 public interface BehaviorHandlerI {
 
     /**
-     * Return the set of all possible animal behaviors, represented
-     * as Strings.
+     * @return The set of all possible animal behaviors, represented as Strings.
      */
     public Set<String> getLabelSet();
 
@@ -41,43 +40,51 @@ public interface BehaviorHandlerI {
      * intervals in which the time was labeled with 'north' the following
      * call will suffice:
      * 
-     * <tt>List<Interval> intervals = BH.getIntervals("north");</tt>
+     * <tt>List<Interval> intervals = behavior.getIntervals("north");</tt>
      * 
      * @param label
      *            label target.
      * @return Returns a list of intervals tagged with a give label as list of
-     *         1D vector, or a \c null if the label was not found in animal
+     *         1D vector, or \c null if the label was not found in animal
      *         behavior description.
-     * @author Nivaldo Vasconcelos
      */
     public List<Interval> getContactIntervals(String label);
 
+
+    /**
+     * Change the list of contact intervals for a given label.
+     * 
+     * @param label The label to be modified
+     * @param intervals The new list of intervals
+     */
     public void setContactIntervals(String label, List<Interval> intervals);
 
 
+    /**
+     * Determine, for a given instant, which behavior the animal was presenting.
+     * 
+     * @param time The time instant
+     * @return A label L such that there is a contact interval I of L that contains time
+     */
     public String getLabel(double time);
 
 
     /**
-     * \brief Returns a big interval in which the animal execute a set of given
-     * behavior
+     * Returns the smallest interval that contains all the contact intervals with
+     * the behaviors in this BehaviorHandlerI.
      * 
-     * Given a set of labels this method returns a interval I in which all
-     * intervals associated with each given label is contained. \n For example,
-     * consider that in animal behavior data there is the following information:
-     * \code 1010,1014,label01
+     * For most experiments, it is the interval in which the animal has been exposed
+     * with a given set of objects. For example, consider that in the animal behavior data
+     * there is the following information:
+     * 
+     * \code
+     * 1010,1014,label01
      * 1015,1020,label03
      * 900,902,label04
      * 900,915,label01
      * \endcode
      * 
-     * If the given list of labels is: {label01,label03}; should be returned the
-     * following interval: \code [900;1020] \endcode
-     * 
-     * @param labels
-     *            list of target labels
-     * @return a 2D vector with the big interval [a,b].
-     * @author Nivaldo Vasconcelos
-     * */
+     * This method should return [900, 1020].
+     */
     public Interval getExpositionInterval();
 }

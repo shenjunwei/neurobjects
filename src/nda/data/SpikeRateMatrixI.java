@@ -5,105 +5,109 @@ import java.util.List;
 
 
 /**
- * Re-implementation of RateMatrixI
+ * The SpikeRateMatrixI component is an abstract representation of a model for estimating
+ * the spike rate function.
  * 
- * @todo documentation, tests
+ * Besides CountMatrix, other models can be implemented that adhere to the interface,
+ * such as a Gaussian model.
+ * 
+ * Every SpikeRateMatrixI has a notion of a pattern. A pattern is a view of the matrix
+ * that was extracted from it in a specific position, using a specific length.
+ * 
+ * Consider a CountMatrix M corresponding to r spike trains, having c time bins for each.
+ * A pattern P on M, extracted from position i with width w (where <tt>i + w <= c</tt>)
+ * is a 1D vector defined as:
+ * 
+ * \code
+ * P = concat(M[0][i:i+w-1], M[1][i:i+w-1], ..., M[r-1][i:i+w-1])
+ * \endcode
+ * 
+ * Where concat represents the horizontal concatenation of its arguments and <tt>M[i][j:k]</tt>
+ * is an 1D vector corresponding to row i and columns j through k, inclusive, of M.
+ * 
+ * Ex: In following matrix, <tt>i = 0, w =  3</tt>.
+ *
+ * \code
+ * 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+ * 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+ * 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+ * 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+ * \endcode
+ * 
+ * The result will be: <tt>p = [1 1 1 2 2 2 3 3 3 4 4 4];</tt>
+ * 
  * @author Nivaldo Vasconcelos
  * @author Giuliano Vilela
  */
 public interface SpikeRateMatrixI extends Iterable<double[]> {
+
     /**
-     * Returns the number of rows in the matrix
-     * 
-     * @return the number of rows in the matrix. If there is no valid content in
-     *         matrix return a \code null value.
+     * @return Number of rows in the matrix
      */
     public int numRows();
 
 
     /**
-     * Returns the number of columns in the matrix
-     * 
-     * @return the number of columns in the matrix. If there is no valid content in
-     *         matrix return a \code null value.
+     * @return Number of columns in the matrix
      */
     public int numColumns();
 
 
     /**
-     * Returns the size of bin used to build the matrix
-     * 
-     * it did not use any bin returns null.
-     * @return size of bin used to build the matrix. it did not use any bin returns \code null.
+     * @return The bin size used to build the matrix
      */
     public double getBinSize();
 
 
+    /**
+     * @return The list of names of the neurons represented by this SpikeRateMatrixI
+     */
     public List<String> getNeuronNames();
 
 
     /**
-     * Returns a double vector which is the activity population pattern in a
-     * given interval. The pattern is built concatenating piece of rows (from the collumn
-     * correpondent to 'a' until the collumn correspondent to 'b'.
-     * 
-     * Ex: In following matrix 'a' corresponds to collumn 3 and 'b' corresponds to collumn 5.
-     * 
-     * M = [
-     * 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-     * 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-     * 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-     * 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
-     * 
-     * The result will be:
-     * p = [1 1 1 2 2 2 3 3 3 4 4 4];
+     * @return Double vector which is the activity population pattern in a
+     * given interval.
      */
     public double[] getPattern(Interval interval);
 
 
     /**
-     * Returns a double vector which is the activity population pattern using
-     * the current cursor position as begin and the current window width.
-     * 
-     * Ex: In following matrix the cursor is 2 and window width is 3.
-     * 
-     * M = [ 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3
-     * 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
-     * 
-     * The result will be: p = [1 1 1 2 2 2 3 3 3 4 4 4];
-     * 
-     * Every time that that this method is the cursor position is incremeted by
-     * unity.
-     * 
-     * @param width window width used to build the pattern
+     * @return A pattern beginning on the current time and with the specified width
      */
     public double[] getPattern(int width);
 
+
+    /**
+     * @return A pattern beginning on time startTime and with the specified width
+     */
     public double[] getPattern(double startTime, int width);
 
+
+    /**
+     * @return A pattern beginning on the specified column of the matrix and with
+     * the given width
+     */
     public double[] getPattern(int column, int width);
 
+
+    /**
+     * @return A list with all the extracted patterns in the given interval, respecting
+     * the current windowWidth.
+     */
     public List<double[]> getPatterns(Interval interval);
 
 
     /**
-     * Returns the first time used to build the matrix
-     * 
-     * 
-     * Any rate matrix is build from the observation of spike trains into a
-     * given time interval I=[i,j]. This methods would return 'i' from that I
-     * time interval.
-     * 
-     * @return first time used to build the matrix \b or \code null
-     * */
+     * @return The interval in which this matrix is estimating the spike rate function
+     */
     public Interval getInterval();
 
 
     /**
      * Defines the window width to the pattern
      * 
-     * Define the window width to the pattern in the next get patterns
-     * operations
+     * Define the window width to the pattern in the next get pattern operations
      * 
      * @param width window to the next patterns.
      * @throws IllegalArgumentException invalid argument when width is bigger than
@@ -123,23 +127,27 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
     public int getWindowWidth();
 
 
+    /**
+     * @return the start column for the next get pattern operation
+     */
     public int getCurrentColumn();
 
 
+    /**
+     * @return the start time for the next get pattern operation
+     */
     public double getCurrentTime();
 
 
-    /** Sets the title of the rate matrix
-     * 
-     * Some times this is useful to matrix visualization.
-     * @param title a string used as title */
+    /**
+     * Sets the title of the rate matrix
+     */
     public void setTitle(String title);
 
 
-    /** Returns the current title of the rate matrix
-     * 
-     * Some times this is useful to matrix visualization.
-     * @return the rate matrix title */
+    /**
+     * @return the current title of the rate matrix
+     */
     public String getTitle();
 
 
@@ -150,7 +158,7 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
      * window width.
      * 
      * @param width window to be used in the calculation.
-     * */
+     */
     public int numPatterns(int width);
 
 
@@ -166,46 +174,44 @@ public interface SpikeRateMatrixI extends Iterable<double[]> {
     public int numPatterns(double startTime, int width);
 
 
+    /**
+     * @return The number of patterns that can be extracted from the given interval,
+     * respecting the current width
+     */
     public int numPatterns(Interval interval);
 
 
-    /** Increments the time cursor in the rate matrix
-     * 
-     * 
-     * The default value is equal to first time.
-     * @param time value to time cursor;
-     * @exception invalid argument when time is invalid to rate matrix time interval.
+    /**
+     * Set the start time of the next pattern to be returned
      */
     public boolean setCurrentTime(double startTime);
 
 
-    /** Increments the time cursor in the rate matrix
-     * 
-     * 
-     * The default value is equal to first time.
-     * @param time value to time cursor;
-     * @exception invalid argument when time is invalid to rate matrix time interval.
+    /**
+     * Set the start column of the next pattern to be returned
      */
     public boolean setCurrentColumn(int column);
 
 
-    /** \brief Tells if a given interval is possible within the matrix
-     * 
-     * */
+    /**
+     * Tells if a given interval is possible within the matrix
+     */
     public boolean containsWindow(Interval interval);
 
 
-    /** Informs if a given window is possible in the Count Matrix
+    /**
+     * Informs if a given window is possible in the Count Matrix
+     * 
      * Given time instant and a temporal width, informs if the respective window is possible in
      * the count matrix. In the count matrix that time window is defined by all rows and the corresponding
      * columns since corresponding column to time until the corresponding column to time+width.
+     * 
      * @param time time instant where start the window
      * @param width time width of the window
      * @return TRUE if window is possible, or FALSE otherwise.
      * 
      * \todo this explanation is confusing (the documentation of this method should explain everything in other words)
-     * 
-     * */
+     */
     public boolean containsWindow(double startTime, double width);
 
 

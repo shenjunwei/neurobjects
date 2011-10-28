@@ -3,8 +3,6 @@ package nda.data;
 import java.util.Comparator;
 import java.util.List;
 
-import nda.data.text.InvalidDataFileException;
-
 
 /**
  * Handle a set of spike trains loaded from a given data source.
@@ -78,27 +76,13 @@ public interface SpikeHandlerI extends List<SpikeTrainI> {
 
 
     /**
-     * Set the selection filter used to choose the neurons.
+     * Create a new SpikeHandlerI containing a subset of the neurons in this
+     * handler that match the given filter.
      * 
-     * Given a string pattern, uses this pattern to select neuron names generating a
-     * list of neurons which match the given filter. This method is useful, for example,
-     * to select a set of neurons from the same anatomic area, or from the same electrode.
-     * A filter selects neuron names based on prefix matching. Some examples:
+     * A spike train ST with name N is said to match filter F if N.startsWith(_F) for any
+     * _F in F.split(",").
      * 
-     * @code
-     * // Select all spike trains from neuron S1. Ex: S1_01a.spk, S1_11b.spk.
-     * handler.setFilter("S1");
-     * 
-     * // Select all measurements of an electrode V1_02. Ex: V1_02a.spk, V1_02b.spk.
-     * handler.setFilter("V1_02");
-     * @endcode
-     * 
-     * Initially, the empty filter "" is used, which matches all neuron names. Every
-     * time the selection filter is modified, all the matching spike trains are reloaded.
-     * 
-     * @throws InvalidDataFileException If one of the matching files is invalid.
-     * 
-     * TODO Document the new convention
+     * The "*" filter matches all neurons.
      */
     public SpikeHandlerI withFilter(String filter);
 
@@ -152,5 +136,8 @@ public interface SpikeHandlerI extends List<SpikeTrainI> {
     public Interval getRecordingInterval();
 
 
+    /**
+     * Sort the spike trains in this handler according to the given comparator.
+     */
     public void sort(Comparator<SpikeTrainI> comparator);
 }
