@@ -45,117 +45,114 @@ public class SQLScriptReport implements EvaluationReportI {
             if (truncateTable)
                 scriptFile.append("delete from " + escapeId(tableName) + ";\n");
 
-            GeneratorSetup.Dataset sampleDataset = results.get(0).getDataset();
+            GeneratorSetup.Dataset sampleDataset = results.get(0).dataset;
             int numClasses = sampleDataset.getClasses().size();
 
             // One result for each row of the table
             for (EvaluationResult result : results) {
-                GeneratorSetup.Dataset dataset = result.getDataset();
+                GeneratorSetup.Dataset dataset = result.dataset;
 
-                String trainSetName = result.getTrainSetName();
+                String trainSetName = result.trainSetName;
                 String positiveLabel = getPositiveLabel(trainSetName);
-                String roundNumberStr = getRoundNumber(trainSetName);
 
-                for (int i = 0; i < result.numEvaluations(); ++i) {
-                    NamedClassifier n_classifier = result.getClassifiers().get(i);
-                    Evaluation evaluation = result.getModelEvaluations().get(i);
+                NamedClassifier n_classifier = result.classifier;
+                Evaluation evaluation = result.evaluation;
 
-                    scriptFile.append("insert into " + escapeId(tableName) + " values ");
+                scriptFile.append("insert into " + escapeId(tableName) + " values ");
 
-                    List<String> row = new ArrayList<String>();
+                List<String> row = new ArrayList<String>();
 
-                    /* id */
-                    row.add("0");
-                    /* subject */
-                    row.add(dataset.getSetup().getName());
-                    /* neurons */
-                    row.add(result.getParameter("areas").toString());
-                    /* object */
-                    row.add(positiveLabel);
-                    /* round */
-                    row.add(roundNumberStr);
-                    /* classifier */
-                    row.add(n_classifier.getName());
-                    /* bin_size */
-                    row.add("" + (int) (1000*(Double)result.getParameter("bin_size")));
-                    /* window_size */
-                    row.add("" + result.getParameter("window_width"));
+                /* id */
+                row.add("0");
+                /* subject */
+                row.add(dataset.getSetup().getName());
+                /* neurons */
+                row.add(result.getParameter("areas").toString());
+                /* object */
+                row.add(positiveLabel);
+                /* round */
+                row.add("" + result.roundNumber);
+                /* classifier */
+                row.add(n_classifier.getName());
+                /* bin_size */
+                row.add("" + (int) (1000*(Double)result.getParameter("bin_size")));
+                /* window_size */
+                row.add("" + result.getParameter("window_width"));
 
-                    /* neuron_drop */
-                    if (result.getParameter("neuron_drop") != null)
-                        row.add("" + result.getParameter("num_drop"));
-                    else
-                        row.add(null);
+                /* neuron_drop */
+                if (result.getParameter("neuron_drop") != null)
+                    row.add("" + result.getParameter("num_drop"));
+                else
+                    row.add(null);
 
-                    /* surrogate, num_surrogate, pct_surrogate, dist_surrogate */
-                    if (result.getParameter("surrogate") != null) {
-                        String type = (String) result.getParameter("surrogate_type");
-                        row.add("" + type);
+                /* surrogate, num_surrogate, pct_surrogate, dist_surrogate */
+                if (result.getParameter("surrogate") != null) {
+                    String type = (String) result.getParameter("surrogate_type");
+                    row.add("" + type);
 
-                        if (type.equals("uniform") || type.equals("poisson")) {
-                            row.add("" + result.getParameter("num_surrogate"));
-                            row.add(null);
-                            row.add(null);
-                        }
-                        else if (type.equals("col_swap") || type.equals("matrix_swap") ||
-                                type.equals("contact_swap")) {
-                            row.add(null);
-                            row.add("" + result.getParameter("pct_surrogate"));
-                            row.add(null);
-                        }
-                        else if (type.equals("neuron_swap")) {
-                            row.add("" + result.getParameter("num_surrogate"));
-                            row.add("" + result.getParameter("pct_surrogate"));
-                            row.add(null);
-                        }
-                        else if (type.equals("col_swap_d")) {
-                            row.add(null);
-                            row.add("" + result.getParameter("pct_surrogate"));
-                            row.add("" + result.getParameter("dist_surrogate"));
-                        }
-                        else if (type.equals("poisson_d") || type.equals("uniform_d") ||
-                                type.equals("spike_jitter") || type.equals("mean_d") ||
-                                type.equals("contact_shift")) {
-                            row.add(null);
-                            row.add(null);
-                            row.add("" + result.getParameter("dist_surrogate"));
-                        }
-                        else if (type.equals("var_contacts")) {
-                            int method;
-
-                            if(result.getParameter("method_surrogate").equals("ab")) method = 1;
-                            else if(result.getParameter("method_surrogate").equals("a")) method = 2;
-                            else method = 3;
-
-                            row.add("" + method);
-                            row.add(null);
-                            row.add("" + result.getParameter("val_surrogate"));
-                        }
-                    }
-                    else {
-                        row.add(null);
-                        row.add(null);
+                    if (type.equals("uniform") || type.equals("poisson")) {
+                        row.add("" + result.getParameter("num_surrogate"));
                         row.add(null);
                         row.add(null);
                     }
-
-                    /* num_instances */
-                    row.add("" + (int) evaluation.numInstances());
-                    /* correct */
-                    row.add("" + (int) evaluation.correct());
-                    /* auroc */
-                    row.add("" + evaluation.weightedAreaUnderROC());
-                    /* kappa */
-                    row.add("" + evaluation.kappa());
-
-                    for (int j = 0; j < numClasses; ++j) {
-                        /* _fmeasure */ row.add("" + evaluation.fMeasure(j));
-                        /* _fp */ row.add("" + (int) evaluation.numFalsePositives(j));
-                        /* _fn */ row.add("" + (int) evaluation.numFalseNegatives(j));
+                    else if (type.equals("col_swap") || type.equals("matrix_swap") ||
+                            type.equals("contact_swap")) {
+                        row.add(null);
+                        row.add("" + result.getParameter("pct_surrogate"));
+                        row.add(null);
                     }
+                    else if (type.equals("neuron_swap")) {
+                        row.add("" + result.getParameter("num_surrogate"));
+                        row.add("" + result.getParameter("pct_surrogate"));
+                        row.add(null);
+                    }
+                    else if (type.equals("col_swap_d")) {
+                        row.add(null);
+                        row.add("" + result.getParameter("pct_surrogate"));
+                        row.add("" + result.getParameter("dist_surrogate"));
+                    }
+                    else if (type.equals("poisson_d") || type.equals("uniform_d") ||
+                            type.equals("spike_jitter") || type.equals("mean_d") ||
+                            type.equals("contact_shift")) {
+                        row.add(null);
+                        row.add(null);
+                        row.add("" + result.getParameter("dist_surrogate"));
+                    }
+                    else if (type.equals("var_contacts")) {
+                        int method;
 
-                    scriptFile.append(toSqlRow(row) + ";\n");
+                        if(result.getParameter("method_surrogate").equals("ab")) method = 1;
+                        else if(result.getParameter("method_surrogate").equals("a")) method = 2;
+                        else method = 3;
+
+                        row.add("" + method);
+                        row.add(null);
+                        row.add("" + result.getParameter("val_surrogate"));
+                    }
                 }
+                else {
+                    row.add(null);
+                    row.add(null);
+                    row.add(null);
+                    row.add(null);
+                }
+
+                /* num_instances */
+                row.add("" + (int) evaluation.numInstances());
+                /* correct */
+                row.add("" + (int) evaluation.correct());
+                /* auroc */
+                row.add("" + evaluation.weightedAreaUnderROC());
+                /* kappa */
+                row.add("" + evaluation.kappa());
+
+                for (int j = 0; j < numClasses; ++j) {
+                    /* _fmeasure */ row.add("" + evaluation.fMeasure(j));
+                    /* _fp */ row.add("" + (int) evaluation.numFalsePositives(j));
+                    /* _fn */ row.add("" + (int) evaluation.numFalseNegatives(j));
+                }
+
+                scriptFile.append(toSqlRow(row) + ";\n");
             }
 
             scriptFile.close();
@@ -192,14 +189,6 @@ public class SQLScriptReport implements EvaluationReportI {
 
         row += ")";
         return row;
-    }
-
-    private static String getRoundNumber(String trainSetName) {
-        int last_underscore = trainSetName.lastIndexOf('_');
-        int p_underscore = trainSetName.lastIndexOf('_', last_underscore - 1);
-
-        String roundString = trainSetName.substring(p_underscore+2, last_underscore);
-        return roundString;
     }
 
 

@@ -47,10 +47,8 @@ public class SimpleEvaluatorTest {
 
         List<EvaluationResult> results = evaluator.evaluate();
         for (EvaluationResult result : results) {
-            List<Evaluation> modelEvaluations = result.getModelEvaluations();
-
-            for (Evaluation evaluation : modelEvaluations)
-                digest.update(evaluation.toSummaryString().getBytes("UTF-8"));
+            Evaluation evaluation = result.evaluation;
+            digest.update(evaluation.toSummaryString().getBytes("UTF-8"));
         }
 
         byte[] hash = digest.digest();

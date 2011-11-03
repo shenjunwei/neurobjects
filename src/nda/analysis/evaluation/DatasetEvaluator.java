@@ -1,5 +1,6 @@
 package nda.analysis.evaluation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import weka.classifiers.Classifier;
@@ -30,23 +31,23 @@ public abstract class DatasetEvaluator implements Verbose {
 
 
     /**
-     * Evaluate a single round of a dataset
+     * Evaluate a single round of a dataset for all classifiers
      */
-    protected EvaluationResult evaluate(
-            GeneratorSetup.Dataset dataset,
+    protected List<EvaluationResult> evaluateTrainTest(
+            GeneratorSetup.Dataset dataset, int round,
             Instances trainData, Instances testData)
-    throws EvaluationException {
+            throws EvaluationException {
+
+        List<EvaluationResult> results = new ArrayList<EvaluationResult>();
 
         List<NamedClassifier> classifiers = setup.getClassifiers();
-
-        EvaluationResult result = new EvaluationResult(
-                dataset, trainData.relationName(), testData.relationName());
-        result.setClassifers(classifiers);
-
         trainData.setClass(trainData.attribute("label"));
         testData.setClass(testData.attribute("label"));
 
         for (NamedClassifier n_classifier : classifiers) {
+
+            EvaluationResult result = new EvaluationResult();
+
             try {
                 Classifier originalModel = n_classifier.getClassifier();
                 Classifier model = Classifier.makeCopy(originalModel);
@@ -58,15 +59,21 @@ public abstract class DatasetEvaluator implements Verbose {
                 Evaluation evaluation = new Evaluation(trainData);
                 evaluation.evaluateModel(model, testData);
 
-                // Store
-                result.addEvaluation(evaluation);
+                // Store result
+                result.dataset = dataset;
+                result.trainSetName = trainData.relationName();
+                result.testSetName = testData.relationName();
+                result.roundNumber = round;
+                result.classifier = n_classifier;
+                result.evaluation = evaluation;
+                results.add(result);
             }
             catch (Exception e) {
                 throw new EvaluationException(e);
             }
         }
 
-        return result;
+        return results;
     }
 
 
