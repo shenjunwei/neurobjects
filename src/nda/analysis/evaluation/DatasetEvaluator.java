@@ -48,7 +48,8 @@ public abstract class DatasetEvaluator implements Verbose {
 
         for (NamedClassifier n_classifier : classifiers) {
             try {
-                Classifier model = n_classifier.getClassifier();
+                Classifier originalModel = n_classifier.getClassifier();
+                Classifier model = Classifier.makeCopy(originalModel);
 
                 // Train
                 model.buildClassifier(trainData);
