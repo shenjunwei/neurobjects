@@ -1,0 +1,19 @@
+name: test_setup_crossval
+
+spikes_dir: data/test/spikes/
+contacts_file: data/test/behaviors/test_contacts.txt
+output_dir: data/test/datasets/test_data/
+
+params:
+  areas: [hp, v]
+  bin_size: 0.050
+  window_width: 10
+
+datasets:
+  - rounds: 5
+    train_ratio: 1
+
+    1_vs_n:
+      labels: [ball, food, urchin]
+      class_ratio: 2
+      total_positives: 10

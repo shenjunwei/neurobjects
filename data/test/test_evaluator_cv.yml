@@ -1,0 +1,12 @@
+#
+# Evaluator setup file for cross validation
+#
+
+report: csv
+file: data/real/results.csv
+
+cross_validation: 10
+
+classifiers:
+  - class: bayes.NaiveBayes
+    options: -K

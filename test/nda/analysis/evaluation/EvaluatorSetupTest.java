@@ -2,6 +2,7 @@ package nda.analysis.evaluation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -52,6 +53,19 @@ public class EvaluatorSetupTest {
     @Test
     public void testGetReportParameter() {
         assertEquals("data/real/results.csv", setup.getReportParameter("file"));
+    }
+
+
+    @Test
+    public void testEvaluationType() throws Exception {
+        String cvSetupFilepath = "data/test/test_evaluator_cv.yml";
+        EvaluatorSetup cv_setup = new EvaluatorSetup(cvSetupFilepath);
+
+        assertEquals(EvaluatorSetup.TRAIN_TEST, setup.getEvaluationType());
+        assertEquals(EvaluatorSetup.CROSS_VALIDATION, cv_setup.getEvaluationType());
+
+        assertFalse(setup.isCrossValidation());
+        assertTrue(cv_setup.isCrossValidation());
     }
 
 
