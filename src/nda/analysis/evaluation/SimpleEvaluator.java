@@ -39,6 +39,7 @@ public class SimpleEvaluator extends DatasetEvaluator {
             List<String> fileNames = dataset.getGeneratedFileNames();
 
             for (int i = 0; i < fileNames.size()-1; i += 2) {
+                int round = i/2 + 1;
                 String trainDataFileName = fileNames.get(i);
                 String testDataFileName = fileNames.get(i+1);
 
@@ -56,8 +57,10 @@ public class SimpleEvaluator extends DatasetEvaluator {
                     Instances testData = new Instances(testDataReader);
 
                     showMessage(" - evaluating train/test round...");
-                    EvaluationResult result = evaluate(dataset, trainData, testData);
-                    results.add(result);
+                    List<EvaluationResult> roundResults = evaluateTrainTest(
+                            dataset, round, trainData, testData);
+
+                    results.addAll(roundResults);
 
                     trainDataReader.close();
                     testDataReader.close();

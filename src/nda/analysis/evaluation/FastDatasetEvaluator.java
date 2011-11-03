@@ -59,7 +59,7 @@ public class FastDatasetEvaluator implements Verbose {
                 List<EvaluationResult> datasetResults = future.get();
                 results.addAll(datasetResults);
 
-                GeneratorSetup.Dataset dataset = datasetResults.get(0).getDataset();
+                GeneratorSetup.Dataset dataset = datasetResults.get(0).dataset;
                 showMessage(" - " + dataset.getName());
             }
             catch (InterruptedException e) {
@@ -123,11 +123,14 @@ public class FastDatasetEvaluator implements Verbose {
                 new ArrayList<EvaluationResult>(handlers.size());
 
             for (int i = 0; i < handlers.size()-1; i += 2) {
+                int round = i/2 + 1;
                 Instances trainSet = handlers.get(i).getRelation();
                 Instances testSet = handlers.get(i+1).getRelation();
 
-                EvaluationResult result = evaluator.evaluate(dataset, trainSet, testSet);
-                datasetResults.add(result);
+                List<EvaluationResult> results = evaluator.evaluateTrainTest(
+                        dataset, round, trainSet, testSet);
+
+                datasetResults.addAll(results);
             }
 
             return datasetResults;
