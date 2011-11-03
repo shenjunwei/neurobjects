@@ -1,0 +1,11 @@
+#
+# Default Evaluator setup file
+#
+
+report: sql_script
+file: ge4_results.sql
+table: results
+
+classifiers:
+  - class: bayes.NaiveBayes
+  - class: functions.SMO
