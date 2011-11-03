@@ -82,6 +82,11 @@ public class EvaluatorSetup {
     }
 
 
+    public int getCVNumFolds() {
+        return (Integer) setup.get("cross_validation");
+    }
+
+
     public List<NamedClassifier> getClassifiers() {
         List<NamedClassifier> copies = new ArrayList<NamedClassifier>(classifiers.size());
 

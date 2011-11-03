@@ -56,10 +56,9 @@ public class SimpleEvaluator extends DatasetEvaluator {
                     Instances trainData = new Instances(trainDataReader);
                     Instances testData = new Instances(testDataReader);
 
-                    showMessage(" - evaluating train/test round...");
-                    List<EvaluationResult> roundResults = evaluateTrainTest(
+                    showMessage(" - evaluating rounds...");
+                    List<EvaluationResult> roundResults = evaluateRound(
                             dataset, round, trainData, testData);
-
                     results.addAll(roundResults);
 
                     trainDataReader.close();
