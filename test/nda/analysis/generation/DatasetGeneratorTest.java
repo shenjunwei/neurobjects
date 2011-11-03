@@ -70,6 +70,8 @@ public class DatasetGeneratorTest {
     private static String setupFilepath = "data/test/test_setup.yml";
     private static String shortSetupFilepath = "data/test/short_setup.yml";
     private static String bugSetupFilepath = "data/test/bug_setup.yml";
+    private static String trainOnlySetupFilepath = "data/test/test_setup_cv.yml";
+
     private static String dropSetupFilepath = "data/test/test_dropping.yml";
     private static String surrogateSetupFilepath = "data/test/test_uniform_surrogates.yml";
     private static String poissonSurSetupFilepath = "data/test/test_poisson_surrogates.yml";
@@ -87,6 +89,8 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
     private MockDatasetGenerator bug_generator;
+    private MockDatasetGenerator cv_generator;
+
     private MockDatasetGenerator drop_generator;
     private MockDatasetGenerator surrogate_gen;
     private MockDatasetGenerator poisson_sur_gen;
@@ -112,6 +116,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup bug_setup = new GeneratorSetup(bugSetupFilepath);
         bug_generator = new MockDatasetGenerator(bug_setup);
+
+        GeneratorSetup cv_setup = new GeneratorSetup(trainOnlySetupFilepath);
+        cv_generator = new MockDatasetGenerator(cv_setup);
 
         GeneratorSetup drop_setup = new GeneratorSetup(dropSetupFilepath);
         drop_generator = new MockDatasetGenerator(drop_setup);
@@ -820,6 +827,33 @@ public class DatasetGeneratorTest {
 
         byte[] hash = digest.digest();
         assertTrue(nda.util.ArrayUtils.equals(INTEGRITY_HASH, hash));
+    }
+
+
+    @Test
+    public void testTrainDataOnlyGeneration() throws Exception {
+        cv_generator.loadHandlers();
+
+        for (GeneratorSetup.Dataset dataset : cv_generator.setup.getDatasets()) {
+            List<PatternHandler> data = cv_generator.buildDataset(dataset);
+
+            for (int i = 1; i < data.size(); i += 2) {
+                PatternHandler train = data.get(i-1);
+                PatternHandler test = data.get(i);
+
+                assertEquals(train.getDimension(), test.getDimension());
+                assertEquals(train.getLabelSet(), test.getLabelSet());
+
+                List<GeneratorSetup.Class> classes = dataset.getClasses();
+                GeneratorSetup.Class yesClass = classes.get(0);
+                GeneratorSetup.Class noClass = classes.get(1);
+                int numTotal = yesClass.getNumberSamples() + noClass.getNumberSamples();
+                assertEquals(numTotal, train.size());
+                assertEquals(0, test.size());
+
+                assertNotNull(test.toWekaFormat());
+            }
+        }
     }
 
 

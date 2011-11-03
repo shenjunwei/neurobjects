@@ -25,6 +25,9 @@ import nda.analysis.generation.GeneratorSetup;
  * @author Giuliano Vilela
  */
 public class EvaluatorSetup {
+    public static final int TRAIN_TEST = 0;
+    public static final int CROSS_VALIDATION = 1;
+
     private static final String WEKA_CLASSIFIERS_PACKAGE = "weka.classifiers";
 
     private static Yaml yaml = GeneratorSetup.getYaml();
@@ -63,6 +66,19 @@ public class EvaluatorSetup {
 
     public Object getReportParameter(String parameter) {
         return setup.get(parameter);
+    }
+
+
+    public int getEvaluationType() {
+        if (setup.containsKey("cross_validation"))
+            return CROSS_VALIDATION;
+        else
+            return TRAIN_TEST;
+    }
+
+
+    public boolean isCrossValidation() {
+        return getEvaluationType() == CROSS_VALIDATION;
     }
 
 
