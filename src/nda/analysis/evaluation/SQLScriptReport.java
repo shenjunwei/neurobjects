@@ -17,11 +17,13 @@ import nda.analysis.generation.GeneratorSetup;
  * @author Giuliano Vilela
  */
 public class SQLScriptReport implements EvaluationReportI {
+    private EvaluatorSetup setup;
     private String outputFilePath;
     private String tableName;
     private boolean truncateTable;
 
-    public SQLScriptReport(EvaluatorSetup setup) {
+    public SQLScriptReport(EvaluatorSetup _setup) {
+        setup = _setup;
         outputFilePath = (String) setup.getReportParameter("file");
         tableName = (String) setup.getReportParameter("table");
         truncateTable = setup.getReportParameter("truncate_table") != null;
@@ -72,6 +74,11 @@ public class SQLScriptReport implements EvaluationReportI {
                 row.add(positiveLabel);
                 /* round */
                 row.add("" + result.roundNumber);
+                /* cv_fold */
+                if (setup.isCrossValidation())
+                    row.add("" + result.cvFoldNumber);
+                else
+                    row.add(null);
                 /* classifier */
                 row.add(n_classifier.getName());
                 /* bin_size */

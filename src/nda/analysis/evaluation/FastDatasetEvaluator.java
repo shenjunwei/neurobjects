@@ -127,9 +127,8 @@ public class FastDatasetEvaluator implements Verbose {
                 Instances trainSet = handlers.get(i).getRelation();
                 Instances testSet = handlers.get(i+1).getRelation();
 
-                List<EvaluationResult> results = evaluator.evaluateTrainTest(
+                List<EvaluationResult> results = evaluator.evaluateRound(
                         dataset, round, trainSet, testSet);
-
                 datasetResults.addAll(results);
             }
 

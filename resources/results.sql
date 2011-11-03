@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 18, 2011 at 05:19 PM
+-- Generation Time: Nov 03, 2011 at 04:10 PM
 -- Server version: 5.1.53
 -- PHP Version: 5.3.5
 
@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `results` (
   `area` varchar(25) NOT NULL,
   `object` varchar(25) NOT NULL,
   `round` int(11) NOT NULL,
+  `cv_fold` int(11) DEFAULT NULL,
   `model` varchar(40) NOT NULL,
   `bin_size` double NOT NULL,
   `window_size` int(11) NOT NULL,
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `results` (
   `no_fp` int(11) NOT NULL,
   `no_fn` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `CONTEXT` (`animal`,`area`,`object`,`round`,`model`,`bin_size`,`window_size`,`neuron_drop`,`surrogate`,`num_surrogate`,`pct_surrogate`,`dist_surrogate`),
+  UNIQUE KEY `CONTEXT` (`animal`,`area`,`object`,`round`,`cv_fold`,`model`,`bin_size`,`window_size`,`neuron_drop`,`surrogate`,`num_surrogate`,`pct_surrogate`,`dist_surrogate`),
   KEY `MAIN` (`animal`,`area`,`object`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Reference table, never changes.' AUTO_INCREMENT=1 ;
 
