@@ -154,7 +154,7 @@ public abstract class DatasetGenerator implements Verbose {
         PatternHandler testSet = new PatternHandler(testSetName, rateMatrix, labels);
 
         for (GeneratorSetup.Class class_attr : dataset.getClasses()) {
-            addInstancesFromClass(class_attr, rateMatrix, behavior, trainSet, testSet);
+            addInstancesFromClass(dataset, class_attr, rateMatrix, behavior, trainSet, testSet);
         }
 
         List<PatternHandler> sets = new ArrayList<PatternHandler>(2);
@@ -171,6 +171,7 @@ public abstract class DatasetGenerator implements Verbose {
      * @param number
      */
     protected void addInstancesFromClass(
+            GeneratorSetup.Dataset dataset,
             GeneratorSetup.Class class_attr,
             SpikeRateMatrixI rateMatrix,
             BehaviorHandlerI behavior,
@@ -215,7 +216,7 @@ public abstract class DatasetGenerator implements Verbose {
                         "Can't sample %d train patterns and %d test patterns from " +
                         "label %s of dataset %s (it only has %d patterns)",
                         numTrain, numTest, label,
-                        class_attr.getDataset().getName(), totalForLabel));
+                        dataset.getName(), totalForLabel));
             }
 
             int[][] inds = sampleTrainTest(totalForLabel, numTrain, numTest);

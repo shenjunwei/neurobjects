@@ -47,6 +47,7 @@ public class DatasetGeneratorTest {
     byte[] HASH_CONTACT_SWAP = {39,-12,123,0,14,-24,-88,-92,-36,-71,126,-109,48,14,-126,2};
     byte[] HASH_CONTACT_SHIFT = {-37,-10,91,5,-113,-48,-122,-99,31,113,-10,-91,76,-102,127,-97};
     byte[] HASH_CONTACT_SPLIT = {-92,7,50,58,-14,106,114,-52,-121,-120,47,48,-72,28,77,-71};
+    byte[] HASH_EXPOSITION_SPLIT = {124,-58,-3,17,48,35,4,-127,9,-73,-43,-68,15,56,-25,-94};
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -87,6 +88,7 @@ public class DatasetGeneratorTest {
     private static String contactSwapSurSetupFilepath = "data/test/test_contact_swap.yml";
     private static String contactShiftSurSetupFilepath = "data/test/test_contact_shift2.yml";
     private static String contactSplitSurSetupFilepath = "data/test/test_contact_split.yml";
+    private static String expositionSplitSurSetupFilepath = "data/test/test_exposition_split.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -107,6 +109,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator contact_swap_sur_gen;
     private MockDatasetGenerator contact_shift_sur_gen;
     private MockDatasetGenerator contact_split_sur_gen;
+    private MockDatasetGenerator exposition_split_sur_gen;
 
 
     @Before
@@ -164,6 +167,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup contact_split_setup = new GeneratorSetup(contactSplitSurSetupFilepath);
         contact_split_sur_gen = new MockDatasetGenerator(contact_split_setup);
+
+        GeneratorSetup exposition_split_setup = new GeneratorSetup(expositionSplitSurSetupFilepath);
+        exposition_split_sur_gen = new MockDatasetGenerator(exposition_split_setup);
     }
 
 
@@ -210,7 +216,7 @@ public class DatasetGeneratorTest {
                         "test", rateMatrix, classNames);
 
                 generator.addInstancesFromClass(
-                        class_attr, rateMatrix,
+                        dataset, class_attr, rateMatrix,
                         generator.globalBehaviorHandler,
                         trainSet, testSet);
 
@@ -846,6 +852,39 @@ public class DatasetGeneratorTest {
 
         byte[] hash = digest.digest();
         assertTrue(nda.util.ArrayUtils.equals(HASH_CONTACT_SPLIT, hash));
+    }
+
+
+    @Test
+    public void testExpositionSplitSurrogateDatasets() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+        exposition_split_sur_gen.loadHandlers();
+
+        assertEquals(6, exposition_split_sur_gen.setup.getDatasets().size());
+        assertEquals(10, exposition_split_sur_gen.globalSpikeHandler.size());
+
+        for (GeneratorSetup.Dataset dataset : exposition_split_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertFalse(DatasetTransformer.needsRateMatrixTransform(dataset));
+            assertTrue(DatasetTransformer.needsBehaviorHandlerTransform(dataset));
+
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNull(dataset.getParameter("dist_surrogate"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("num_surrogate"));
+            assertEquals(2, dataset.getParameter("total_split"));
+            assertEquals("exposition_split", dataset.getParameter("surrogate_type"));
+            assertTrue(dataset.getName().contains("exposition_split"));
+
+            for (PatternHandler set : exposition_split_sur_gen.buildDataset(dataset)) {
+                assertEquals(100, set.getDimension());
+                String str = set.toWekaFormat();
+                digest.update(str.getBytes("UTF-8"));
+            }
+        }
+
+        byte[] hash = digest.digest();
+        assertTrue(nda.util.ArrayUtils.equals(HASH_EXPOSITION_SPLIT, hash));
     }
 
 

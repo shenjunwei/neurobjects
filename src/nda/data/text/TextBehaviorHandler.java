@@ -43,6 +43,8 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
 
             String line;
             while (((line = in.readLine()) != null) ) {
+                if (line.trim().isEmpty()) continue;
+
                 String[] values = line.split(",");
 
                 if (values.length != 3) {
@@ -139,12 +141,14 @@ public class TextBehaviorHandler implements BehaviorHandlerI {
 
     @Override
     public List<Interval> getContactIntervals(String label) {
-        return behavior.get(label);
+        return new ArrayList<Interval>(behavior.get(label));
     }
 
 
     @Override
     public void setContactIntervals(String label, List<Interval> intervals) {
+        intervals = new ArrayList<Interval>(intervals);
+        Collections.sort(intervals, new Interval.ElementComparator());
         behavior.put(label, intervals);
     }
 

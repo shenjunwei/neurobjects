@@ -3,8 +3,8 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 08, 2011 at 12:10 PM
--- Server version: 5.1.53
+-- Generation Time: Nov 21, 2011 at 05:12 PM
+-- Server version: 5.1.57
 -- PHP Version: 5.3.5
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `results` (
   `bin_size` double NOT NULL,
   `window_size` int(11) NOT NULL,
   `neuron_drop` int(11) DEFAULT NULL,
-  `surrogate` enum('uniform','poisson','col_swap','neuron_swap','matrix_swap','col_swap_d','poisson_d','uniform_d','spike_jitter','mean_d','contact_swap','contact_shift','contact_split') DEFAULT NULL,
+  `surrogate` enum('uniform','poisson','col_swap','neuron_swap','matrix_swap','col_swap_d','poisson_d','uniform_d','spike_jitter','mean_d','contact_swap','contact_shift','contact_split','exposition_split') DEFAULT NULL,
   `num_surrogate` int(11) DEFAULT NULL,
   `pct_surrogate` double DEFAULT NULL,
   `dist_surrogate` double DEFAULT NULL,
