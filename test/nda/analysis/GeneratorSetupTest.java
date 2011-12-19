@@ -41,6 +41,7 @@ public class GeneratorSetupTest {
     private GeneratorSetup test_mean_d_sur;
     private GeneratorSetup test_contact_swap_sur;
     private GeneratorSetup test_contact_shift_sur;
+    private GeneratorSetup test_contact_split_sur;
 
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
@@ -60,6 +61,7 @@ public class GeneratorSetupTest {
     private static String meanDistSurSetupFilepath = "data/test/test_mean_d.yml";
     private static String contactSwapSurSetupFilepath = "data/test/test_contact_swap.yml";
     private static String contactShiftSurSetupFilepath = "data/test/test_contact_shift.yml";
+    private static String contactSplitSurSetupFilepath = "data/test/test_contact_split.yml";
 
 
     @Before
@@ -80,6 +82,7 @@ public class GeneratorSetupTest {
         test_mean_d_sur = new GeneratorSetup(meanDistSurSetupFilepath);
         test_contact_swap_sur = new GeneratorSetup(contactSwapSurSetupFilepath);
         test_contact_shift_sur = new GeneratorSetup(contactShiftSurSetupFilepath);
+        test_contact_split_sur = new GeneratorSetup(contactSplitSurSetupFilepath);
     }
 
 
@@ -736,5 +739,38 @@ public class GeneratorSetupTest {
         assertEquals((Integer) 9, count.get("_p3"));
 
         for (int c : dist_count) assertEquals(9, c);
+    }
+
+
+    @Test
+    public void testContactSplitSurrogateSetup() {
+        assertEquals(18, test_contact_split_sur.getDatasets().size());
+
+        String[] ps = { "_p1", "_p2", "_p3" };
+        Map<String, Integer> count = new HashMap<String, Integer>();
+        for (String p : ps) count.put(p, 0);
+        int[] id_count = { 0, 0 };
+
+        for (GeneratorSetup.Dataset dataset : test_contact_split_sur.getDatasets()) {
+            for (String p : ps) {
+                if (dataset.getName().contains(p)) {
+                    count.put(p, count.get(p) + 1);
+                    break;
+                }
+            }
+
+            assertTrue(dataset.getName().contains("sur_contact_split"));
+            assertNull(dataset.getParameter("dist_surrogate"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("num_surrogate"));
+            assertNotNull(dataset.getParameter("total_split"));
+            assertEquals("contact_split", dataset.getParameter("surrogate_type"));
+
+            int id = (Integer) dataset.getParameter("num_surrogate");
+            id_count[id-1]++;
+        }
+
+        for (int val : count.values()) assertEquals(6, val);
+        for (int val : id_count) assertEquals(9, val);
     }
 }

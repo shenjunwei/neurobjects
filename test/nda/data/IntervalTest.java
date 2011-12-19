@@ -24,6 +24,7 @@ public class IntervalTest {
     final Interval out_i = Interval.make(20, 30);
     final double EPS = 1e-8;
 
+
     /**
      * Test method for {@link nda.data.Interval#make(double, double)}.
      */
@@ -33,6 +34,7 @@ public class IntervalTest {
         assertEquals(10, norm_i.end(), EPS);
     }
 
+
     /**
      * Test method for {@link nda.data.Interval#duration()}.
      */
@@ -41,6 +43,7 @@ public class IntervalTest {
         assertEquals(10, norm_i.duration(), EPS);
         assertEquals(0, point_i.duration(), EPS);
     }
+
 
     /**
      * Test method for {@link nda.data.Interval#contains(double)}.
@@ -54,6 +57,7 @@ public class IntervalTest {
         assertTrue(point_i.contains(5));
     }
 
+
     /**
      * Test method for {@link nda.data.Interval#contains(nda.data.Interval)}.
      */
@@ -65,6 +69,7 @@ public class IntervalTest {
         assertFalse(point_i.contains(norm_i));
     }
 
+
     /**
      * Test method for {@link nda.data.Interval#isValid()}.
      */
@@ -74,6 +79,7 @@ public class IntervalTest {
         assertTrue(point_i.isValid());
         assertFalse(norm_i.intersection(out_i).isValid());
     }
+
 
     /**
      * Test method for {@link nda.data.Interval#intersection(nda.data.Interval)}.
@@ -87,6 +93,7 @@ public class IntervalTest {
         assertEquals(0, norm_i.intersection(point_i).duration(), EPS);
     }
 
+
     /**
      * Test method for {@link nda.data.Interval#isEmpty()}.
      */
@@ -96,6 +103,7 @@ public class IntervalTest {
         assertFalse(neg_i.isEmpty());
         assertTrue(norm_i.intersection(out_i).isEmpty());
     }
+
 
     /**
      * Test pre-defined intervals
@@ -110,10 +118,42 @@ public class IntervalTest {
         assertFalse(norm_i.contains(Interval.INF));
     }
 
+
     @Test
     public void testEnclose() {
         assertEquals(Interval.INF, norm_i.enclose(Interval.INF));
         assertEquals(neg_i, norm_i.enclose(neg_i));
         assertEquals(neg_i, neg_i.enclose(norm_i));
+    }
+
+
+    @Test
+    public void testSplit() {
+        double[] vals = {
+                196, 538, 30, 288, 731, 876, 290, 804,
+                494, 548, 457, 705, 267, 1000, 167, 378
+        };
+
+        int n_intervals = vals.length/2;
+        Interval[] test_intervals = new Interval[n_intervals];
+        for (int i = 0; i < n_intervals; ++i)
+            test_intervals[i] = Interval.make(vals[i*2], vals[i*2+1]);
+
+        for (int n_split = 1; n_split <= 1000; ++n_split) {
+            for (Interval interval : test_intervals) {
+                Interval[] splits = interval.split(n_split);
+
+                assertEquals(n_split, splits.length);
+                assertEquals(interval.start(), splits[0].start(), 1e-8);
+                assertEquals(interval.end(), splits[splits.length-1].end(), 1e-8);
+
+                double duration = interval.duration() / n_split;
+                for (int i = 0; i < splits.length; ++i) {
+                    assertEquals(duration, splits[i].duration(), 1e-8);
+                    if (i > 0)
+                        assertEquals(splits[i-1].end(), splits[i].start(), 1e-8);
+                }
+            }
+        }
     }
 }

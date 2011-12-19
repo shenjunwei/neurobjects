@@ -241,4 +241,23 @@ public class Interval {
     public Interval shift(double offset) {
         return Interval.make(start+offset, end+offset);
     }
+
+
+    /**
+     * Split this interval in equal sized sub-intervals, returned in order.
+     * 
+     * @param n Number of sub-intervals to return (must be > 0)
+     */
+    public Interval[] split(int n) {
+        double duration = end - start;
+        double step = duration / n;
+
+        Interval[] intervals = new Interval[n];
+        for (int i = 0; i < n; ++i) {
+            double new_start = start + i*step;
+            intervals[i] = Interval.make(new_start, new_start + step);
+        }
+
+        return intervals;
+    }
 }

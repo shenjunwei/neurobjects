@@ -27,24 +27,28 @@ public class DatasetTransformer {
         dataset.getParameter("surrogate_type").equals("spike_jitter");
     }
 
+
     // Victor
     public static boolean needsVarianceContactsTransform(GeneratorSetup.Dataset dataset) {
         return dataset.getParameter("surrogate") != null &&
         dataset.getParameter("surrogate_type").equals("var_contacts");
     }
 
+
     public static boolean needsRateMatrixTransform(GeneratorSetup.Dataset dataset) {
         return (dataset.getParameter("neuron_drop") != null ||
                 dataset.getParameter("surrogate") != null &&
                 !dataset.getParameter("surrogate_type").equals("spike_jitter") &&
                 !dataset.getParameter("surrogate_type").equals("contact_shift") &&
-                !dataset.getParameter("surrogate_type").equals("var_contacts"));
+                !dataset.getParameter("surrogate_type").equals("var_contacts") &&
+                !dataset.getParameter("surrogate_type").equals("contact_split"));
     }
 
 
     public static boolean needsBehaviorHandlerTransform(GeneratorSetup.Dataset dataset) {
         return (dataset.getParameter("surrogate") != null &&
-                dataset.getParameter("surrogate_type").equals("contact_shift"));
+                (dataset.getParameter("surrogate_type").equals("contact_shift") ||
+                        dataset.getParameter("surrogate_type").equals("contact_split")));
     }
 
 
@@ -127,6 +131,11 @@ public class DatasetTransformer {
         if (sur_type.equals("contact_shift")) {
             double t0 = (Double) dataset.getParameter("dist_surrogate");
             return withContactShift(random, behavior, t0);
+        }
+        else if (sur_type.equals("contact_split")) {
+            int split_id = (Integer) dataset.getParameter("num_surrogate");
+            int total_split = (Integer) dataset.getParameter("total_split");
+            return withContactSplit(random, behavior, split_id, total_split);
         }
         else {
             throw new IllegalArgumentException("Dataset doesn't need a transform");
@@ -385,6 +394,7 @@ public class DatasetTransformer {
         return behavior;
     }
 
+
     // Victor
     protected static BehaviorHandlerI withVarianceContacts(
             RandomData random, BehaviorHandlerI old_behavior, double new_t0, String var_type) {
@@ -436,6 +446,31 @@ public class DatasetTransformer {
 
         return behavior;
     }
+
+
+    /**
+     * contact_split(N)
+     */
+    protected static BehaviorHandlerI withContactSplit(
+            RandomData random, BehaviorHandlerI old_behavior,
+            int split_id, int total_split) {
+
+        BehaviorHandlerI behavior = new TextBehaviorHandler(old_behavior);
+        for (String label : behavior.getLabelSet()) {
+            List<Interval> intervals = behavior.getContactIntervals(label);
+            List<Interval> new_intervals = new ArrayList<Interval>(intervals.size());
+
+            for (Interval interval : intervals) {
+                Interval[] splits = interval.split(total_split);
+                new_intervals.add(splits[split_id-1]);
+            }
+
+            behavior.setContactIntervals(label, new_intervals);
+        }
+
+        return behavior;
+    }
+
 
     /*
      * Helper methods for the transforms
