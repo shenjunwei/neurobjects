@@ -341,7 +341,8 @@ public class GeneratorSetup {
                             ((String) paramsMap.get("surrogate")).startsWith("contact_swap") ||
                             ((String) paramsMap.get("surrogate")).startsWith("contact_shift") ||
                             ((String) paramsMap.get("surrogate")).startsWith("var_contacts") ||
-                            ((String) paramsMap.get("surrogate")).startsWith("contact_split"));
+                            ((String) paramsMap.get("surrogate")).startsWith("contact_split") ||
+                            ((String) paramsMap.get("surrogate")).startsWith("exposition_split"));
 
                 boolean doSurrogate = doNeuronSurrogate || doFullSurrogate;
 
@@ -448,7 +449,7 @@ public class GeneratorSetup {
                             datasets.add(sub_dataset);
                         }
                     }
-                    else if (sur_type.equals("contact_split")) {
+                    else if (sur_type.equals("contact_split") || sur_type.equals("exposition_split")) {
                         int total_split = Integer.valueOf(tokens[1]);
 
                         for (int id = 1; id <= total_split; ++id) {

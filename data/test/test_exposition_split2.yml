@@ -1,0 +1,21 @@
+name: test_exposition_split
+spikes_dir: data/test/spikes/
+contacts_file: data/test/real_contacts2.txt
+
+params:
+  areas: [hp,s1,v1]
+
+  bin_size: 0.050
+  window_width: 10
+  surrogate: exposition_split 2
+
+datasets:
+  - name: dataset_name
+    rounds: 1
+    train_ratio: 0.8
+
+    1_vs_n:
+      labels: [ball, food, urchin]
+      class_ratio: 2
+      total_positives: 2
+  

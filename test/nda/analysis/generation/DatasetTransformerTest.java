@@ -620,6 +620,67 @@ public class DatasetTransformerTest {
     }
 
 
+    @Test
+    public void testExpositionSplitSurrogates() throws Exception {
+        BehaviorHandlerI firstBehavior = null;
+        BehaviorHandlerI secondBehavior = null;
+
+        for (int split_id = 1; split_id <= 2; ++split_id) {
+            BehaviorHandlerI split_behavior = DatasetTransformer.withExpositionSplit(
+                    random, behavior, split_id, 2);
+            if (split_id == 1)
+                firstBehavior = split_behavior;
+            else
+                secondBehavior = split_behavior;
+
+            Interval old_expo = behavior.getExpositionInterval();
+            Interval new_expo = split_behavior.getExpositionInterval();
+
+            assertEquals(behavior.getLabelSet(), split_behavior.getLabelSet());
+            assertTrue(Double.compare(old_expo.duration(), new_expo.duration()) > 0);
+            assertTrue(Double.compare(new_expo.start(), old_expo.start()) >= 0);
+            assertTrue(Double.compare(new_expo.end(), old_expo.end()) <= 0);
+
+            for (String label : behavior.getLabelSet()) {
+                List<Interval> old_intervals = behavior.getContactIntervals(label);
+                List<Interval> new_intervals = split_behavior.getContactIntervals(label);
+                assertTrue(new_intervals.size() <= old_intervals.size());
+
+                double oldDuration = totalDuration(old_intervals);
+                double newDuration = totalDuration(new_intervals);
+                assertEquals(oldDuration/2, newDuration, 1e-8);
+
+                for (Interval newInterval : new_intervals) {
+                    boolean found = false;
+                    for (Interval oldInterval : old_intervals) {
+                        if (oldInterval.contains(newInterval)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    assertTrue(found);
+                }
+            }
+        }
+
+        for (String label : firstBehavior.getLabelSet()) {
+            List<Interval> original = behavior.getContactIntervals(label);
+            List<Interval> firsts = firstBehavior.getContactIntervals(label);
+            List<Interval> seconds = secondBehavior.getContactIntervals(label);
+
+            assertTrue(firsts.size()+seconds.size() <= original.size()+1);
+            assertTrue(firsts.size()+seconds.size() >= original.size());
+
+            for (Interval firstInt : firsts) {
+                for (Interval secInt : seconds) {
+                    assertTrue(Double.compare(firstInt.start(), secInt.start()) <= 0);
+                    assertTrue(Double.compare(firstInt.end(), secInt.end()) <= 0);
+                }
+            }
+        }
+    }
+
+
     private void assertSameParameters(CountMatrix a, CountMatrix b) {
         assertEquals(a.getBinSize(), b.getBinSize(), 1e-8);
         assertEquals(a.getWindowWidth(), b.getWindowWidth());
@@ -633,5 +694,13 @@ public class DatasetTransformerTest {
         assertEquals(a.numColumns(), b.numColumns());
         assertEquals(a.numRows(), b.numRows());
         assertEquals(a.getNeuronNames(), b.getNeuronNames());
+    }
+
+
+    private static double totalDuration(List<Interval> intervals) {
+        double duration = 0;
+        for (Interval interval : intervals)
+            duration += interval.duration();
+        return duration;
     }
 }
