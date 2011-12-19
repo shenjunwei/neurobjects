@@ -579,6 +579,47 @@ public class DatasetTransformerTest {
     }
 
 
+    @Test
+    public void testContactSplitSurrogates() {
+        for (int total_split = 1; total_split <= 100; ++total_split) {
+            for (int split_id = 1; split_id <= total_split; ++split_id) {
+                BehaviorHandlerI split_behavior = DatasetTransformer.withContactSplit(
+                        random, behavior, split_id, total_split);
+
+                assertEquals(behavior.getLabelSet(), split_behavior.getLabelSet());
+
+                Interval old_expo = behavior.getExpositionInterval();
+                Interval new_expo = split_behavior.getExpositionInterval();
+
+                if (total_split == 1) {
+                    assertEquals(old_expo, new_expo);
+                }
+                else {
+                    assertTrue(Double.compare(old_expo.duration(), new_expo.duration()) > 0);
+                    assertTrue(Double.compare(new_expo.start(), old_expo.start()) >= 0);
+                    assertTrue(Double.compare(new_expo.end(), old_expo.end()) <= 0);
+                }
+
+                for (String label : behavior.getLabelSet()) {
+                    List<Interval> old_intervals = behavior.getContactIntervals(label);
+                    List<Interval> new_intervals = split_behavior.getContactIntervals(label);
+
+                    assertEquals(old_intervals.size(), new_intervals.size());
+
+                    for (int i = 0; i < new_intervals.size(); ++i) {
+                        Interval old_int = old_intervals.get(i);
+                        Interval new_int = new_intervals.get(i);
+
+                        assertEquals(old_int.duration()/total_split, new_int.duration(), 1e-8);
+                        assertTrue(Double.compare(new_int.start(), old_int.start()) >= 0);
+                        assertTrue(Double.compare(new_int.end(), old_int.end()) <= 0);
+                    }
+                }
+            }
+        }
+    }
+
+
     private void assertSameParameters(CountMatrix a, CountMatrix b) {
         assertEquals(a.getBinSize(), b.getBinSize(), 1e-8);
         assertEquals(a.getWindowWidth(), b.getWindowWidth());
