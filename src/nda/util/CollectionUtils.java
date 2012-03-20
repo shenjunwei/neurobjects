@@ -1,6 +1,7 @@
 package nda.util;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 
@@ -18,5 +19,13 @@ public class CollectionUtils {
 
     public static<K,V> V getElement(Map<K, V> map) {
         return getElement(map.values());
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public static<T> List<T>[] splitOnHalf(List<T> list) {
+        List<T> listA = list.subList(0, list.size()/2);
+        List<T> listB = list.subList(list.size()/2, list.size());
+        return (List<T>[]) new Object[] { listA, listB };
     }
 }
