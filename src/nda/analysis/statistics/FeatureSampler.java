@@ -60,6 +60,14 @@ public class FeatureSampler implements Verbose {
 
             features.put("*", samples);
         }
+        else if (feature.equals("pattern_distance")) {
+            showMessage("Extracting " + feature + " from population");
+
+            Map<String,double[]> samples = SpikeFeatures.patternDistancesSamples(
+                    countMatrix, behaviorHandler, behaviors);
+
+            features = expandPatternDistanceSamples(samples);
+        }
         else {
             for (String neuron : neurons) {
                 showMessage("Extracting " + feature + " from neuron " + neuron);
@@ -96,10 +104,34 @@ public class FeatureSampler implements Verbose {
             behaviorHandler = new TextBehaviorHandler(behaviorFilepath);
 
             double binSize = (Double) params.get("bin_size");
+            int windowWidth = 10;
+            if (params.containsKey("window_width"))
+                windowWidth = (Integer) params.get("window_width");
+
             countMatrix = new CountMatrix(spikeHandler, binSize);
+            countMatrix.setWindowWidth(windowWidth);
         } catch (Exception e) {
             throw new FeatureExtractionException(e);
         }
+    }
+
+
+    /*
+     * dirty hack to see the results earlier! fix this later
+     */
+    private static Map<String,Map<String,double[]>> expandPatternDistanceSamples(
+            Map<String,double[]> samples) {
+
+        Map<String,Map<String,double[]>> features =
+            new HashMap<String, Map<String,double[]>>();
+
+        for (String behaviorPair : samples.keySet()) {
+            Map<String,double[]> map = new HashMap<String, double[]>();
+            map.put(behaviorPair, samples.get(behaviorPair));
+            features.put(behaviorPair, map);
+        }
+
+        return features;
     }
 
 

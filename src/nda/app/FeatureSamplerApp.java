@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import nda.analysis.InvalidSetupFileException;
 import nda.analysis.statistics.FeatureSampler;
 import nda.analysis.statistics.FeatureSamplerSetup;
+import nda.util.CollectionUtils;
 
 
 /**
@@ -97,8 +98,14 @@ public class FeatureSamplerApp {
                 row.add(setup.getFeature());
 
                 /* _samples */
-                for (String behavior : behaviors) {
-                    double[] behavior_samples = samples.get(neuron).get(behavior);
+                if (!setup.getFeature().equals("pattern_distance")) {
+                    for (String behavior : behaviors) {
+                        double[] behavior_samples = samples.get(neuron).get(behavior);
+                        row.add(ArrayUtils.toString(behavior_samples));
+                    }
+                }
+                else {
+                    double[] behavior_samples = CollectionUtils.getElement(samples.get(neuron));
                     row.add(ArrayUtils.toString(behavior_samples));
                 }
 
