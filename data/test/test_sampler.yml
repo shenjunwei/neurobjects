@@ -3,10 +3,11 @@ name: test_feature_sampler
 spikes_dir: data/test/spikes/
 contacts_file: data/test/behaviors/test_contacts.txt
 
-feature: firing_rate
+feature: isi
 params:
   neurons: hp,s1,v1
   bin_size: 0.250
   labels: [ball,  brush, food, urchin]
   
 output_file: data/test/datasets/firing_rates.sql
+

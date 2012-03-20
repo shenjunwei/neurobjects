@@ -10,6 +10,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;
+import nda.data.SpikeHandlerI;
+import nda.data.SpikeTrainI;
 
 
 /**
@@ -31,6 +33,22 @@ public class SpikeFeatures {
         }
 
         return behaviorSamples;
+    }
+
+
+    public static Map<String,double[]> interSpikeIntervalSamples(
+            SpikeHandlerI spikeHandler,
+            BehaviorHandlerI behaviorHandler,
+            String neuron) {
+
+        Map<String,double[]> isiSamples = new HashMap<String, double[]>();
+
+        for (String label : behaviorHandler.getLabelSet()) {
+            double[] samples = getBehaviorISIs(spikeHandler, behaviorHandler, neuron, label);
+            isiSamples.put(label, samples);
+        }
+
+        return isiSamples;
     }
 
 
@@ -62,5 +80,41 @@ public class SpikeFeatures {
                 behavior_rates.toArray(new Double[] { }));
 
         return behavior_rates_a;
+    }
+
+
+    private static double[] getBehaviorISIs(
+            SpikeHandlerI spikeHandler,
+            BehaviorHandlerI behaviorHandler,
+            String neuron,
+            String behavior) {
+
+        SpikeTrainI spikeTrain = spikeHandler.get(neuron);
+        List<Double> isi_samples_l = new ArrayList<Double>();
+
+        for (Interval interval : behaviorHandler.getContactIntervals(behavior)) {
+            SpikeTrainI intervalTrain = spikeTrain.extractInterval(interval);
+            if (intervalTrain.isEmpty())
+                continue;
+
+            double[] isi = getInterSpikeIntervals(intervalTrain);
+            for (double isi_sample : isi)
+                isi_samples_l.add(isi_sample);
+        }
+
+        double[] isi_samples = ArrayUtils.toPrimitive(
+                isi_samples_l.toArray(new Double[] { }));
+
+        return isi_samples;
+    }
+
+
+    private static double[] getInterSpikeIntervals(SpikeTrainI spikeTrain) {
+        double[] isi = new double[spikeTrain.size()-1];
+
+        for (int i = 1; i < spikeTrain.size(); ++i)
+            isi[i-1] = spikeTrain.get(i) - spikeTrain.get(i-1);
+
+        return isi;
     }
 }

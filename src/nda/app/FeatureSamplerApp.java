@@ -86,10 +86,15 @@ public class FeatureSamplerApp {
                 /* neuron */
                 row.add(neuron);
                 /* bin_size */
-                row.add("" + setup.getParams().get("bin_size"));
+                if (setup.getParams().get("bin_size") != null)
+                    row.add("" + setup.getParams().get("bin_size"));
+                else
+                    row.add(null);
+                /* feature */
+                row.add(setup.getFeature());
 
-                double[] rewardSamples = samples.get(neuron).get("urchin");
-                double[] errorSamples = samples.get(neuron).get("food");
+                double[] rewardSamples = samples.get(neuron).get("reward");
+                double[] errorSamples = samples.get(neuron).get("error");
 
                 /* reward_samples */
                 row.add(ArrayUtils.toString(rewardSamples));
