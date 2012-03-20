@@ -1,5 +1,6 @@
 package nda.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -182,5 +183,15 @@ public final class ArrayUtils {
             array[i] = list.get(i);
 
         return array;
+    }
+
+
+    public static List<Double> toObjectList(double[] array) {
+        List<Double> list = new ArrayList<Double>(array.length);
+
+        for (double val : array)
+            list.add(val);
+
+        return list;
     }
 }

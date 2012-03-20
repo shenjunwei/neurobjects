@@ -5,12 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math.random.RandomData;
+import org.apache.commons.math.random.RandomDataImpl;
+
 import nda.analysis.InvalidSetupFileException;
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.SpikeHandlerI;
 import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
+import nda.util.RandomUtils;
 import nda.util.Verbose;
 
 
@@ -20,6 +24,9 @@ import nda.util.Verbose;
  * @author Giuliano Vilela
  */
 public class FeatureSampler implements Verbose {
+
+    private static RandomData random = new RandomDataImpl();
+
     protected boolean verbose;
     protected FeatureSamplerSetup setup;
 
@@ -40,7 +47,9 @@ public class FeatureSampler implements Verbose {
     }
 
 
-    public Map<String,Map<String,double[]>> extractFeatures() throws FeatureExtractionException {
+    public Map<String,Map<String,double[]>> extractFeatures()
+    throws FeatureExtractionException {
+
         showMessage("Reading spike data...");
         loadHandlers();
 
@@ -49,8 +58,10 @@ public class FeatureSampler implements Verbose {
 
         String feature = setup.getFeature();
 
+        Map<String,Object> params = setup.getParams();
+
         @SuppressWarnings("unchecked")
-        List<String> behaviors = (List<String>)setup.getParams().get("labels");
+        List<String> behaviors = (List<String>) params.get("labels");
 
         if (feature.equals("population_firing_rate")) {
             showMessage("Extracting " + feature + " from population");
@@ -84,6 +95,19 @@ public class FeatureSampler implements Verbose {
                     throw new FeatureExtractionException("Unknown feature: " + feature);
 
                 features.put(neuron, samples);
+            }
+        }
+
+        if (params.containsKey("num_samples")) {
+            int numSamples = (Integer) params.get("num_samples");
+            for (Map<String,double[]> map : features.values()) {
+                for (String key : map.keySet()) {
+                    double[] samples = map.get(key);
+                    if (numSamples < samples.length) {
+                        samples = RandomUtils.randomSample(random, samples, numSamples);
+                        map.put(key, samples);
+                    }
+                }
             }
         }
 

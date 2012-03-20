@@ -56,4 +56,25 @@ public class RandomUtilsTest {
             }
         }
     }
+
+
+    @Test
+    public void testRandomSample() {
+        int N = 1000;
+        for (int T = 0; T < 50; ++T) {
+            double[] array = new double[N];
+            for (int i = 0; i < N; ++i) array[i] = random.nextInt(-1000, 1000);
+
+            double[] sample = RandomUtils.randomSample(random, array, T);
+
+            assertEquals(T, sample.length);
+
+            for (double x : sample) {
+                boolean found = false;
+                for (double y : array)
+                    if (Double.compare(x, y) == 0) found = true;
+                assertTrue(found);
+            }
+        }
+    }
 }

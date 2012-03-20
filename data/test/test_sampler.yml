@@ -8,6 +8,7 @@ params:
   neurons: hp,s1,v1
   bin_size: 0.250
   window_width: 10
+  #num_samples: 5
   labels: [ball,  brush, food, urchin]
   
 output_file: data/test/datasets/firing_rates.sql
