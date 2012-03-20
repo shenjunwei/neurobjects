@@ -681,6 +681,42 @@ public class DatasetTransformerTest {
     }
 
 
+    @Test
+    public void testLabelSplitSurrogates() {
+        for (String split_label : behavior.getLabelSet()) {
+            for (int total_split = 1; total_split <= 10; ++total_split) {
+                for (int split_id = 1; split_id <= total_split; ++split_id) {
+                    BehaviorHandlerI split_behavior = DatasetTransformer.withLabelSplit(
+                            random, behavior, split_id, total_split, split_label);
+
+                    assertEquals(behavior.getLabelSet(), split_behavior.getLabelSet());
+
+                    for (String label : behavior.getLabelSet()) {
+                        List<Interval> old_intervals = behavior.getContactIntervals(label);
+                        List<Interval> new_intervals = split_behavior.getContactIntervals(label);
+                        assertEquals(old_intervals.size(), new_intervals.size());
+
+                        if (label.equals(split_label)) {
+                            for (int i = 0; i < new_intervals.size(); ++i) {
+                                Interval old_int = old_intervals.get(i);
+                                Interval new_int = new_intervals.get(i);
+
+                                assertEquals(old_int.duration()/total_split, new_int.duration(), 1e-8);
+                                assertTrue(Double.compare(new_int.start(), old_int.start()) >= 0);
+                                assertTrue(Double.compare(new_int.end(), old_int.end()) <= 0);
+                            }
+                        }
+                        else {
+                            for (int i = 0; i < old_intervals.size(); ++i)
+                                old_intervals.get(i).equals(new_intervals.get(i));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     private void assertSameParameters(CountMatrix a, CountMatrix b) {
         assertEquals(a.getBinSize(), b.getBinSize(), 1e-8);
         assertEquals(a.getWindowWidth(), b.getWindowWidth());

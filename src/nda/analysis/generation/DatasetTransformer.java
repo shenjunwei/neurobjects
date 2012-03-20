@@ -42,7 +42,8 @@ public class DatasetTransformer {
                 !dataset.getParameter("surrogate_type").equals("contact_shift") &&
                 !dataset.getParameter("surrogate_type").equals("var_contacts") &&
                 !dataset.getParameter("surrogate_type").equals("contact_split") &&
-                !dataset.getParameter("surrogate_type").equals("exposition_split"));
+                !dataset.getParameter("surrogate_type").equals("exposition_split") &&
+                !dataset.getParameter("surrogate_type").equals("label_split"));
     }
 
 
@@ -50,7 +51,8 @@ public class DatasetTransformer {
         return (dataset.getParameter("surrogate") != null &&
                 (dataset.getParameter("surrogate_type").equals("contact_shift") ||
                         dataset.getParameter("surrogate_type").equals("contact_split") ||
-                        dataset.getParameter("surrogate_type").equals("exposition_split")));
+                        dataset.getParameter("surrogate_type").equals("exposition_split") ||
+                        dataset.getParameter("surrogate_type").equals("label_split")));
     }
 
 
@@ -144,6 +146,12 @@ public class DatasetTransformer {
             int split_id = (Integer) dataset.getParameter("num_surrogate");
             int total_split = (Integer) dataset.getParameter("total_split");
             return withExpositionSplit(random, behavior, split_id, total_split);
+        }
+        else if (sur_type.equals("label_split")) {
+            int split_id = (Integer) dataset.getParameter("num_surrogate");
+            int total_split = (Integer) dataset.getParameter("total_split");
+            String split_label = (String) dataset.getParameter("label_split");
+            return withLabelSplit(random, behavior, split_id, total_split, split_label);
         }
         else {
             throw new IllegalArgumentException("Dataset doesn't need a transform");
@@ -532,6 +540,28 @@ public class DatasetTransformer {
             behavior.setContactIntervals(label, new_intervals);
         }
 
+        return behavior;
+    }
+
+
+    /**
+     * label_split(N)
+     */
+    protected static BehaviorHandlerI withLabelSplit(
+            RandomData random, BehaviorHandlerI old_behavior,
+            int split_id, int total_split, String split_label) {
+
+        BehaviorHandlerI behavior = new TextBehaviorHandler(old_behavior);
+
+        List<Interval> intervals = behavior.getContactIntervals(split_label);
+        List<Interval> new_intervals = new ArrayList<Interval>(intervals.size());
+
+        for (Interval interval : intervals) {
+            Interval[] splits = interval.split(total_split);
+            new_intervals.add(splits[split_id-1]);
+        }
+
+        behavior.setContactIntervals(split_label, new_intervals);
         return behavior;
     }
 

@@ -43,6 +43,7 @@ public class GeneratorSetupTest {
     private GeneratorSetup test_contact_shift_sur;
     private GeneratorSetup test_contact_split_sur;
     private GeneratorSetup test_exposition_split_sur;
+    private GeneratorSetup test_label_split_sur;
 
     private static String invalidFilepath = "data/test/invalid.yml";
     private static String ge5SetupFilepath = "data/test/ge5_setup.yml";
@@ -64,6 +65,7 @@ public class GeneratorSetupTest {
     private static String contactShiftSurSetupFilepath = "data/test/test_contact_shift.yml";
     private static String contactSplitSurSetupFilepath = "data/test/test_contact_split.yml";
     private static String expositionSplitSurSetupFilepath = "data/test/test_exposition_split2.yml";
+    private static String labelSplitSurSetupFilepath = "data/test/test_label_split.yml";
 
 
     @Before
@@ -86,6 +88,7 @@ public class GeneratorSetupTest {
         test_contact_shift_sur = new GeneratorSetup(contactShiftSurSetupFilepath);
         test_contact_split_sur = new GeneratorSetup(contactSplitSurSetupFilepath);
         test_exposition_split_sur = new GeneratorSetup(expositionSplitSurSetupFilepath);
+        test_label_split_sur = new GeneratorSetup(labelSplitSurSetupFilepath);
     }
 
 
@@ -808,5 +811,39 @@ public class GeneratorSetupTest {
 
         for (int val : count.values()) assertEquals(6, val);
         for (int val : id_count) assertEquals(9, val);
+    }
+
+
+    @Test
+    public void testLabelSplitSurrogateSetup() {
+        assertEquals(6, test_label_split_sur.getDatasets().size());
+
+        String[] ps = { "_p1", "_p2", "_p3" };
+        Map<String, Integer> count = new HashMap<String, Integer>();
+        for (String p : ps) count.put(p, 0);
+        int[] id_count = { 0, 0 };
+
+        for (GeneratorSetup.Dataset dataset : test_label_split_sur.getDatasets()) {
+            for (String p : ps) {
+                if (dataset.getName().contains(p)) {
+                    count.put(p, count.get(p) + 1);
+                    break;
+                }
+            }
+
+            assertTrue(dataset.getName().contains("sur_label_split"));
+            assertNull(dataset.getParameter("dist_surrogate"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("num_surrogate"));
+            assertNotNull(dataset.getParameter("total_split"));
+            assertEquals("label_split", dataset.getParameter("surrogate_type"));
+            assertEquals("food", dataset.getParameter("label_split"));
+
+            int id = (Integer) dataset.getParameter("num_surrogate");
+            id_count[id-1]++;
+        }
+
+        for (int val : count.values()) assertEquals(2, val);
+        for (int val : id_count) assertEquals(3, val);
     }
 }
