@@ -98,6 +98,17 @@ public final class ArrayUtils {
         return ((double) sum) / mat.length;
     }
 
+    public static double euclideanDistance(double[] a, double[] b) {
+        if (a.length != b.length)
+            throw new IllegalArgumentException("vectors have different dimensions");
+
+        double sum = 0;
+        for (int i = 0; i < a.length; ++i)
+            sum += (a[i]-b[i]) * (a[i]-b[i]);
+
+        return Math.sqrt(sum);
+    }
+
     public static boolean isSorted(List<Double> list) {
         for (int i = 1; i < list.size(); ++i)
             if (list.get(i).compareTo(list.get(i-1)) < 0)
@@ -165,7 +176,11 @@ public final class ArrayUtils {
 
 
     public static double[] toPrimitiveArray(List<Double> list) {
-        Double[] obj_array = list.toArray(new Double[] { });
-        return org.apache.commons.lang3.ArrayUtils.toPrimitive(obj_array);
+        double[] array = new double[list.size()];
+
+        for (int i = 0; i < list.size(); ++i)
+            array[i] = list.get(i);
+
+        return array;
     }
 }

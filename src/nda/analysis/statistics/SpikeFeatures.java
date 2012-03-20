@@ -5,13 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
 import nda.data.Interval;
 import nda.data.SpikeHandlerI;
 import nda.data.SpikeTrainI;
+import nda.util.ArrayUtils;
 
 
 /**
@@ -61,7 +60,7 @@ public class SpikeFeatures {
             List<String> behaviors,
             String neuron) {
 
-        Map<String,double[]> isiSamples = new HashMap<String, double[]>();
+        Map<String,double[]> isiSamples = new HashMap<String,double[]>();
 
         for (String label : behaviors) {
             double[] samples = getBehaviorISIs(spikeHandler, behaviorHandler, neuron, label);
@@ -69,6 +68,56 @@ public class SpikeFeatures {
         }
 
         return isiSamples;
+    }
+
+
+    /**
+     * window_width and bin_size must be set on the countMatrix by the caller.
+     */
+    public static Map<String,double[]> patternDistancesSamples(
+            CountMatrix countMatrix,
+            BehaviorHandlerI behaviorHandler,
+            List<String> behaviors) {
+
+        Map<String,double[]> behaviorSamples = new HashMap<String,double[]>();
+
+        for (int i = 0; i < behaviors.size(); ++i) {
+            for (int j = i; j < behaviors.size(); ++j) {
+                String labelA = behaviors.get(i);
+                String labelB = behaviors.get(j);
+
+                List<double[]> patternsA = getBehaviorPatterns(countMatrix, behaviorHandler, labelA);
+                List<double[]> patternsB = getBehaviorPatterns(countMatrix, behaviorHandler, labelB);
+
+                int estimateSize = patternsA.size() * patternsB.size() + 2;
+                List<Double> distanceSamples = new ArrayList<Double>(estimateSize);
+
+                if (!labelA.equals(labelB)) {
+                    for (double[] pA : patternsA) {
+                        for (double[] pB : patternsB) {
+                            double dist = ArrayUtils.euclideanDistance(pA, pB);
+                            distanceSamples.add(dist);
+                        }
+                    }
+                }
+                else {
+                    for (int p = 0; p < patternsA.size(); ++p) {
+                        for (int q = p+1; q < patternsB.size(); ++q) {
+                            double[] pA = patternsA.get(p);
+                            double[] pB = patternsB.get(q);
+                            double dist = ArrayUtils.euclideanDistance(pA, pB);
+                            distanceSamples.add(dist);
+                        }
+                    }
+                }
+
+                String labelAB = labelA + '_' + labelB;
+                System.out.println(labelAB + ": " + distanceSamples);
+                behaviorSamples.put(labelAB, ArrayUtils.toPrimitiveArray(distanceSamples));
+            }
+        }
+
+        return behaviorSamples;
     }
 
 
@@ -97,7 +146,7 @@ public class SpikeFeatures {
                 behavior_rates.add((double)neuron_rates[i]);
         }
 
-        return nda.util.ArrayUtils.toPrimitiveArray(behavior_rates);
+        return ArrayUtils.toPrimitiveArray(behavior_rates);
     }
 
 
@@ -117,12 +166,12 @@ public class SpikeFeatures {
 
             for (int i = st; i <= end; ++i) {
                 int[] population_rates = countMatrix.getColumn(i);
-                double avg_rate = nda.util.ArrayUtils.average(population_rates);
+                double avg_rate = ArrayUtils.average(population_rates);
                 behavior_rates.add(avg_rate);
             }
         }
 
-        return nda.util.ArrayUtils.toPrimitiveArray(behavior_rates);
+        return ArrayUtils.toPrimitiveArray(behavior_rates);
     }
 
 
@@ -145,7 +194,7 @@ public class SpikeFeatures {
                 isi_samples_l.add(isi_sample);
         }
 
-        double[] isi_samples = ArrayUtils.toPrimitive(
+        double[] isi_samples = org.apache.commons.lang3.ArrayUtils.toPrimitive(
                 isi_samples_l.toArray(new Double[] { }));
 
         return isi_samples;
@@ -159,5 +208,21 @@ public class SpikeFeatures {
             isi[i-1] = spikeTrain.get(i) - spikeTrain.get(i-1);
 
         return isi;
+    }
+
+
+    private static List<double[]> getBehaviorPatterns(
+            CountMatrix countMatrix,
+            BehaviorHandlerI behaviorHandler,
+            String behavior) {
+
+        List<double[]> patterns = new ArrayList<double[]>();
+
+        for (Interval interval : behaviorHandler.getContactIntervals(behavior)) {
+            List<double[]> intervalPatterns = countMatrix.getPatterns(interval);
+            patterns.addAll(intervalPatterns);
+        }
+
+        return patterns;
     }
 }
