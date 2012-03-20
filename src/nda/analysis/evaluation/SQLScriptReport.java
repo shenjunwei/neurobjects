@@ -98,7 +98,8 @@ public class SQLScriptReport implements EvaluationReportI {
                     row.add("" + type);
 
                     if (type.equals("uniform") || type.equals("poisson") ||
-                            type.equals("contact_split") || type.equals("exposition_split")) {
+                            type.equals("contact_split") || type.equals("exposition_split") ||
+                            type.equals("label_split")) {
                         row.add("" + result.getParameter("num_surrogate"));
                         row.add(null);
                         row.add(null);

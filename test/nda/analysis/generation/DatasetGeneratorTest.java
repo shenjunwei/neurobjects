@@ -48,6 +48,7 @@ public class DatasetGeneratorTest {
     byte[] HASH_CONTACT_SHIFT = {-37,-10,91,5,-113,-48,-122,-99,31,113,-10,-91,76,-102,127,-97};
     byte[] HASH_CONTACT_SPLIT = {-92,7,50,58,-14,106,114,-52,-121,-120,47,48,-72,28,77,-71};
     byte[] HASH_EXPOSITION_SPLIT = {124,-58,-3,17,48,35,4,-127,9,-73,-43,-68,15,56,-25,-94};
+    byte[] HASH_LABEL_SPLIT = {-75,60,59,79,-28,-54,86,-77,92,-117,-80,-95,4,-61,-116,-110};
 
     // Uncomment the following block to test with a new seed
     /*static {
@@ -89,6 +90,7 @@ public class DatasetGeneratorTest {
     private static String contactShiftSurSetupFilepath = "data/test/test_contact_shift2.yml";
     private static String contactSplitSurSetupFilepath = "data/test/test_contact_split.yml";
     private static String expositionSplitSurSetupFilepath = "data/test/test_exposition_split.yml";
+    private static String labelSplitSurSetupFilepath = "data/test/test_label_split.yml";
 
     private MockDatasetGenerator generator;
     private MockDatasetGenerator short_gen;
@@ -110,6 +112,7 @@ public class DatasetGeneratorTest {
     private MockDatasetGenerator contact_shift_sur_gen;
     private MockDatasetGenerator contact_split_sur_gen;
     private MockDatasetGenerator exposition_split_sur_gen;
+    private MockDatasetGenerator label_split_sur_gen;
 
 
     @Before
@@ -170,6 +173,9 @@ public class DatasetGeneratorTest {
 
         GeneratorSetup exposition_split_setup = new GeneratorSetup(expositionSplitSurSetupFilepath);
         exposition_split_sur_gen = new MockDatasetGenerator(exposition_split_setup);
+
+        GeneratorSetup label_split_setup = new GeneratorSetup(labelSplitSurSetupFilepath);
+        label_split_sur_gen = new MockDatasetGenerator(label_split_setup);
     }
 
 
@@ -885,6 +891,46 @@ public class DatasetGeneratorTest {
 
         byte[] hash = digest.digest();
         assertTrue(nda.util.ArrayUtils.equals(HASH_EXPOSITION_SPLIT, hash));
+    }
+
+
+    @Test
+    public void testLabelSplitSurrogateDatasets() throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+
+        label_split_sur_gen.loadHandlers();
+
+        assertEquals(6, label_split_sur_gen.setup.getDatasets().size());
+        assertEquals(10, label_split_sur_gen.globalSpikeHandler.size());
+
+        for (GeneratorSetup.Dataset dataset : label_split_sur_gen.setup.getDatasets()) {
+            assertFalse(DatasetTransformer.needsSpikeTrainTransform(dataset));
+            assertFalse(DatasetTransformer.needsRateMatrixTransform(dataset));
+            assertTrue(DatasetTransformer.needsBehaviorHandlerTransform(dataset));
+
+            assertNotNull(dataset.getParameter("surrogate"));
+            assertNull(dataset.getParameter("dist_surrogate"));
+            assertNull(dataset.getParameter("pct_surrogate"));
+            assertNotNull(dataset.getParameter("num_surrogate"));
+            assertEquals(2, dataset.getParameter("total_split"));
+            assertEquals("label_split", dataset.getParameter("surrogate_type"));
+            assertEquals("food", dataset.getParameter("label_split"));
+            assertTrue(dataset.getName().contains("label_split"));
+
+            for (PatternHandler set : label_split_sur_gen.buildDataset(dataset)) {
+                if (dataset.getParameter("areas").equals("hp") ||
+                        dataset.getParameter("areas").equals("s1"))
+                    assertEquals(30, set.getDimension());
+                else
+                    assertEquals(40, set.getDimension());
+
+                String str = set.toWekaFormat();
+                digest.update(str.getBytes("UTF-8"));
+            }
+        }
+
+        byte[] hash = digest.digest();
+        assertTrue(nda.util.ArrayUtils.equals(HASH_LABEL_SPLIT, hash));
     }
 
 
