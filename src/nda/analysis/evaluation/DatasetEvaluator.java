@@ -71,15 +71,8 @@ public abstract class DatasetEvaluator implements Verbose {
             EvaluationResult result = new EvaluationResult();
 
             try {
-                Classifier originalModel = n_classifier.getClassifier();
-                Classifier model = Classifier.makeCopy(originalModel);
-
-                // Train
-                model.buildClassifier(trainData);
-
-                // Classify
-                Evaluation evaluation = new Evaluation(trainData);
-                evaluation.evaluateModel(model, testData);
+                Classifier model = n_classifier.getClassifier();
+                Evaluation evaluation = evaluateTrainTest(model, trainData, testData);
 
                 // Store result
                 result.dataset = dataset;
@@ -146,7 +139,7 @@ public abstract class DatasetEvaluator implements Verbose {
      * instances instead of Prediction's.
      */
     private List<Evaluation> getCrossValidationEvaluations(
-            Classifier originalClassifier,
+            Classifier model,
             Instances data, int numFolds) throws Exception {
 
         List<Evaluation> results = new ArrayList<Evaluation>();
@@ -160,20 +153,30 @@ public abstract class DatasetEvaluator implements Verbose {
             Instances trainData = cvData.trainCV(numFolds, fold, random);
             Instances testData = cvData.testCV(numFolds, fold);
 
-            Classifier model = Classifier.makeCopy(originalClassifier);
-
-            // Train
-            model.buildClassifier(trainData);
-
-            // Classify
-            Evaluation evaluation = new Evaluation(trainData);
-            evaluation.evaluateModel(model, testData);
+            Evaluation evaluation = evaluateTrainTest(model, trainData, testData);
 
             // Store
             results.add(evaluation);
         }
 
         return results;
+    }
+
+
+    protected static Evaluation evaluateTrainTest(
+            Classifier model, Instances trainData, Instances testData) throws Exception {
+
+        // Defensive copy
+        model = Classifier.makeCopy(model);
+
+        // Train
+        model.buildClassifier(trainData);
+
+        // Classify
+        Evaluation evaluation = new Evaluation(trainData);
+        evaluation.evaluateModel(model, testData);
+
+        return evaluation;
     }
 
 
