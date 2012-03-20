@@ -3,7 +3,7 @@ name: test_feature_sampler
 spikes_dir: data/test/spikes/
 contacts_file: data/test/behaviors/test_contacts.txt
 
-feature: isi
+feature: population_firing_rate
 params:
   neurons: hp,s1,v1
   bin_size: 0.250

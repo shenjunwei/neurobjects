@@ -162,4 +162,10 @@ public final class ArrayUtils {
 
         return true;
     }
+
+
+    public static double[] toPrimitiveArray(List<Double> list) {
+        Double[] obj_array = list.toArray(new Double[] { });
+        return org.apache.commons.lang3.ArrayUtils.toPrimitive(obj_array);
+    }
 }

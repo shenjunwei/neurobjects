@@ -47,21 +47,33 @@ public class FeatureSampler implements Verbose {
         List<String> neurons = spikeHandler.getNeuronNames();
         Map<String,Map<String,double[]>> features = new HashMap<String, Map<String,double[]>>();
 
-        for (String neuron : neurons) {
-            showMessage("Extracting " + setup.getFeature() + " from neuron " + neuron);
+        String feature = setup.getFeature();
 
-            Map<String,double[]> samples;
+        if (feature.equals("population_firing_rate")) {
+            showMessage("Extracting " + feature + " from population");
 
-            if (setup.getFeature().equals("firing_rate"))
-                samples = SpikeFeatures.firingRateSamples(
-                        countMatrix, behaviorHandler, neuron);
-            else if (setup.getFeature().equals("isi"))
-                samples = SpikeFeatures.interSpikeIntervalSamples(
-                        spikeHandler, behaviorHandler, neuron);
-            else
-                throw new FeatureExtractionException("Unknown feature: " + setup.getFeature());
+            Map<String,double[]> samples = SpikeFeatures.populationFiringRateSamples(
+                    countMatrix, behaviorHandler);
 
-            features.put(neuron, samples);
+            features.put("*", samples);
+        }
+        else {
+            for (String neuron : neurons) {
+                showMessage("Extracting " + feature + " from neuron " + neuron);
+
+                Map<String,double[]> samples;
+
+                if (feature.equals("firing_rate"))
+                    samples = SpikeFeatures.firingRateSamples(
+                            countMatrix, behaviorHandler, neuron);
+                else if (feature.equals("isi"))
+                    samples = SpikeFeatures.interSpikeIntervalSamples(
+                            spikeHandler, behaviorHandler, neuron);
+                else
+                    throw new FeatureExtractionException("Unknown feature: " + feature);
+
+                features.put(neuron, samples);
+            }
         }
 
         return features;

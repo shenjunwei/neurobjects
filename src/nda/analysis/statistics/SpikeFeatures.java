@@ -36,6 +36,23 @@ public class SpikeFeatures {
     }
 
 
+    public static Map<String,double[]> populationFiringRateSamples(
+            CountMatrix countMatrix,
+            BehaviorHandlerI behaviorHandler) {
+
+        Map<String,double[]> behaviorSamples = new HashMap<String, double[]>();
+
+        for (String label : behaviorHandler.getLabelSet()) {
+            double[] samples = getBehaviorPopulationFiringRates(
+                    countMatrix, behaviorHandler, label);
+
+            behaviorSamples.put(label, samples);
+        }
+
+        return behaviorSamples;
+    }
+
+
     public static Map<String,double[]> interSpikeIntervalSamples(
             SpikeHandlerI spikeHandler,
             BehaviorHandlerI behaviorHandler,
@@ -50,6 +67,7 @@ public class SpikeFeatures {
 
         return isiSamples;
     }
+
 
 
     /*
@@ -76,10 +94,32 @@ public class SpikeFeatures {
                 behavior_rates.add((double)neuron_rates[i]);
         }
 
-        double[] behavior_rates_a = ArrayUtils.toPrimitive(
-                behavior_rates.toArray(new Double[] { }));
+        return nda.util.ArrayUtils.toPrimitiveArray(behavior_rates);
+    }
 
-        return behavior_rates_a;
+
+    private static double[] getBehaviorPopulationFiringRates(
+            CountMatrix countMatrix,
+            BehaviorHandlerI behaviorHandler,
+            String behavior) {
+
+        List<Double> behavior_rates = new ArrayList<Double>();
+
+        for (Interval interval : behaviorHandler.getContactIntervals(behavior)) {
+            interval = interval.intersection(countMatrix.getInterval());
+            if (interval.isEmpty()) continue;
+
+            int st = countMatrix.getBinForTime(interval.start());
+            int end = countMatrix.getBinForTime(interval.end());
+
+            for (int i = st; i <= end; ++i) {
+                int[] population_rates = countMatrix.getColumn(i);
+                double avg_rate = nda.util.ArrayUtils.average(population_rates);
+                behavior_rates.add(avg_rate);
+            }
+        }
+
+        return nda.util.ArrayUtils.toPrimitiveArray(behavior_rates);
     }
 
 
