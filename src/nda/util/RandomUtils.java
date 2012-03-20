@@ -42,4 +42,18 @@ public class RandomUtils {
         else
             return random.nextSample(objects, k);
     }
+
+
+    public static double[] randomSample(
+            RandomData random,
+            double[] sample, int k) {
+
+        List<Double> list = nda.util.ArrayUtils.toObjectList(sample);
+        Object[] objSamples = randomSample(random, list, k);
+
+        double[] ret = new double[objSamples.length];
+        for (int i = 0; i < ret.length; ++i)
+            ret[i] = (Double) objSamples[i];
+        return ret;
+    }
 }
