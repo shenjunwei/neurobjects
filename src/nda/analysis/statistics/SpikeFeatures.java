@@ -112,7 +112,6 @@ public class SpikeFeatures {
                 }
 
                 String labelAB = labelA + '_' + labelB;
-                System.out.println(labelAB + ": " + distanceSamples);
                 behaviorSamples.put(labelAB, ArrayUtils.toPrimitiveArray(distanceSamples));
             }
         }
