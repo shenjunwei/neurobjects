@@ -143,6 +143,25 @@
       <zipfileset dir="lib" includes="commons-cli-1.2.jar"/>
       <zipfileset dir="lib" includes="opencsv-2.3.jar"/>
     </jar>
+	
+    <jar destfile="dist/feature-sampler.jar">
+      <manifest>
+        <attribute name="Main-Class" value="${jar-loader-class}"/>
+        <attribute name="Rsrc-Main-Class" value="nda.app.FeatureSamplerApp"/>
+        <attribute name="Class-Path" value="."/>
+        <attribute name="Rsrc-Class-Path" value="./ ${jar-libs}"/>
+      </manifest>
+      
+      <zipfileset src="lib/jar-in-jar-loader.zip"/>
+      <fileset dir="build"/>
+      <zipfileset dir="lib" includes="commons-math-2.2.jar"/>
+      <zipfileset dir="lib" includes="junit-4.8.2.jar"/>
+      <zipfileset dir="lib" includes="weka.jar"/>
+      <zipfileset dir="lib" includes="snakeyaml-1.8.jar"/>
+      <zipfileset dir="lib" includes="commons-lang3-3.0.jar"/>
+      <zipfileset dir="lib" includes="commons-cli-1.2.jar"/>
+      <zipfileset dir="lib" includes="opencsv-2.3.jar"/>
+    </jar>
   </target>
 
 </project>
