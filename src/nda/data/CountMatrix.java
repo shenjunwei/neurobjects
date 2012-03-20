@@ -124,6 +124,11 @@ public class CountMatrix implements SpikeRateMatrixI {
     }
 
 
+    public int[] getRow(String neuron) {
+        return getRow(neuronNames.indexOf(neuron));
+    }
+
+
     /**
      * @return A copy of the specified column of the matrix
      */
