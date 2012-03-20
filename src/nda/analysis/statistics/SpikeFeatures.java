@@ -217,7 +217,14 @@ public class SpikeFeatures {
 
         List<double[]> patterns = new ArrayList<double[]>();
 
-        for (Interval interval : behaviorHandler.getContactIntervals(behavior)) {
+        List<Interval> intervals;
+        try {
+            intervals = behaviorHandler.getContactIntervals(behavior);
+        } catch (Exception e) {
+            intervals = new ArrayList<Interval>();
+        }
+
+        for (Interval interval : intervals) {
             List<double[]> intervalPatterns = countMatrix.getPatterns(interval);
             patterns.addAll(intervalPatterns);
         }
