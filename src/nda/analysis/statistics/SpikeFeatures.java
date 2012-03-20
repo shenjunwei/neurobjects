@@ -22,11 +22,12 @@ public class SpikeFeatures {
     public static Map<String,double[]> firingRateSamples(
             CountMatrix countMatrix,
             BehaviorHandlerI behaviorHandler,
+            List<String> behaviors,
             String neuron) {
 
         Map<String,double[]> behaviorSamples = new HashMap<String, double[]>();
 
-        for (String label : behaviorHandler.getLabelSet()) {
+        for (String label : behaviors) {
             double[] samples = getBehaviorFiringRates(
                     countMatrix, behaviorHandler, neuron, label);
             behaviorSamples.put(label, samples);
@@ -38,11 +39,12 @@ public class SpikeFeatures {
 
     public static Map<String,double[]> populationFiringRateSamples(
             CountMatrix countMatrix,
-            BehaviorHandlerI behaviorHandler) {
+            BehaviorHandlerI behaviorHandler,
+            List<String> behaviors) {
 
         Map<String,double[]> behaviorSamples = new HashMap<String, double[]>();
 
-        for (String label : behaviorHandler.getLabelSet()) {
+        for (String label : behaviors) {
             double[] samples = getBehaviorPopulationFiringRates(
                     countMatrix, behaviorHandler, label);
 
@@ -56,11 +58,12 @@ public class SpikeFeatures {
     public static Map<String,double[]> interSpikeIntervalSamples(
             SpikeHandlerI spikeHandler,
             BehaviorHandlerI behaviorHandler,
+            List<String> behaviors,
             String neuron) {
 
         Map<String,double[]> isiSamples = new HashMap<String, double[]>();
 
-        for (String label : behaviorHandler.getLabelSet()) {
+        for (String label : behaviors) {
             double[] samples = getBehaviorISIs(spikeHandler, behaviorHandler, neuron, label);
             isiSamples.put(label, samples);
         }

@@ -49,11 +49,14 @@ public class FeatureSampler implements Verbose {
 
         String feature = setup.getFeature();
 
+        @SuppressWarnings("unchecked")
+        List<String> behaviors = (List<String>)setup.getParams().get("labels");
+
         if (feature.equals("population_firing_rate")) {
             showMessage("Extracting " + feature + " from population");
 
             Map<String,double[]> samples = SpikeFeatures.populationFiringRateSamples(
-                    countMatrix, behaviorHandler);
+                    countMatrix, behaviorHandler, behaviors);
 
             features.put("*", samples);
         }
@@ -65,10 +68,10 @@ public class FeatureSampler implements Verbose {
 
                 if (feature.equals("firing_rate"))
                     samples = SpikeFeatures.firingRateSamples(
-                            countMatrix, behaviorHandler, neuron);
+                            countMatrix, behaviorHandler, behaviors, neuron);
                 else if (feature.equals("isi"))
                     samples = SpikeFeatures.interSpikeIntervalSamples(
-                            spikeHandler, behaviorHandler, neuron);
+                            spikeHandler, behaviorHandler, behaviors, neuron);
                 else
                     throw new FeatureExtractionException("Unknown feature: " + feature);
 
