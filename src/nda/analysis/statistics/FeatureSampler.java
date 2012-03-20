@@ -48,9 +48,19 @@ public class FeatureSampler implements Verbose {
         Map<String,Map<String,double[]>> features = new HashMap<String, Map<String,double[]>>();
 
         for (String neuron : neurons) {
-            showMessage("Extracting from neuron " + neuron);
-            Map<String,double[]> samples = SpikeFeatures.firingRateSamples(
-                    countMatrix, behaviorHandler, neuron);
+            showMessage("Extracting " + setup.getFeature() + " from neuron " + neuron);
+
+            Map<String,double[]> samples;
+
+            if (setup.getFeature().equals("firing_rate"))
+                samples = SpikeFeatures.firingRateSamples(
+                        countMatrix, behaviorHandler, neuron);
+            else if (setup.getFeature().equals("isi"))
+                samples = SpikeFeatures.interSpikeIntervalSamples(
+                        spikeHandler, behaviorHandler, neuron);
+            else
+                throw new FeatureExtractionException("Unknown feature: " + setup.getFeature());
+
             features.put(neuron, samples);
         }
 
