@@ -75,6 +75,9 @@ public class FeatureSamplerApp {
             sampler.setVerbose(cml.hasOption('v'));
             Map<String,Map<String,double[]>> samples = sampler.extractFeatures();
 
+            @SuppressWarnings("unchecked")
+            List<String> behaviors = (List<String>) setup.getParams().get("labels");
+
             for (String neuron : samples.keySet()) {
                 scriptFile.append("insert into `results` values ");
 
@@ -93,13 +96,12 @@ public class FeatureSamplerApp {
                 /* feature */
                 row.add(setup.getFeature());
 
-                double[] rewardSamples = samples.get(neuron).get("reward");
-                double[] errorSamples = samples.get(neuron).get("error");
+                /* _samples */
+                for (String behavior : behaviors) {
+                    double[] behavior_samples = samples.get(neuron).get(behavior);
+                    row.add(ArrayUtils.toString(behavior_samples));
+                }
 
-                /* reward_samples */
-                row.add(ArrayUtils.toString(rewardSamples));
-                /* error_samples */
-                row.add(ArrayUtils.toString(errorSamples));
                 /* wilcoxon_p */
                 row.add(null);
 
