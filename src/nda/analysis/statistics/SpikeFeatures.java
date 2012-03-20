@@ -96,6 +96,7 @@ public class SpikeFeatures {
                     for (double[] pA : patternsA) {
                         for (double[] pB : patternsB) {
                             double dist = ArrayUtils.euclideanDistance(pA, pB);
+                            dist = ((double)Math.round(dist * 1000)) / 1000;
                             distanceSamples.add(dist);
                         }
                     }
@@ -106,6 +107,7 @@ public class SpikeFeatures {
                             double[] pA = patternsA.get(p);
                             double[] pB = patternsB.get(q);
                             double dist = ArrayUtils.euclideanDistance(pA, pB);
+                            dist = ((double)Math.round(dist * 1000)) / 1000;
                             distanceSamples.add(dist);
                         }
                     }
