@@ -1,18 +1,22 @@
 package nda.app;
 
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.math.random.RandomData;
 import org.apache.commons.math.random.RandomDataImpl;
 import org.yaml.snakeyaml.Yaml;
+
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.core.Attribute;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
 
 import nda.data.BehaviorHandlerI;
 import nda.data.CountMatrix;
@@ -20,7 +24,6 @@ import nda.data.Interval;
 import nda.data.SpikeHandlerI;
 import nda.data.text.TextBehaviorHandler;
 import nda.data.text.TextSpikeHandler;
-import nda.util.ArrayUtils;
 import nda.util.RandomUtils;
 
 
@@ -46,6 +49,12 @@ public class SplitWithinContactApp {
     private static int minTotalPatterns;
     private static int numPatterns;
 
+    private static String classifierName;
+    private static Classifier classifier;
+    private static int numCrossValidationFolds;
+
+    private static Random random = new Random();
+
 
     @SuppressWarnings("unchecked")
     private static void readSetupFile(String setupFilepath) throws Exception {
@@ -70,42 +79,20 @@ public class SplitWithinContactApp {
             numRounds = (Integer) setup.get("rounds");
             minTotalPatterns = (Integer) setup.get("min_total_patterns");
             numPatterns = (Integer) setup.get("num_patterns");
+
+            classifierName = (String) setup.get("classifier");
+            classifier = Classifier.forName(classifierName, null);
+            numCrossValidationFolds = (Integer) setup.get("num_cv_folds");
         } finally {
             if (reader != null) reader.close();
         }
     }
 
 
-    static {
-        options = new Options();
-        options.addOption("h", "help", false, "print help information");
-    }
-
-
-    private static void usage() {
-        HelpFormatter help = new HelpFormatter();
-        help.printHelp("java -jar dataset-evaluator.jar [-h] setup", options);
-        System.exit(1);
-    }
-
-
     public static void main(String[] args) throws Exception {
         RandomData random = new RandomDataImpl();
 
-        CommandLineParser parser = new GnuParser();
-        CommandLine cml = null;
-
-        try {
-            cml = parser.parse(options, args, true);
-        }
-        catch (ParseException e1) {
-            usage();
-        }
-
-        if (cml.getArgs().length == 0 || cml.hasOption("h"))
-            usage();
-
-        String setupFilepath = cml.getArgs()[0];
+        String setupFilepath = args[0];
         readSetupFile(setupFilepath);
 
         BehaviorHandlerI behaviorHandler = new TextBehaviorHandler(contactsFilepath);
@@ -116,54 +103,141 @@ public class SplitWithinContactApp {
             countMatrix.setWindowWidth(windowSize);
 
             for (String label : labels) {
-                boolean hasValidInterval = false;
-                int intervalCount = 0;
+                int interval_id = 0;
 
                 for (Interval interval : behaviorHandler.getContactIntervals(label)) {
-                    if (countMatrix.numPatterns(interval) < 2*minTotalPatterns)
-                        continue;
+                    if (countMatrix.numPatterns(interval) < 2*minTotalPatterns) {
+                        System.err.printf(
+                                "[label=%s, interval=%s] interval doesnt have %d patterns\n",
+                                label, interval, 2*minTotalPatterns);
 
-                    hasValidInterval = true;
+                        System.exit(1);
+                    }
 
                     List<double[]> patterns = countMatrix.getPatterns(interval);
                     List<double[]> patternsA = patterns.subList(0, patterns.size()/2);
                     List<double[]> patternsB = patterns.subList(patterns.size()/2, patterns.size());
 
-                    int roundCount = 0;
-                    for (int j = 0; j < numRounds; ++j) {
+                    for (int round = 0; round < numRounds; ++round) {
                         Object[] sampleA = RandomUtils.randomSample(random, patternsA, numPatterns);
                         Object[] sampleB = RandomUtils.randomSample(random, patternsB, numPatterns);
 
-                        double value = evaluatePatternDistances(sampleA, sampleB);
-                        System.out.printf("0, %s, %s, %s, %.04f, %d, %d, %d, %d, %d, %.04f\n",
-                                animalName, filter, label, binSize, windowSize,
-                                minTotalPatterns, numPatterns, intervalCount, roundCount++, value);
+                        List<Evaluation> results = evaluatePatternClassification(sampleA, sampleB);
+                        for (int cv_fold = 0; cv_fold < results.size(); ++cv_fold) {
+                            Evaluation result = results.get(cv_fold);
+                            double pctCorrect = result.pctCorrect();
+                            double auroc = result.weightedAreaUnderROC();
+                            double kappa = result.kappa();
+
+                            System.out.printf(
+                                    "0, %s, %s, %s, %s, %f, %d, %d, %d, %d, %d, %d, %f, %f, %f\n",
+                                    animalName, filter, label, classifierName, binSize,
+                                    windowSize, minTotalPatterns, numPatterns,
+                                    interval_id, round, cv_fold, pctCorrect, auroc, kappa);
+                        }
                     }
 
-                    ++intervalCount;
-                }
-
-                if (!hasValidInterval) {
-                    System.err.printf("Label %s on area %s has no valid intervals\n", label, filter);
+                    ++interval_id;
                 }
             }
         }
     }
 
 
-    private static double evaluatePatternDistances(Object[] sampleA, Object[] sampleB) {
-        int count = 0;
-        double distSum = 0.0;
+    private static List<Evaluation> evaluatePatternClassification(
+            Object[] sampleA, Object[] sampleB) throws Exception {
 
-        for (int i = 0; i < sampleA.length; ++i) {
-            for (int j = i+1; j < sampleB.length; ++j) {
-                double[] patternA = (double[]) sampleA[i];
-                double[] patternB = (double[]) sampleB[j];
-                distSum += ArrayUtils.euclideanDistance(patternA, patternB);
-                ++count;
-            }
+        Instances datasetA = buildInstances(sampleA, "A");
+        Instances datasetB = buildInstances(sampleB, "B");
+
+        Instances dataset = new Instances(datasetA);
+        for (int i = 0; i < datasetB.numInstances(); ++i)
+            dataset.add(datasetB.instance(i));
+
+        List<Evaluation> evaluations = getCrossValidationEvaluations(
+                classifier, dataset, numCrossValidationFolds);
+
+        return evaluations;
+    }
+
+
+    private static Instances buildInstances(Object[] patterns, String classValue) {
+        int patternSize = ((double[]) patterns[0]).length;
+
+        FastVector attributes = new FastVector();
+        for (int i = 0; i < patternSize; ++i)
+            attributes.addElement(new Attribute("bin_" + i));
+
+        FastVector classValues = new FastVector();
+        classValues.addElement("A");
+        classValues.addElement("B");
+
+        Attribute classAttribute = new Attribute("class", classValues);
+        attributes.addElement(classAttribute);
+
+        Instances dataset = new Instances("split_within_contact", attributes, patterns.length);
+        dataset.setClass(classAttribute);
+
+        for (Object patternObj : patterns) {
+            double[] pattern = (double[]) patternObj;
+
+            Instance instance = new Instance(dataset.numAttributes());
+            instance.setDataset(dataset);
+
+            for (int i = 0; i < pattern.length; ++i)
+                instance.setValue(i, pattern[i]);
+            instance.setValue(pattern.length, classValue);
+
+            dataset.add(instance);
         }
 
-        return distSum / count;
+        return dataset;
+    }
+
+
+    /**
+     * This is a duplicate of the logic from EvaluationUtils.getCVPredictions.
+     * 
+     * The replication is due to the need for results in the form Evaluation
+     * instances instead of Prediction's.
+     */
+    private static List<Evaluation> getCrossValidationEvaluations(
+            Classifier model, Instances dataset, int numFolds) throws Exception {
+
+        List<Evaluation> results = new ArrayList<Evaluation>();
+        Instances cvData = new Instances(dataset);
+        cvData.randomize(random);
+
+        if (cvData.classAttribute().isNominal() && (numFolds > 1))
+            cvData.stratify(numFolds);
+
+        for (int fold = 0; fold < numFolds; ++fold) {
+            Instances trainData = cvData.trainCV(numFolds, fold, random);
+            Instances testData = cvData.testCV(numFolds, fold);
+
+            Evaluation evaluation = evaluateTrainTest(model, trainData, testData);
+
+            // Store
+            results.add(evaluation);
+        }
+
+        return results;
+    }
+
+
+    protected static Evaluation evaluateTrainTest(
+            Classifier model, Instances trainData, Instances testData) throws Exception {
+
+        // Defensive copy
+        model = Classifier.makeCopy(model);
+
+        // Train
+        model.buildClassifier(trainData);
+
+        // Classify
+        Evaluation evaluation = new Evaluation(trainData);
+        evaluation.evaluateModel(model, testData);
+
+        return evaluation;
     }
 }
