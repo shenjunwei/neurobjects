@@ -13,3 +13,5 @@ rounds: 10
 min_total_patterns: 40
 num_patterns: 20
 
+classifier: weka.classifiers.bayes.NaiveBayes
+num_cv_folds: 5
