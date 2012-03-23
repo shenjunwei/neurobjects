@@ -92,7 +92,18 @@ public class SplitWithinContactApp {
     public static void main(String[] args) throws Exception {
         RandomData random = new RandomDataImpl();
 
-        String setupFilepath = args[0];
+        boolean simulateOnly;
+        String setupFilepath;
+
+        if (args[0].equals("-t")) {
+            simulateOnly = true;
+            setupFilepath = args[1];
+        }
+        else {
+            simulateOnly = false;
+            setupFilepath = args[0];
+        }
+
         readSetupFile(setupFilepath);
 
         BehaviorHandlerI behaviorHandler = new TextBehaviorHandler(contactsFilepath);
@@ -106,17 +117,24 @@ public class SplitWithinContactApp {
                 int interval_id = 0;
 
                 for (Interval interval : behaviorHandler.getContactIntervals(label)) {
-                    if (countMatrix.numPatterns(interval) < 2*minTotalPatterns) {
+                    Interval[] halves = interval.split(2);
+                    Interval intervalA = halves[0];
+                    Interval intervalB = halves[1];
+
+                    if (countMatrix.numPatterns(intervalA) < minTotalPatterns ||
+                            countMatrix.numPatterns(intervalB) < minTotalPatterns) {
+
                         System.err.printf(
                                 "[label=%s, interval=%s] interval doesnt have %d patterns\n",
                                 label, interval, 2*minTotalPatterns);
 
-                        System.exit(1);
+                        if (!simulateOnly) System.exit(1);
                     }
 
-                    List<double[]> patterns = countMatrix.getPatterns(interval);
-                    List<double[]> patternsA = patterns.subList(0, patterns.size()/2);
-                    List<double[]> patternsB = patterns.subList(patterns.size()/2, patterns.size());
+                    if (simulateOnly) continue;
+
+                    List<double[]> patternsA = countMatrix.getPatterns(intervalA);
+                    List<double[]> patternsB = countMatrix.getPatterns(intervalB);
 
                     for (int round = 0; round < numRounds; ++round) {
                         Object[] sampleA = RandomUtils.randomSample(random, patternsA, numPatterns);
