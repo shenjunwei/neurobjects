@@ -1,0 +1,18 @@
+name: ge4
+spikes_dir: data/test/spikes/
+contacts_file: data/test/behaviors/ge4_contacts.txt
+matrix_file: data/test/matrix/ge4.txt
+output_file: output.txt
+
+params:
+  
+  bin_size: 0.030
+  window_width: 10
+
+labels: [A, B, C]
+rounds: 50
+min_total_patterns: 70
+num_patterns: 20
+
+classifier: weka.classifiers.bayes.NaiveBayes
+num_cv_folds: 10
