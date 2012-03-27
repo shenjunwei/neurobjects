@@ -10,7 +10,6 @@ params:
 
 labels: [ball, food, urchin, brush]
 rounds: 10
-min_total_patterns: 40
 num_patterns: 20
 
 classifier: weka.classifiers.bayes.NaiveBayes
