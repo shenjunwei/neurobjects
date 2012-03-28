@@ -54,6 +54,20 @@ public class TextSpikeHandler extends AbstractList<SpikeTrainI> implements Spike
         this(dir, filter, Interval.INF);
     }
 
+    public TextSpikeHandler(String dir, String filter, String animalName)
+    throws InvalidDataFileException, InvalidDataDirectoryException {
+        this(dir, filter, Interval.INF,animalName);
+    }
+
+    public TextSpikeHandler(String dir, String filter, Interval itv, String animalName)
+    throws InvalidDataFileException, InvalidDataDirectoryException {
+        this.dataDir = dir;
+        this.spikeInterval = itv;
+        this.animalName = animalName;
+        this.neuronFilter = filter.toLowerCase();
+        readSpikes(dataDir, filter, spikeInterval);
+    }
+
 
     public TextSpikeHandler(String dir, String filter, Interval itv)
     throws InvalidDataFileException, InvalidDataDirectoryException {
