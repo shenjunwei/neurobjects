@@ -109,7 +109,7 @@ public class SplitWithinContactApp {
         BehaviorHandlerI behaviorHandler = new TextBehaviorHandler(contactsFilepath);
 
         for (String filter : spikeFilters) {
-            SpikeHandlerI spikeHandler = new TextSpikeHandler(spikesDir, filter);
+            SpikeHandlerI spikeHandler = new TextSpikeHandler(spikesDir, filter,animalName);
             CountMatrix countMatrix = new CountMatrix(spikeHandler, binSize);
             countMatrix.setWindowWidth(windowSize);
 

@@ -1,5 +1,9 @@
 package nda.data;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +36,9 @@ public class CountMatrix implements SpikeRateMatrixI {
 
     private int cursor_pos;
     private int cursor_width;
+    private double binSize;
+    private Interval interval;
+
 
     private String title;
     private List<String> neuronNames;
@@ -47,6 +54,8 @@ public class CountMatrix implements SpikeRateMatrixI {
         cursor_width = copy.cursor_width;
         title = copy.title;
         neuronNames = copy.neuronNames;
+        binSize = this.histogram.getBinSize();
+        interval = this.histogram.getInterval();
     }
 
 
@@ -56,6 +65,8 @@ public class CountMatrix implements SpikeRateMatrixI {
     public CountMatrix(SpikeHandlerI spikeHandler, int binCount) {
         Interval interval = spikeHandler.getRecordingInterval();
         histogram = new Histogram(interval, binCount);
+        binSize = this.histogram.getBinSize();
+        interval = this.histogram.getInterval();
 
         load(spikeHandler);
     }
@@ -67,8 +78,75 @@ public class CountMatrix implements SpikeRateMatrixI {
     public CountMatrix(SpikeHandlerI spikeHandler, double binSize) {
         Interval interval = spikeHandler.getRecordingInterval();
         histogram = new Histogram(interval, binSize);
+        binSize = this.histogram.getBinSize();
+        interval = this.histogram.getInterval();
 
         load(spikeHandler);
+    }
+
+    /**
+     * Create a CountMatrix based on a file, where can be found the matrix content
+     */
+
+    public CountMatrix(String fileName, double binSize) {
+
+        this.binSize = binSize;
+
+        ArrayList<String> data = this.readFile(fileName);
+        if (!this.buildMatrixFromFile(data)) {
+            System.err.println ("Problems reading matrix from file");
+            return;
+        }
+        this.interval = new Interval (0,matrix[0].length*binSize);
+        this.histogram = new Histogram(interval,binSize);
+    }
+
+    private ArrayList<String> readFile(String fileName) {
+        String line = "";
+        ArrayList<String> data = new ArrayList<String>();//consider using ArrayList<int>
+        try {
+            FileReader fr = new FileReader(fileName);
+            BufferedReader br = new BufferedReader(fr);//Can also use a Scanner to read the file
+            while((line = br.readLine()) != null) {
+
+                data.add(line);
+            }
+        }
+        catch(FileNotFoundException fN) {
+            fN.printStackTrace();
+        }
+        catch(IOException e) {
+            System.out.println(e);
+        }
+        return data;
+    }
+
+    private boolean buildMatrixFromFile (ArrayList<String> data) {
+        int numRows = data.size();
+        if (numRows==0) {
+            System.err.println ("Empty matrix !!");
+            return false;
+        }
+        String tmpRow = data.get(0);
+        String numbers[] = tmpRow.split("\\s+");
+
+        int numCols = numbers.length;
+        if (numCols==0) {
+            System.err.println ("Empty matrix !!");
+            return false;
+        }
+        // Allocates the matrix
+        this.matrix = new int[numRows][numCols];
+
+
+        for (int row=0; row<numRows; row++) {
+            tmpRow = data.get(row);
+            numbers = tmpRow.split("\\s+");
+            for (int col=0; col<numCols; col++) {
+                matrix[row][col] = Integer.parseInt(numbers [col]);
+            }
+        }
+        return true;
     }
 
 
@@ -98,13 +176,14 @@ public class CountMatrix implements SpikeRateMatrixI {
 
     @Override
     public int numColumns() {
-        return histogram.getNumberBins();
+        return this.matrix[0].length;
     }
 
 
     @Override
     public double getBinSize() {
-        return histogram.getBinSize();
+        return binSize;
+        //return histogram.getBinSize();
     }
 
 
@@ -161,7 +240,7 @@ public class CountMatrix implements SpikeRateMatrixI {
         return title +
         " cursor:" + cursor_pos +
         " width:" + cursor_width +
-        " binSize: " + histogram.getBinSize() +
+        " binSize: " + this.getBinSize() +
         " numColumns: " + numColumns() +
         " neurons: " + getNeuronNames();
     }
@@ -276,7 +355,7 @@ public class CountMatrix implements SpikeRateMatrixI {
 
     @Override
     public Interval getInterval() {
-        return histogram.getInterval();
+        return interval;
     }
 
 
