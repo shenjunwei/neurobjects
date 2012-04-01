@@ -1,7 +1,11 @@
 package nda.app;
 
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -41,11 +45,12 @@ public class AssembliesApp {
 
     private static List<String> spikeFilters;
     private static double binSize;
+    private static String area;
     private static int windowSize;
 
     private static List<String> labels;
     private static int numRounds;
-    private static int minTotalPatterns;
+    //  private static int minTotalPatterns;
     private static int numPatterns;
 
     private static String classifierName;
@@ -74,11 +79,12 @@ public class AssembliesApp {
             Map<String,Object> params = (Map<String,Object>) setup.get("params");
             //spikeFilters = (List<String>) params.get("areas");
             binSize = (Double) params.get("bin_size");
+            area = (String) params.get("area");
             windowSize = (Integer) params.get("window_width");
 
             labels = (List<String>) setup.get("labels");
             numRounds = (Integer) setup.get("rounds");
-            minTotalPatterns = (Integer) setup.get("min_total_patterns");
+            //   minTotalPatterns = (Integer) setup.get("min_total_patterns");
             numPatterns = (Integer) setup.get("num_patterns");
 
             classifierName = (String) setup.get("classifier");
@@ -110,14 +116,20 @@ public class AssembliesApp {
         BehaviorHandlerI behaviorHandler = new TextBehaviorHandler(contactsFilepath);
         CountMatrix countMatrix = new CountMatrix(matrixFilename, binSize);
         countMatrix.setWindowWidth(windowSize);
-        // return;
-        // for (String filter : spikeFilters) {
-        //  SpikeHandlerI spikeHandler = new TextSpikeHandler(spikesDir, filter,animalName);
-        //  CountMatrix countMatrix = new CountMatrix(matrixFilename, binSize);
-        //  countMatrix.setWindowWidth(windowSize);
+        // Would be interesting validate the labels supplied from behavior file and from the setup file.
+        // For example, the labels supplied by the setup file can be found in the behavior file
 
         List<double[]> other = new ArrayList<double[]>();
         List<double[]> target = new ArrayList<double[]>();
+        BufferedWriter out=null;
+        try {
+            out = new BufferedWriter(new FileWriter(outputFilepath));
+        }
+        catch (IOException e)
+        {
+            System.out.println("Exception ");
+
+        }
         for (String label : labels) {
             //  List<Interval> intervalList = behaviorHandler.getContactIntervals(label);
 
@@ -144,19 +156,68 @@ public class AssembliesApp {
                     double pctCorrect = result.pctCorrect();
                     double auroc = result.weightedAreaUnderROC();
                     double kappa = result.kappa();
+                    Map<String, String> csvResults =  new HashMap<String, String>();;
 
-                    System.out.printf(
+                    csvResults.put("animal", animalName);
+                    csvResults.put("area", area);
+                    csvResults.put("label", label);
+                    csvResults.put("classifierName", classifierName);
+                    csvResults.put("binSize", String.valueOf(binSize));
+
+                    csvResults.put("windowSize", String.valueOf(windowSize));
+                    csvResults.put("numPatterns", String.valueOf(numPatterns));
+                    // csvResults.put("label", String.valueOf(binSize));
+
+                    csvResults.put("round", String.valueOf(round));
+                    csvResults.put("cv_fold", String.valueOf(cv_fold));
+                    csvResults.put("pctCorrect", String.valueOf(pctCorrect));
+                    csvResults.put("auroc", String.valueOf(auroc));
+                    csvResults.put("kappa", String.valueOf(kappa));
+
+                    //System.out.println (csvResults.values());
+
+                    if (out!=null) {
+                        out.write(buildSQL(csvResults,"ioc_assemblies")+"\n");
+                    }
+                    else {
+                        System.out.println (buildSQL(csvResults,"ioc_assemblies"));
+                    }
+
+
+                    /*  System.out.printf(
                             "0, %s, %s, %s, %s, %f, %d, %d, %d, %d, %d, %f, %f, %f\n",
-                            animalName, "", label, classifierName, binSize,
+                            animalName, area, label, classifierName, binSize,
                             windowSize, minTotalPatterns, numPatterns,
-                            round, cv_fold, pctCorrect, auroc, kappa);
+                            round, cv_fold, pctCorrect, auroc, kappa); */
                 }
             }
         }
-
+        out.close();
 
     }
 
+
+    private static String buildSQL (Map<String, String> csvResults, String tableName) {
+        String sqlQuery="INSERT INTO "+tableName+" ";
+        //  String param[] = (String[]) csvResults.keySet().toArray();
+        Object params[] = csvResults.keySet().toArray();
+        sqlQuery+=" (";
+        for (Object param: params) {
+            sqlQuery+=""+param+",";
+
+        }
+        sqlQuery = sqlQuery.substring(0, sqlQuery.length()-1 );
+        sqlQuery += ") VALUES (";
+        Object values[] = csvResults.values().toArray();
+        for (Object value: values) {
+            sqlQuery+="'"+value+"',";
+        }
+        sqlQuery = sqlQuery.substring(0, sqlQuery.length()-1 );
+        sqlQuery += "); ";
+
+
+        return sqlQuery;
+    }
 
     private static List<Evaluation> evaluatePatternClassification(
             Object[] sampleA, Object[] sampleB) throws Exception {
