@@ -136,7 +136,8 @@ public class AssembliesApp {
             other.clear();
             target.clear();
             for (String str : labels) {
-                for (Interval interval : behaviorHandler.getContactIntervals(str))
+                List<Interval> intervalList = behaviorHandler.getContactIntervals(str);
+                for (Interval interval : intervalList ) {
                     if (!str.equals(label)) {
                         other.addAll(countMatrix.getPatterns(interval));
 
@@ -144,8 +145,8 @@ public class AssembliesApp {
                     else {
                         target.addAll(countMatrix.getPatterns(interval));
                     }
+                }
             }
-
             for (int round = 0; round < numRounds; ++round) {
                 Object[] sampleTarget = RandomUtils.randomSample(random, target, numPatterns);
                 Object[] sampleOther = RandomUtils.randomSample(random, other, numPatterns);
@@ -185,12 +186,13 @@ public class AssembliesApp {
 
 
                     /*  System.out.printf(
-                            "0, %s, %s, %s, %s, %f, %d, %d, %d, %d, %d, %f, %f, %f\n",
-                            animalName, area, label, classifierName, binSize,
-                            windowSize, minTotalPatterns, numPatterns,
-                            round, cv_fold, pctCorrect, auroc, kappa); */
+                                "0, %s, %s, %s, %s, %f, %d, %d, %d, %d, %d, %f, %f, %f\n",
+                                animalName, area, label, classifierName, binSize,
+                                windowSize, minTotalPatterns, numPatterns,
+                                round, cv_fold, pctCorrect, auroc, kappa); */
                 }
             }
+
         }
         out.close();
 
