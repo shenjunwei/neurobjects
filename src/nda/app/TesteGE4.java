@@ -107,8 +107,8 @@ public class TesteGE4 {
 
         readSetupFile(setupFilepath);
 
-        List<double[]> ball = new ArrayList<double[]>();
-        List<double[]> brush = new ArrayList<double[]>();
+        List<double[]> ballPatterns = new ArrayList<double[]>();
+        List<double[]> brushPatterns = new ArrayList<double[]>();
 
         BehaviorHandlerI behaviorHandler = new TextBehaviorHandler(contactsFilepath);
 
@@ -119,24 +119,25 @@ public class TesteGE4 {
             countMatrix.setWindowWidth(windowSize);
 
             for (String label : labels) {
-
                 int interval_id = 0;
+                ballPatterns.clear();
+                brushPatterns.clear();
 
-                ball.clear();
-                brush.clear();
                 for (Interval interval : behaviorHandler.getContactIntervals(label))
                     if (label.equals("ball")) {
-                        ball.addAll(countMatrix.getPatterns(interval));
+                        ballPatterns.addAll(countMatrix.getPatterns(interval));
 
                     }
                     else {
-                        brush.addAll(countMatrix.getPatterns(interval));
+                        brushPatterns.addAll(countMatrix.getPatterns(interval));
                     }
+
                 for (int round = 0; round < numRounds; ++round) {
-                    Object[] sampleBall = RandomUtils.randomSample(random, ball, numPatterns);
-                    Object[] sampleBrush = RandomUtils.randomSample(random, brush, numPatterns);
+                    Object[] sampleBall = RandomUtils.randomSample(random, ballPatterns, numPatterns);
+                    Object[] sampleBrush = RandomUtils.randomSample(random, brushPatterns, numPatterns);
 
                     List<Evaluation> results = evaluatePatternClassification(sampleBall, sampleBrush);
+
                     for (int cv_fold = 0; cv_fold < results.size(); ++cv_fold) {
                         Evaluation result = results.get(cv_fold);
                         double pctCorrect = result.pctCorrect();
@@ -155,7 +156,6 @@ public class TesteGE4 {
             }
 
         }
-        // out.close();
 
     }
 
@@ -184,13 +184,13 @@ public class TesteGE4 {
             attributes.addElement(new Attribute("bin_" + i));
 
         FastVector classValues = new FastVector();
-        classValues.addElement("A");
-        classValues.addElement("B");
+        classValues.addElement("ball");
+        classValues.addElement("brush");
 
         Attribute classAttribute = new Attribute("class", classValues);
         attributes.addElement(classAttribute);
 
-        Instances dataset = new Instances("split_within_contact", attributes, patterns.length);
+        Instances dataset = new Instances("ge4_ball_brush", attributes, patterns.length);
         dataset.setClass(classAttribute);
 
         for (Object patternObj : patterns) {
