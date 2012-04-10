@@ -118,7 +118,10 @@ public class TesteGE4 {
             CountMatrix countMatrix = new CountMatrix(spikeHandler, binSize);
             countMatrix.setWindowWidth(windowSize);
 
+
+
             for (String label : labels) {
+
                 int interval_id = 0;
                 ballPatterns.clear();
                 brushPatterns.clear();
@@ -150,13 +153,9 @@ public class TesteGE4 {
                                 interval_id, round, cv_fold, pctCorrect, auroc, kappa);
                     }
                 }
-
                 ++interval_id;
-
             }
-
         }
-
     }
 
     private static List<Evaluation> evaluatePatternClassification(
