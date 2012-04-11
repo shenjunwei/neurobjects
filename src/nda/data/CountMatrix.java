@@ -77,9 +77,9 @@ public class CountMatrix implements SpikeRateMatrixI {
      */
     public CountMatrix(SpikeHandlerI spikeHandler, double binSize) {
         Interval interval = spikeHandler.getRecordingInterval();
-        histogram = new Histogram(interval, binSize);
-        binSize = this.histogram.getBinSize();
-        interval = this.histogram.getInterval();
+        this.histogram = new Histogram(interval, binSize);
+        this.binSize = this.histogram.getBinSize();
+        this.interval = this.histogram.getInterval();
 
         load(spikeHandler);
     }
