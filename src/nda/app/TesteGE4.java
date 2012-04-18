@@ -1,7 +1,11 @@
 package nda.app;
 
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -110,6 +114,17 @@ public class TesteGE4 {
         List<double[]> ballPatterns = new ArrayList<double[]>();
         List<double[]> foodPatterns = new ArrayList<double[]>();
 
+        BufferedWriter out = null;
+
+        try {
+            out = new BufferedWriter(new FileWriter(outputFilepath));
+        }
+        catch (IOException e)
+        {
+            System.out.println("Exception!");
+
+        }
+
         BehaviorHandlerI behaviorHandler = new TextBehaviorHandler(contactsFilepath);
 
         int interval_id = 0;
@@ -151,11 +166,34 @@ public class TesteGE4 {
                         double pctCorrect = result.pctCorrect();
                         double auroc = result.weightedAreaUnderROC();
                         double kappa = result.kappa();
-                        System.out.printf(
-                                "0, %s, %s, %s, %s, %f, %d, %d, %d, %d, %d, %d, %f, %f, %f\n",
-                                animalName, filter, str, classifierName, binSize,
-                                windowSize, minTotalPatterns, numPatterns,
-                                interval_id, round, cv_fold, pctCorrect, auroc, kappa);
+
+                        Map<String, String> csvResults =  new HashMap<String, String>();;
+
+                        csvResults.put("animal", animalName);
+                        csvResults.put("area", filter);
+                        csvResults.put("object", str);
+                        csvResults.put("model", classifierName);
+                        csvResults.put("bin_size", String.valueOf(binSize));
+
+                        csvResults.put("window_size", String.valueOf(windowSize));
+                        csvResults.put("num_patterns", String.valueOf(numPatterns));
+                        // csvResults.put("label", String.valueOf(binSize));
+
+                        csvResults.put("round", String.valueOf(round));
+                        csvResults.put("cv_fold", String.valueOf(cv_fold));
+                        csvResults.put("pct_correct", String.valueOf(pctCorrect));
+                        csvResults.put("auroc", String.valueOf(auroc));
+                        csvResults.put("kappa", String.valueOf(kappa));
+
+                        //System.out.println (csvResults.values());
+
+                        if (out!=null) {
+                            out.write(buildSQL(csvResults,"results_ge4_ball_food")+"\n");
+                        }
+                        else {
+                            System.out.println (buildSQL(csvResults,"results_ge4_ball_food"));
+                        }
+
                         ++interval_id;
                     }
 
@@ -164,8 +202,33 @@ public class TesteGE4 {
             }
 
         }
+        out.close();
+        System.out.println("File generated successfully.");
 
     }
+
+    private static String buildSQL (Map<String, String> csvResults, String tableName) {
+        String sqlQuery="INSERT INTO "+tableName+" ";
+        //  String param[] = (String[]) csvResults.keySet().toArray();
+        Object params[] = csvResults.keySet().toArray();
+        sqlQuery+=" (";
+        for (Object param: params) {
+            sqlQuery+=""+param+",";
+
+        }
+        sqlQuery = sqlQuery.substring(0, sqlQuery.length()-1 );
+        sqlQuery += ") VALUES (";
+        Object values[] = csvResults.values().toArray();
+        for (Object value: values) {
+            sqlQuery+="'"+value+"',";
+        }
+        sqlQuery = sqlQuery.substring(0, sqlQuery.length()-1 );
+        sqlQuery += "); ";
+
+
+        return sqlQuery;
+    }
+
 
     private static List<Evaluation> evaluatePatternClassification(
             Object[] sampleA, Object[] sampleB) throws Exception {
