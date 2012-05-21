@@ -111,8 +111,8 @@ public class TesteGE4 {
 
         readSetupFile(setupFilepath);
 
-        List<double[]> ballPatterns = new ArrayList<double[]>();
-        List<double[]> foodPatterns = new ArrayList<double[]>();
+        List<double[]> firstPattern = new ArrayList<double[]>();
+        List<double[]> secondPattern = new ArrayList<double[]>();
 
         BufferedWriter out = null;
 
@@ -129,6 +129,10 @@ public class TesteGE4 {
 
         int interval_id = 0;
 
+        String firstLabel = labels.get(0);
+        String secondLabel = labels.get(1);
+
+
         for (String filter : spikeFilters) {
 
             SpikeHandlerI spikeHandler = new TextSpikeHandler(spikesDir, filter, animalName);
@@ -137,29 +141,30 @@ public class TesteGE4 {
 
             for (String str : labels){
 
-                ballPatterns.clear();
-                foodPatterns.clear();
+                firstPattern.clear();
+                secondPattern.clear();
 
                 for (String label : labels) {
 
                     for (Interval interval : behaviorHandler.getContactIntervals(label)){
-                        if (label.equals("ball")){
-                            ballPatterns.addAll(countMatrix.getPatterns(interval));
+                        if (label.equals(firstLabel)){
+                            firstPattern.addAll(countMatrix.getPatterns(interval));
 
                         }
 
-                        if (label.equals("food")){
-                            foodPatterns.addAll(countMatrix.getPatterns(interval));
+                        if (label.equals(secondLabel)){
+                            secondPattern.addAll(countMatrix.getPatterns(interval));
                         }
                     }
 
                 }
 
                 for (int round = 0; round < numRounds; ++round) {
-                    Object[] sampleBall = RandomUtils.randomSample(random, ballPatterns, numPatterns);
-                    Object[] sampleFood = RandomUtils.randomSample(random, foodPatterns, numPatterns);
+                    Object[] sampleBall = RandomUtils.randomSample(random, firstPattern, numPatterns);
+                    Object[] sampleFood = RandomUtils.randomSample(random, secondPattern, numPatterns);
 
-                    List<Evaluation> results = evaluatePatternClassification(sampleBall, sampleFood);
+                    List<Evaluation> results = evaluatePatternClassification(sampleBall, sampleFood, firstLabel,
+                            secondLabel);
 
                     for (int cv_fold = 0; cv_fold < results.size(); ++cv_fold) {
                         Evaluation result = results.get(cv_fold);
@@ -171,7 +176,8 @@ public class TesteGE4 {
 
                         csvResults.put("animal", animalName);
                         csvResults.put("area", filter);
-                        csvResults.put("object", str);
+                        csvResults.put("peers", firstLabel + "x" +secondLabel);
+                        //csvResults.put("peer2", secondLabel);
                         csvResults.put("model", classifierName);
                         csvResults.put("bin_size", String.valueOf(binSize));
 
@@ -188,10 +194,11 @@ public class TesteGE4 {
                         //System.out.println (csvResults.values());
 
                         if (out!=null) {
-                            out.write(buildSQL(csvResults,"results_ge4_ball_food")+"\n");
+                            // System.out.println("ok");
+                            out.write(buildSQL(csvResults,"results_peers")+"\n");
                         }
                         else {
-                            System.out.println (buildSQL(csvResults,"results_ge4_ball_food"));
+                            System.out.println (buildSQL(csvResults,"results_peers"));
                         }
 
                         ++interval_id;
@@ -231,10 +238,13 @@ public class TesteGE4 {
 
 
     private static List<Evaluation> evaluatePatternClassification(
-            Object[] sampleA, Object[] sampleB) throws Exception {
+            Object[] sampleA, Object[] sampleB, String firstLabel, String secondLabel) throws Exception {
 
-        Instances datasetA = buildInstances(sampleA, "ball");
-        Instances datasetB = buildInstances(sampleB, "food");
+        firstLabel = "A";
+        secondLabel = "B";
+
+        Instances datasetA = buildInstances(sampleA, firstLabel);
+        Instances datasetB = buildInstances(sampleB, secondLabel);
 
         Instances dataset = new Instances(datasetA);
         for (int i = 0; i < datasetB.numInstances(); ++i)
@@ -248,6 +258,7 @@ public class TesteGE4 {
 
 
     private static Instances buildInstances(Object[] patterns, String classValue) {
+
         int patternSize = ((double[]) patterns[0]).length;
 
         FastVector attributes = new FastVector();
@@ -255,13 +266,13 @@ public class TesteGE4 {
             attributes.addElement(new Attribute("bin_" + i));
 
         FastVector classValues = new FastVector();
-        classValues.addElement("ball");
-        classValues.addElement("food");
+        classValues.addElement("A");
+        classValues.addElement("B");
 
         Attribute classAttribute = new Attribute("class", classValues);
         attributes.addElement(classAttribute);
 
-        Instances dataset = new Instances("ge4_ball_brush", attributes, patterns.length);
+        Instances dataset = new Instances("Peers", attributes, patterns.length);
         dataset.setClass(classAttribute);
 
         for (Object patternObj : patterns) {
