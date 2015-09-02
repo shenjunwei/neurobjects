@@ -1,0 +1,62 @@
+# Frequently Asked Questions #
+
+In this document we present a few topics that are often asked or that
+could serve as a task oriented tutorial for our project.
+
+
+## Spike data ##
+
+### What is the time unit used? ###
+
+The project is independent of the chosen unit for measurement, but usually we use seconds.
+
+### How should I name my spike data files? ###
+
+Our convention is `"<neuron_area>_<experiment_id><electrode>.spk"`. Ex: `HP_02a.spk`
+meaning hippocampus "2", electrode "a".
+
+### How do I open a spike data file and access the spike times? ###
+
+Create a `TextSpikeHandler` specifying the directory of your file and the name of the
+desired file as a label. Use `SpikeHandlerI.getSpikeTrain` to get a `SpikeTrain` instance
+and then use `SpikeTrain.getTimes` to access the times directly.
+
+### The spike file is too big and I only want to look at a small section of it. What can I do? ###
+
+Use `SpikeTrain.extractInterval` to extract a given time window of a particular spike
+train.
+
+### How do I calculate the inter spike intervals for a given spike train? ###
+
+Use `SpikeTrain.getInterSpikeInterval()` to easily calculate the ISI.
+
+
+## Spike rates ##
+
+### How do you estimate the spike rate function? ###
+
+Currently we use the spike rate count (see the `CountMatrix` component). Our plan is to
+implement other methods, all of them implementing the `SpikeRateMatrixI` interface.
+
+### Which constructor should I use when creating a `CountMatrix`? ###
+
+It depends. You have to decide if you want to specify the number of bins used or the time
+size of each bin. There is a constructor for each method.
+
+### How do I access the spike rate count? ###
+
+Create a `CountMatrix` for your `SpikeHandler`. If you want to access the individual
+counts for each bin, use `CountMatrix.get`. Alternatively, you can access a pattern of
+the `CountMatrix` using the `getPattern` interface methods of `SpikeRateMatrixI`.
+
+
+## Behavior ##
+
+### How should I name my animal behavior files? ###
+
+Our convention is `"<experiment_id>_contacts.txt"`. Ex: `ge4_contacts.txt`.
+
+### Do the timestamps have to be ascending? ###
+
+No. In the process of creating a `BehaviorHandler` instance, we sort the timestamps for
+you according to their starting times. We only assume non-overlapping intervals.

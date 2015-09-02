@@ -1,0 +1,67 @@
+# Behavior data file format specification #
+
+
+## Naming ##
+
+A behavior data file name must have a **.bhv** extension.
+
+
+## Structure ##
+
+It's an ASCII encoded text file with a series of lines, each containing a three values
+separated by commas. A value representation can't contain a comma.
+
+` <A>, <B>, <S> `
+
+  * `<S>`: a string. Leading and trailing spaces are ignored.
+  * `<A>`, `<B>`: string representation of floating point numbers as described [in this format](http://download.oracle.com/javase/6/docs/api/java/lang/Double.html#valueOf(java.lang.String)), where `Double.valueOf(<B>) < Double.valueOf(<C>)`.
+
+
+## Meaning ##
+
+Data files in this format contain information about observed animal behavior in an
+experiment. The behavior model consists of a relation between the set of _time intervals_
+(`[a,b]`) and a set of _tags_. Each tag represents one of the possible animal behaviors
+observed during the experiment (ex: sleeping, walking, playing with ball, eating, etc.).
+
+The behavior data file encodes that relation. Each line is a member pair, where
+`[<A>,<B>]` is the time interval (in seconds) and `<S>` is the tag. Each line meaning is
+that during the specified time interval, the observed behavior of the animal was `<S>`.
+
+
+## Example ##
+
+```
+3630, 3631, ball
+3684, 3699, ball
+3719, 3720, ball
+3738, 3740, ball
+3753, 3754, ball
+3781, 3800, ball
+3610, 3617, brush
+3642, 3648, brush
+3668, 3672, brush
+3703, 3714, brush
+3760, 3763, brush
+3803, 3805, brush
+3999, 4000, brush
+4123, 4125, brush
+4320, 4328, brush
+3623, 3630, urchin
+3632, 3637, urchin
+3681, 3682, urchin
+3741, 3752, urchin
+3754, 3758, urchin
+3617, 3621, food
+3639, 3641, food
+3648, 3661, food
+3673, 3674, food
+3715, 3717, food
+3764, 3778, food
+3806, 3987, food
+4008, 4118, food
+4128, 4225, food
+4237, 4319, food
+4339, 4706, food
+4712, 4754, food
+```

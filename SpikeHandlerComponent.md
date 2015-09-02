@@ -1,0 +1,96 @@
+# `SpikeHandler` #
+
+## Introduction ##
+
+This document gives an overview of the `SpikeHandler` component. It shows how to use the
+`TextSpikeHandler` implementation of `SpikeHandlerI` to open a set of text files
+containing spike train data.
+
+The component `SpikeHandler` is a source-independent representation of a set of spike
+trains. It abstracts the origin of the data, presenting the user with a unified interface
+named `SpikeHandlerI`.
+
+
+## Loading the spikes ##
+
+To explain the use of the `SpikeHandlerI` interface we'll show how to use the
+`TextSpikeHandler` implementation to open a set of text data files describing spike
+trains.
+
+To open a set of spike train data files we first need to provide:
+  * Path to a directory of text files: `String path = "path/to/dir/;"`
+  * Filter to identify chosen neurons: `String filter = "V1";`. The filter will match all spike files beginning with `"V1"` and ending with the `".spk"` extension.
+  * Desired interval of spike times: `Interval i = Interval.make(0, 500);`. In Neurobjects, a time window in an experiment is represented by the _Interval_ class, which holds two `double` values that represent a closed range `[a, b]`. In this example. we'll only load the spike times occurring between `t = 0s` and `t = 500s`, inclusive.
+
+Next, we create a `TextSpikeHandler` with these parameters. It's the component that reads
+the spike train raw data and implements the access interface `SpikeHandlerI`. To
+instantiate a `TextSpikeHandler`, we use:
+
+```
+SpikeHandlerI spikeHandler = new TextSpikeHandler(path, filter, i);
+```
+
+
+## Accessing the raw spike times ##
+
+To actually use the spike train data, we can loop through every spike train using:
+
+```
+for (SpikeTrain spikeTrain : spikeHandler.getAllSpikes()) {
+  double[] times = spikeTrain.getTimes();
+  // use times
+}
+```
+
+(_There are other ways to get spike trains from a `SpikeHandlerI`, see the source for
+details_)
+
+
+## Complete example ##
+
+```
+package app;
+
+import static java.lang.System.out;
+
+import nda.data.Interval;
+import nda.data.SpikeHandlerI;
+import nda.data.SpikeTrain;
+import nda.data.text.TextSpikeHandler;
+import static nda.util.ArrayUtils.*;
+
+
+public class ReadTextDataApp {
+	public static void main(String[] args) throws Exception {
+	        // Path to a directory with spike files
+		String path = "setup/spikes";
+		
+		// Only open neurons whose names begin with "V1"
+		String filter = "V1";
+		
+		// For each neuron, only load in memory the spikes that occur between
+		// 0s and 5820s.
+		Interval interval = Interval.make(0, 5820);
+	    
+	        // Create a SpikeHandlerI to effectively open the files
+		SpikeHandlerI spikeHandler = new TextSpikeHandler(path, filter, interval);
+		
+                // Print the table header
+		out.println("Neuron | Spike min | Spike max | Spike avg | " +
+				    "ISI min | ISI max | ISI avg");
+		
+		// For each spike train that matches the given criteria
+		for (SpikeTrain spikeTrain : spikeHandler.getAllSpikeTrains()) {
+		    // Load the spike train time series and inter spike intervals
+		    double[] times = spikeTrain.getTimes();
+		    double[] isi = spikeTrain.getInterspikeInterval();
+				
+			// Print a row of the table
+			out.printf("%s %11.3f %11.3f %11.3f %9.3f %9.3f %9.3f\n",
+			        spikeTrain.getName(), spikeTrain.getFirst(), spikeTrain.getLast(),
+				getAverage(times), getMin(isi), getMax(isi), getAverage(isi)
+			);
+		}
+	}
+}
+```

@@ -1,0 +1,152 @@
+# `SpikeRateMatrix` #
+
+## Introduction ##
+
+This document gives an overview of the `SpikeRateMatrixI` component. It contains a
+tutorial explaining how to use the `CountMatrix` implementation of  `SpikeRateMatrixI` to
+build a simple count matrix and extract patterns from it.
+
+The `SpikeRateMatrixI` component is an abstract representation of a model for estimating
+the spike rate function. Besides `CountMatrix`, other models can be implemented that
+adhere to the interface, such as a Gaussian model.
+
+In the following sections we show how to use the component to build a simple example
+application.
+
+
+## Creating a CountMatrix ##
+
+In order to create a CountMatrix, we need to specify all its parameters. In the example
+included at the end of the page, we chose to read those parameters from standard input.
+There is more than one way to create a CountMatrix, each using different parameters.
+We refer the reader to the API documentation for more details. For this example, we
+include one possible set of parameters. They are:
+
+  * _Spike trains_: a CountMatrix is associated with a SpikeHandler in order to read the timestamps.
+  * _Bin size_: size of the time bin used to count the spikes, measured in seconds.
+  * _Start time_: the starting point from which the pattern extraction will begin.
+  * _Window width_: length of a single part of a pattern.
+  * _Cursor step_: how many columns will the internal cursor advance each time we create a pattern based on the cursor position.
+
+
+## Accessing the matrix elements ##
+
+Using a CountMatrix, it is possible to access individual elements of the SpikeRateMatrixI.
+Use `CountMatrix.numRows()` and `CountMatrix.numColumns()` for the matrix dimensions and
+`CountMatrix.get(i, j)` to get an element. Note that this method is not available in the
+more general interface SpikeRateMatrixI (it may not have a meaning for other
+implementations).
+
+
+## Patterns ##
+
+Every SpikeRateMatrixI has a notion of a _pattern_. A pattern is a view of the matrix that
+was extracted from it in a specific position, using a specific length.
+
+Consider a CountMatrix `M` corresponding to `r` spike trains, having `c` time bins for each.
+A pattern `P` on `M`, extracted from position `i` with width `w` (where `i + w <= c`) is a
+1D vector defined as:
+
+`P = concat(M[0][i:i+w-1], M[1][i:i+w-1], ..., M[r-1][i:i+w-1])`
+
+Where `concat` represents the horizontal concatenation of its arguments and `M[i][j:k]`
+is an 1D vector corresponding to row `i` and columns `j` through `k`, inclusive, of `M`.
+
+
+## Complete Example ##
+```
+package app;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.Scanner;
+
+import nda.data.CountMatrix;
+import nda.data.SpikeHandlerI;
+import nda.data.text.TextSpikeHandler;
+
+
+/**
+ * This is a test application for the SpikeRateMatrixI component and its
+ * CountMatrix implementation. It shows how to use the CountMatrix to
+ * calculate a count rate matrix and create text files containing the
+ * count matrix itself and a series of patterns extracted from it.
+ * 
+ * The application reads various parameter values provided by the user
+ * from the standard input.
+ * 
+ * @author Giuliano Vilela
+ * @ingroup ExampleApps
+ */
+public class WriteRateMatrixApp {
+    // Path to a directory with real spike files
+    private static final String spikeDir = "setup/spikes";
+
+    public static void main(String[] args) throws Exception {
+        Scanner in = new Scanner(System.in);
+
+        // Read the neuron filter: used to choose the spike files that will be opened
+        System.out.println("Filter: ");
+        String filter = in.nextLine().trim();
+
+        // Read the bin size: size of the time window that each bin in the
+        // count matrix contains
+        System.out.print("Bin size: ");
+        double binSize = in.nextDouble();
+
+        // Read the start time: starting point for the pattern extraction
+        System.out.print("Start time: ");
+        double startTime = in.nextDouble();
+
+        // Read the window width: length of a single part of a pattern
+        // see the SpikeRateMatrixI docs for a better explanation
+        System.out.print("Window width: ");
+        int width = in.nextInt();
+
+        // Read the cursor step: size of the increment used to gather patterns
+        // see the SpikeRateMatrixI docs
+        System.out.print("Cursor step: ");
+        int cursorStep = in.nextInt();
+
+        // Create a SpikeHandlerI containing the desired neurons
+        SpikeHandlerI spikeHandler = new TextSpikeHandler(spikeDir, filter);
+
+        // Setup the CountMatrix with the given parameters
+        CountMatrix rateMatrix = new CountMatrix(spikeHandler, binSize);
+        rateMatrix.setCurrentTime(startTime);
+        rateMatrix.setWindowWidth(width);
+        rateMatrix.setStep(cursorStep);
+
+
+        // Open a file to write the complete count matrix.
+        // Ex: count_matrix_HP.mat
+        String matrixFilename = "count_matrix_" + filter + ".mat";
+        BufferedWriter matrixOut = new BufferedWriter(new FileWriter(matrixFilename));
+
+        // Loop over all the counts and write them to matrixOut
+        for (int r = 0; r < rateMatrix.numRows(); ++r) {
+            for (int c = 0; c < rateMatrix.numColumns(); ++c) {
+                String num = Integer.toString(rateMatrix.get(r, c));
+                matrixOut.write(num + ' ');
+            }
+            matrixOut.write('\n');
+        }
+        matrixOut.close();
+
+
+        // Open a file to write all the patterns extracted from the CountMatrix
+        // Ex: pattern_HP_0,25_5820_00_50_1.mat
+        String patternFilename = String.format("pattern_%s_%.02f_%.02f_%d_%d.mat",
+                filter, binSize, startTime, width, cursorStep);
+        BufferedWriter patternOut = new BufferedWriter(new FileWriter(patternFilename));
+
+        // Loop over all the patterns in the current configuration of the rateMatrix
+        for (double[] pattern : rateMatrix) {
+            for (int i = 0; i < pattern.length; ++i)
+                patternOut.write(pattern[i] + " ");
+            patternOut.write('\n');
+        }
+        patternOut.close();
+    }
+}
+```
